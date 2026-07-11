@@ -1,0 +1,14 @@
+{
+  "engine_id": "sympy",
+  "role": "OPEN_SOURCE_EXACT_SYMBOLIC_BASELINE",
+  "adapter_version": "1.0.0",
+  "created_by": "SLOOP_ENGINE_002",
+  "runner_script": "engines/sympy/runner.py",
+  "allowed_operations_file": "engines/sympy/allowed_operations.json",
+  "forbidden_operations_file": "engines/sympy/forbidden_operations.json",
+  "templates_dir": "engines/sympy/templates/",
+  "executable": "python3",
+  "executable_args": ["-c"],
+  "capability_profile": "engines/sympy/capability.json",
+  "requires_license_key": false
+}

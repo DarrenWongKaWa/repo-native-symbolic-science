@@ -1,0 +1,45 @@
+{
+  "object_id": "RAW-SCALAR-POLY-001",
+  "source_sha256": "a3f7c9d1e2b4a5f6c8d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2",
+  "held_representation": "a + 3*b*c - d^2 + 5*e*f*g",
+  "free_symbols": ["a", "b", "c", "d", "e", "f", "g"],
+  "expression_language": "sympy",
+  "current_status": "RAW_INGESTED",
+  "expression_scope": "pointwise",
+  "commutativity_profile": {
+    "operator_commutativity": {
+      "addition": true,
+      "multiplication": true,
+      "scalar_multiplication": true,
+      "subtraction": true,
+      "power": true
+    },
+    "all_operators_commutative": true
+  },
+  "symbol_classification": {
+    "scalars": ["a", "b", "c", "d", "e", "f", "g"],
+    "indexed_symbols": [],
+    "constants": [],
+    "functions": []
+  },
+  "index_topology": {
+    "free_indices": [],
+    "dummy_indices": [],
+    "indexed_symbols": [],
+    "index_domains": {},
+    "summation_conventions": {}
+  },
+  "metadata": {
+    "ingested_at": "2025-07-11T11:00:00Z",
+    "ingestion_method": "sympy_parse",
+    "source_file": "examples/polynomial_sum.py",
+    "expression_tree_depth": 4,
+    "term_count": 4,
+    "operation_counts": {
+      "additions": 3,
+      "multiplications": 4,
+      "powers": 1,
+      "scalar_multiplies": 2
+    }
+  }
+}

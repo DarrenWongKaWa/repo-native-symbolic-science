@@ -1,0 +1,107 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "schemas/session_capability_matrix.schema.json",
+  "title": "Session Capability Matrix",
+  "description": "Role-based capability matrix defining read/write, tool, transformation, claim, verdict, and gate entitlements for every repo-native role.",
+  "type": "object",
+  "required": ["roles", "default_canonical_state_authority"],
+  "properties": {
+    "default_canonical_state_authority": {
+      "type": "boolean",
+      "description": "Default for canonical state authority across all roles. Must be false in generic engine."
+    },
+    "roles": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "role",
+          "readable_input_classes",
+          "writable_paths",
+          "permitted_tools",
+          "permitted_transformations",
+          "permitted_claim_classes",
+          "forbidden_actions",
+          "allowed_verdicts",
+          "gate_requirements",
+          "canonical_state_authority",
+          "parallel_artifact_consumption_rules"
+        ],
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": [
+              "global_planner",
+              "lane_planner",
+              "executor",
+              "independent_verifier",
+              "human_gate_materializer",
+              "integration_executor",
+              "integration_verifier",
+              "report_generator",
+              "report_verifier"
+            ]
+          },
+          "readable_input_classes": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Classes of artifacts this role may read, e.g., 'immutable accepted inputs', 'fully materialized dependency artifacts', 'task-local files'."
+          },
+          "writable_paths": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Paths/wildcards this role may write to. Must be scoped to the role's task-owned output directory."
+          },
+          "permitted_tools": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Tools this role is permitted to invoke, e.g., 'filesystem read', 'declared deterministic validators', 'materialize exact human statement'."
+          },
+          "permitted_transformations": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Transformation levels this role may perform. Empty or 'none' for read-only/verification roles."
+          },
+          "permitted_claim_classes": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Classes of claims this role is authorized to assert, e.g., 'role-scoped provisional records', 'verification verdicts within evidence scope'."
+          },
+          "forbidden_actions": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Actions explicitly forbidden for this role."
+          },
+          "allowed_verdicts": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Verdicts this role is authorized to issue."
+          },
+          "gate_requirements": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Required gates before this role may proceed, e.g., 'artifact contract', 'input SHA stability', 'claim boundary'."
+          },
+          "canonical_state_authority": {
+            "oneOf": [
+              {"type": "boolean"},
+              {"type": "string"}
+            ],
+            "description": "Whether this role has canonical state promotion authority. Must be false or a condition string."
+          },
+          "parallel_artifact_consumption_rules": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Rules governing consumption of partially-complete artifacts, e.g., 'fully materialized inputs only', 'start and closeout SHA recheck'."
+          },
+          "historical_mutation_policy": {
+            "type": "string",
+            "enum": ["immutable", "amend_only", "versioned"],
+            "description": "Policy for mutating historical artifacts."
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

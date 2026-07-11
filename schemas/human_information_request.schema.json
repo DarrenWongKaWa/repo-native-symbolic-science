@@ -1,0 +1,113 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "schemas/human_information_request.schema.json",
+  "title": "Human Information Request",
+  "description": "Structured request to a human scientist when semantic information is missing and cannot be inferred.",
+  "type": "object",
+  "required": [
+    "request_id",
+    "request_timestamp",
+    "blocked_task_ids",
+    "what_is_missing",
+    "why_required",
+    "blocked_scientific_claims",
+    "search_universe",
+    "absent_vs_not_found",
+    "exact_evidence_requested",
+    "safe_continuation_work",
+    "forbidden_operations",
+    "status"
+  ],
+  "properties": {
+    "request_id": {
+      "type": "string",
+      "description": "Unique identifier for this human information request."
+    },
+    "request_timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "blocked_task_ids": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Task IDs that are blocked until this request is resolved."
+    },
+    "what_is_missing": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["entity", "kind"],
+        "properties": {
+          "entity": {"type": "string", "description": "What symbol, index, notation, or definition is missing."},
+          "kind": {"type": "string", "enum": ["definition", "convention", "physical_role", "source_authority", "orientation", "sign", "prefactor", "domain", "boundary_condition", "other"]},
+          "context": {"type": "string", "description": "Where it appears and why its meaning matters."}
+        }
+      }
+    },
+    "why_required": {
+      "type": "string",
+      "description": "Explanation of why this information is necessary to proceed."
+    },
+    "blocked_scientific_claims": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Scientific claims that cannot be evaluated without this information."
+    },
+    "search_universe": {
+      "type": "object",
+      "required": ["scopes_checked", "search_time"],
+      "properties": {
+        "scopes_checked": {"type": "array", "items": {"type": "string"}},
+        "search_time": {"type": "string"},
+        "sources_consulted": {"type": "array", "items": {"type": "string"}},
+        "search_strategy": {"type": "string"}
+      },
+      "description": "Record of where the agent searched."
+    },
+    "absent_vs_not_found": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["entity", "classification"],
+        "properties": {
+          "entity": {"type": "string"},
+          "classification": {"type": "string", "enum": ["absent_from_repo", "absent_from_sources", "not_found_in_available_sources", "ambiguous_in_sources", "needs_expert_judgment"]},
+          "detail": {"type": "string"}
+        }
+      },
+      "description": "Classification of whether information is absent or merely not found."
+    },
+    "exact_evidence_requested": {
+      "type": "object",
+      "additionalProperties": {"type": "string"},
+      "description": "Exactly what evidence the human should provide, keyed by entity."
+    },
+    "safe_continuation_work": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Work that may safely continue while this request is pending."
+    },
+    "forbidden_operations": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Operations that remain forbidden until this request is resolved."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["PENDING", "PARTIALLY_RESOLVED", "RESOLVED", "WITHDRAWN"],
+      "description": "Current status of the information request."
+    },
+    "human_response": {
+      "type": "object",
+      "properties": {
+        "provided_by": {"type": "string"},
+        "timestamp": {"type": "string", "format": "date-time"},
+        "evidence_provided": {"type": "object"},
+        "accepted_answers": {"type": "array", "items": {"type": "string"}},
+        "rejected_answers": {"type": "array", "items": {"type": "string"}},
+        "new_assumptions": {"type": "array", "items": {"type": "string"}}
+      }
+    }
+  },
+  "additionalProperties": false
+}

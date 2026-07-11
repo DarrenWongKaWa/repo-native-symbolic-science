@@ -1,0 +1,130 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "schemas/latex_evidence_mapping.schema.json",
+  "title": "LaTeX Evidence Mapping",
+  "description": "Mapping from every important equation, table, and conclusion in a publication to its source task, artifact, SHA, verification, and claim boundary.",
+  "type": "object",
+  "required": ["mapping_id", "publication_task_id", "entries", "completeness_claim"],
+  "properties": {
+    "mapping_id": {
+      "type": "string",
+      "description": "Unique identifier for this evidence mapping."
+    },
+    "publication_task_id": {
+      "type": "string",
+      "description": "Task ID of the publication/report this mapping belongs to."
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "latex_label",
+          "source_task",
+          "source_artifact",
+          "source_sha",
+          "verification_task",
+          "claim_type",
+          "assumptions",
+          "scope",
+          "human_decision_dependency",
+          "caveats",
+          "canonical_or_candidate_status"
+        ],
+        "properties": {
+          "latex_label": {
+            "type": "string",
+            "description": "LaTeX \\label{} value."
+          },
+          "source_task": {
+            "type": "string",
+            "description": "Task ID that produced this equation/table/conclusion."
+          },
+          "source_artifact": {
+            "type": "string",
+            "description": "Path to the source artifact containing the rendered content."
+          },
+          "source_sha": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "description": "SHA-256 of the source artifact at time of rendering."
+          },
+          "verification_task": {
+            "type": "string",
+            "description": "Task ID of the independent verification."
+          },
+          "claim_type": {
+            "type": "string",
+            "enum": [
+              "literal_equality",
+              "finite_role_preserving_rename",
+              "role_labelled_analogy",
+              "structural_compatibility",
+              "pointwise_identity",
+              "projected_identity",
+              "identity_under_assumptions",
+              "integrated_identity",
+              "numerical_regression_only",
+              "not_established",
+              "contradicted",
+              "forbidden_claim"
+            ]
+          },
+          "assumptions": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Assumptions under which this claim holds."
+          },
+          "scope": {
+            "type": "string",
+            "description": "Scope of the claim (pointwise, integrated, projected, etc.)."
+          },
+          "human_decision_dependency": {
+            "type": "boolean",
+            "description": "Whether this result depends on a materialized human decision."
+          },
+          "caveats": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Caveats that qualify this result."
+          },
+          "canonical_or_candidate_status": {
+            "type": "string",
+            "enum": ["canonical", "candidate", "legacy", "rejected", "superseded", "unknown"],
+            "description": "Whether the source object is canonical or still a candidate."
+          },
+          "object_role": {
+            "type": "string",
+            "description": "Role of the object in the derivation."
+          },
+          "publication_section": {
+            "type": "string",
+            "description": "Section in the publication where this appears."
+          }
+        }
+      }
+    },
+    "completeness_claim": {
+      "type": "object",
+      "required": ["all_equations_mapped", "all_tables_mapped", "all_conclusions_mapped"],
+      "properties": {
+        "all_equations_mapped": {"type": "boolean"},
+        "all_tables_mapped": {"type": "boolean"},
+        "all_conclusions_mapped": {"type": "boolean"},
+        "exclusions": {"type": "array", "items": {"type": "string"}},
+        "audit_timestamp": {"type": "string", "format": "date-time"}
+      }
+    },
+    "forbidden_presentations_audit": {
+      "type": "object",
+      "properties": {
+        "candidate_as_verified_count": {"type": "integer"},
+        "verified_candidate_as_canonical_count": {"type": "integer"},
+        "projection_as_global_equality_count": {"type": "integer"},
+        "pointwise_as_integrated_cancellation_count": {"type": "integer"},
+        "historical_as_current_without_qualification_count": {"type": "integer"}
+      }
+    }
+  },
+  "additionalProperties": false
+}

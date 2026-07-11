@@ -1,0 +1,48 @@
+{
+  "reconstruction_id": "RECON-SCALAR-POLY-001",
+  "decomposition_id": "DECOMP-SCALAR-POLY-001",
+  "parent_object_id": "RAW-SCALAR-POLY-001",
+  "verified_at": "2025-07-11T11:10:00Z",
+  "exact_reconstruction": true,
+  "reconstruction_method": "sympy_simplify_equals",
+  "parent_expression": "a + 3*b*c - d^2 + 5*e*f*g",
+  "reconstructed_expression": "a + 3*b*c - d^2 + 5*e*f*g",
+  "difference_expression": "0",
+  "difference_simplified": 0,
+  "child_contributions": {
+    "CHILD-SCALAR-001-term-a": "a",
+    "CHILD-SCALAR-002-term-3bc": "3*b*c",
+    "CHILD-SCALAR-003-term-neg-d2": "-d^2",
+    "CHILD-SCALAR-004-term-5efg": "5*e*f*g"
+  },
+  "intermediate_sums": [
+    {
+      "step": 1,
+      "accumulated": "a",
+      "added_child": "CHILD-SCALAR-001-term-a"
+    },
+    {
+      "step": 2,
+      "accumulated": "a + 3*b*c",
+      "added_child": "CHILD-SCALAR-002-term-3bc"
+    },
+    {
+      "step": 3,
+      "accumulated": "a + 3*b*c - d^2",
+      "added_child": "CHILD-SCALAR-003-term-neg-d2"
+    },
+    {
+      "step": 4,
+      "accumulated": "a + 3*b*c - d^2 + 5*e*f*g",
+      "added_child": "CHILD-SCALAR-004-term-5efg"
+    }
+  ],
+  "validation_checks": {
+    "symbolic_equality": true,
+    "numerical_random_eval": true,
+    "term_count_match": true,
+    "coefficient_preservation": true,
+    "commutative_reordering_preserved": true
+  },
+  "notes": "All children are purely scalar and commutative. Reconstruction is exact with no index or ordering issues."
+}

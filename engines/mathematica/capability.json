@@ -1,0 +1,88 @@
+{
+  "engine_id": "mathematica",
+  "engine_family": "mathematica",
+  "engine_type": "EXACT_SYMBOLIC",
+  "license_class": "COMMERCIAL",
+  "availability_status": "AVAILABLE",
+  "version": "14.3.0",
+  "exact_or_numeric": "BOTH",
+  "supported_expression_classes": [
+    "polynomial",
+    "rational",
+    "elementary",
+    "special_functions",
+    "matrices",
+    "tensors",
+    "indexed_expressions",
+    "series_expansions",
+    "held_expressions"
+  ],
+  "supported_operations": [
+    "ReplaceAll",
+    "Series",
+    "Coefficient",
+    "Together",
+    "Apart",
+    "Factor",
+    "Expand",
+    "Cancel",
+    "SameQ",
+    "exact_subtraction",
+    "TimeConstrained",
+    "MemoryConstrained",
+    "held_expression_operations",
+    "exact_simplification",
+    "exact_integration",
+    "special_function_evaluation",
+    "matrix_operations",
+    "summation",
+    "limit"
+  ],
+  "unsupported_operations": [],
+  "assumption_handling": {
+    "supports_explicit_assumptions": true,
+    "supports_domain_constraints": true,
+    "supports_positivity_constraints": true,
+    "default_assumptions": "complex"
+  },
+  "branch_handling": {
+    "branch_aware": true,
+    "principal_branch_default": "standard_mathematica_principal_branch"
+  },
+  "noncommutative_support": {
+    "supported": true,
+    "mechanism": "NonCommutativeMultiply and explicit ordering",
+    "limitations": ["requires explicit noncommutative wrappers"]
+  },
+  "indexed_expression_support": {
+    "supported": true,
+    "free_indices": true,
+    "dummy_indices": true,
+    "einstein_summation": false
+  },
+  "special_function_support": {
+    "gamma": true,
+    "polygamma": true,
+    "zeta": true,
+    "hypergeometric": true,
+    "bessel": true
+  },
+  "series_support": {
+    "taylor": true,
+    "laurent": true,
+    "puiseux": true,
+    "multivariate": true
+  },
+  "integration_support": {
+    "indefinite": true,
+    "definite": true,
+    "numerical_quadrature": true
+  },
+  "precision_model": "MIXED",
+  "determinism_status": "CONDITIONALLY_DETERMINISTIC",
+  "timeout_support": true,
+  "memory_limit_support": true,
+  "input_formats": ["wolfram_language", "wolfram_string", "mathml"],
+  "output_formats": ["wolfram_language", "string", "latex", "mathml"],
+  "platform_constraints": ["requires_mathematica_license", "requires_wolframscript"]
+}

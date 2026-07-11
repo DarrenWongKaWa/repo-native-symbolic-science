@@ -1,0 +1,195 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "schemas/generic_raw_object.schema.json",
+  "title": "Generic Raw Expression Object",
+  "description": "Immutable raw expression object with full structural and provenance metadata. Initial state must not imply scientific correctness.",
+  "type": "object",
+  "required": [
+    "object_id",
+    "source_file_path",
+    "source_sha256",
+    "source_format",
+    "expression_language",
+    "held_representation",
+    "expression_scope",
+    "free_symbols",
+    "indexed_symbols",
+    "dummy_indices",
+    "external_indices",
+    "index_domains",
+    "summation_conventions",
+    "operator_commutativity",
+    "assumptions",
+    "known_symmetries",
+    "branch_sensitive_functions",
+    "allowed_transformations",
+    "forbidden_transformations",
+    "regression_targets",
+    "current_role",
+    "current_status",
+    "parent_provenance"
+  ],
+  "properties": {
+    "object_id": {
+      "type": "string",
+      "description": "Immutable unique object identifier."
+    },
+    "source_file_path": {
+      "type": "string",
+      "description": "Path to the source file from which the expression was ingested."
+    },
+    "source_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA-256 hash of the source file content."
+    },
+    "source_format": {
+      "type": "string",
+      "description": "Original source format, e.g., 'wolfram', 'latex', 'python_sympy', 'matlab'."
+    },
+    "expression_language": {
+      "type": "string",
+      "description": "Target expression language for held representation, e.g., 'sympy', 'wolfram', 'tensor_algebra'."
+    },
+    "held_representation": {
+      "type": "string",
+      "description": "Original/held expression string in the expression language, not to be modified except by authorized transformations."
+    },
+    "executable_representation_if_authorized": {
+      "type": "string",
+      "description": "Executable form only when explicitly authorized by project adapter. Absent if not authorized."
+    },
+    "expression_scope": {
+      "type": "string",
+      "enum": ["pointwise", "integrated", "projected", "asymptotic", "formal", "unknown"],
+      "description": "Scope of the expression."
+    },
+    "free_symbols": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Free scalar symbols in the expression."
+    },
+    "indexed_symbols": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "index_count", "tensor_rank"],
+        "properties": {
+          "name": {"type": "string"},
+          "index_count": {"type": "integer", "minimum": 0},
+          "tensor_rank": {"type": "array", "items": {"type": "string", "enum": ["contravariant", "covariant", "undefined"]}}
+        }
+      },
+      "description": "Index-carrying symbols with their rank structure."
+    },
+    "dummy_indices": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Summed/contracted indices internal to the expression."
+    },
+    "external_indices": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Free external indices visible in the expression result."
+    },
+    "index_domains": {
+      "type": "object",
+      "additionalProperties": {"type": "string"},
+      "description": "Mapping from index name to domain, e.g., 'a' -> 'spatial_1_3', 'mu' -> 'spacetime_0_3'."
+    },
+    "summation_conventions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["convention", "applies_to", "range"],
+        "properties": {
+          "convention": {"type": "string", "enum": ["einstein", "explicit_sum", "none"]},
+          "applies_to": {"type": "string"},
+          "range": {"type": "string"}
+        }
+      },
+      "description": "Summation conventions active in the expression."
+    },
+    "operator_commutativity": {
+      "type": "object",
+      "additionalProperties": {"type": "boolean"},
+      "description": "Mapping from operator name to commutativity flag. true = commutative, false = noncommutative."
+    },
+    "assumptions": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Declared assumptions about symbols, domains, limits, etc."
+    },
+    "known_symmetries": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Known symmetries declared for indexed symbols."
+    },
+    "branch_sensitive_functions": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Functions whose branch selection affects correctness."
+    },
+    "allowed_transformations": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Transformation levels explicitly allowed for this object."
+    },
+    "forbidden_transformations": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Transformation levels explicitly forbidden for this object."
+    },
+    "regression_targets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["target_type", "target_value"],
+        "properties": {
+          "target_type": {"type": "string"},
+          "target_value": {},
+          "tolerance": {"type": "number"},
+          "assumptions": {"type": "array", "items": {"type": "string"}}
+        }
+      },
+      "description": "Regression targets for numerical verification."
+    },
+    "current_role": {
+      "type": "string",
+      "enum": ["raw", "candidate", "verified", "canonical", "legacy", "rejected", "superseded"],
+      "description": "Current role of the object in the lifecycle."
+    },
+    "current_status": {
+      "type": "string",
+      "enum": [
+        "RAW_UNVERIFIED",
+        "RAW_INGESTED",
+        "STRUCTURE_VERIFIED",
+        "SEMANTICALLY_BLOCKED",
+        "SEMANTICALLY_NORMALIZED",
+        "CANDIDATE_TRANSFORMED",
+        "INDEPENDENTLY_VERIFIED",
+        "HUMAN_ACCEPTED",
+        "CANONICAL",
+        "REJECTED_PRESERVED",
+        "SUPERSEDED_PRESERVED"
+      ],
+      "description": "Current lifecycle status. Initial state must be RAW_UNVERIFIED or RAW_INGESTED."
+    },
+    "parent_provenance": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["parent_id", "relation_type"],
+        "properties": {
+          "parent_id": {"type": "string"},
+          "relation_type": {"type": "string"},
+          "transformation_task": {"type": "string"},
+          "transformation_sha": {"type": "string"}
+        }
+      },
+      "description": "Provenance chain linking to parent objects."
+    }
+  },
+  "additionalProperties": false
+}

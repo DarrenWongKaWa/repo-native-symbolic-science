@@ -1,0 +1,21 @@
+{
+  "engine_id": "mathematica",
+  "forbidden_operations": [
+    "unrestricted_global_FullSimplify",
+    "undeclared_Assumptions",
+    "pre_authorized_limit_order_changes",
+    "unauthorized_Integrate",
+    "IBP_invention",
+    "automatic_Gamma_expansion",
+    "canonical_state_writes",
+    "invent_scientific_assumptions",
+    "change_index_meaning",
+    "decide_boundary_terms_vanish",
+    "promote_numerical_agreement_to_symbolic_equality",
+    "promote_candidate_to_canonical_state",
+    "unevaluated_Simplify_without_TimeConstrained",
+    "DC_before_Gamma_expansion_violation"
+  ],
+  "project_specific_restriction_rule": "Rules such as DC before Gamma expansion must come from the scientific adapter or task package, not from a generic backend adapter.",
+  "violation_response": "POLICY_VIOLATION"
+}

@@ -1,0 +1,158 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "schemas/claim_relation.schema.json",
+  "title": "Claim Relation",
+  "description": "Relation between two objects with explicit type, scope, assumptions, and verification evidence. Relation typing must block unauthorized status promotion.",
+  "type": "object",
+  "required": [
+    "claim_id",
+    "source_object_id",
+    "target_object_id",
+    "relation_type",
+    "scope",
+    "assumptions",
+    "verification_evidence",
+    "claimed_by_role",
+    "status"
+  ],
+  "properties": {
+    "claim_id": {
+      "type": "string",
+      "description": "Unique identifier for this claim."
+    },
+    "source_object_id": {
+      "type": "string",
+      "description": "Object ID of the source (left-hand or reference) expression."
+    },
+    "target_object_id": {
+      "type": "string",
+      "description": "Object ID of the target (right-hand or derived) expression."
+    },
+    "relation_type": {
+      "type": "string",
+      "enum": [
+        "literal_equality",
+        "finite_role_preserving_rename",
+        "role_labelled_analogy",
+        "structural_compatibility",
+        "pointwise_identity",
+        "projected_identity",
+        "identity_under_assumptions",
+        "integrated_identity",
+        "numerical_regression_only",
+        "not_established",
+        "contradicted",
+        "forbidden_claim"
+      ],
+      "description": "Type of relation claimed between source and target."
+    },
+    "scope": {
+      "type": "object",
+      "required": ["expression_scope", "index_scope"],
+      "properties": {
+        "expression_scope": {
+          "type": "string",
+          "enum": ["pointwise", "integrated", "projected", "asymptotic", "formal", "unknown"]
+        },
+        "index_scope": {"type": "string"},
+        "domain_restrictions": {"type": "array", "items": {"type": "string"}},
+        "dimensionality": {"type": "string"}
+      },
+      "description": "Scope under which this relation is claimed."
+    },
+    "assumptions": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Assumptions required for this relation to hold."
+    },
+    "verification_evidence": {
+      "type": "object",
+      "required": ["methods_used"],
+      "properties": {
+        "methods_used": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "literal_sameq",
+              "exact_held_expression_comparison",
+              "exact_subtraction_under_assumptions",
+              "finite_index_replay",
+              "parent_child_reconstruction",
+              "random_exact_rational_substitution",
+              "high_precision_numerical_sampling",
+              "counterexample_search",
+              "projection_regression",
+              "scope_and_assumption_audit"
+            ]
+          }
+        },
+        "numerical_support_level": {
+          "type": "string",
+          "enum": ["none", "weak", "moderate", "strong", "conclusive"]
+        },
+        "numerical_agreement_is_not_symbolic_equality": {
+          "type": "boolean",
+          "description": "Affirmation that numerical agreement alone is not sufficient for symbolic equality."
+        },
+        "verification_task_id": {"type": "string"},
+        "verification_result": {"type": "string"},
+        "verification_timestamp": {"type": "string", "format": "date-time"},
+        "residual_expression": {"type": "string"},
+        "counterexamples_found": {"type": "array", "items": {"type": "object"}}
+      }
+    },
+    "claimed_by_role": {
+      "type": "string",
+      "enum": [
+        "executor",
+        "independent_verifier",
+        "integration_executor",
+        "integration_verifier",
+        "human_scientist"
+      ],
+      "description": "Role that made this claim."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "PROVISIONAL",
+        "VERIFIED",
+        "VERIFIED_WITH_CAVEAT",
+        "HUMAN_ACCEPTED",
+        "REJECTED",
+        "SUPERSEDED",
+        "FORBIDDEN"
+      ],
+      "description": "Current status of the claim. Only HUMAN_ACCEPTED claims may be eligible for canonical promotion."
+    },
+    "caveats": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Caveats that qualify this claim."
+    },
+    "human_gate_id": {
+      "type": "string",
+      "description": "Reference to the human gate decision that accepted this claim."
+    },
+    "parent_claim_ids": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Claims this claim depends on."
+    },
+    "forbidden_promotions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["from_status", "to_status", "reason"],
+        "properties": {
+          "from_status": {"type": "string"},
+          "to_status": {"type": "string"},
+          "reason": {"type": "string"}
+        }
+      },
+      "description": "Status promotions explicitly forbidden for this claim type."
+    }
+  },
+  "additionalProperties": false
+}

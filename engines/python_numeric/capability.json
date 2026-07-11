@@ -1,0 +1,83 @@
+{
+  "engine_id": "python_numeric",
+  "engine_family": "python_numeric",
+  "engine_type": "NUMERICAL",
+  "license_class": "OPEN_SOURCE",
+  "availability_status": "AVAILABLE",
+  "version": "1.26.4/1.13.3/1.3.0",
+  "exact_or_numeric": "NUMERIC",
+  "supported_expression_classes": [
+    "numerical_functions",
+    "arrays",
+    "matrices",
+    "special_functions_numeric"
+  ],
+  "supported_operations": [
+    "high_precision_sampling",
+    "parameter_grid_regression",
+    "numerical_limits",
+    "numerical_quadrature",
+    "linear_algebra",
+    "counterexample_search",
+    "numerical_differentiation",
+    "numerical_optimization",
+    "fft",
+    "random_sampling",
+    "mpmath_arbitrary_precision",
+    "mpmath_special_functions",
+    "mpmath_limits",
+    "mpmath_quadrature"
+  ],
+  "unsupported_operations": [
+    "symbolic_equality_claim",
+    "exact_integration",
+    "exact_simplification",
+    "assumption_invention"
+  ],
+  "assumption_handling": {
+    "supports_explicit_assumptions": false,
+    "supports_domain_constraints": false,
+    "supports_positivity_constraints": false,
+    "default_assumptions": "none"
+  },
+  "branch_handling": {
+    "branch_aware": false,
+    "principal_branch_default": "numeric_evaluation"
+  },
+  "noncommutative_support": {
+    "supported": true,
+    "mechanism": "numpy_array_operations",
+    "limitations": ["noncommutative matrix operations only"]
+  },
+  "indexed_expression_support": {
+    "supported": true,
+    "free_indices": true,
+    "dummy_indices": false,
+    "einstein_summation": true
+  },
+  "special_function_support": {
+    "gamma": true,
+    "polygamma": true,
+    "zeta": true,
+    "hypergeometric": true,
+    "bessel": true
+  },
+  "series_support": {
+    "taylor": false,
+    "laurent": false,
+    "puiseux": false,
+    "multivariate": false
+  },
+  "integration_support": {
+    "indefinite": false,
+    "definite": false,
+    "numerical_quadrature": true
+  },
+  "precision_model": "ARBITRARY_PRECISION",
+  "determinism_status": "DETERMINISTIC",
+  "timeout_support": false,
+  "memory_limit_support": false,
+  "input_formats": ["python_callable", "numpy_array", "mpmath_expression", "lambda_string"],
+  "output_formats": ["numpy_array", "float", "complex", "mpmath_mpf", "python_float"],
+  "platform_constraints": ["requires_python3", "requires_numpy", "requires_scipy", "requires_mpmath"]
+}

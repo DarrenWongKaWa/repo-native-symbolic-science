@@ -1,0 +1,50 @@
+{
+  "audit_id": "INDEX-AUDIT-TENSOR-001",
+  "object_id": "RAW-TENSOR-INDEXED-001",
+  "audited_at": "2025-07-11T12:10:00Z",
+  "free_indices": ["a", "b"],
+  "dummy_indices": ["c"],
+  "collision_detected": false,
+  "collision_details": null,
+  "role_preserving_rename": {
+    "original": "c",
+    "renamed_to": "d",
+    "is_valid": true,
+    "rename_mapping": {"c": "d"},
+    "renamed_expression": "T^{ab} * W_{d} * V^{d}",
+    "equivalence_verified": true
+  },
+  "projection_claim": {
+    "claim_id": "PROJ-TENSOR-001",
+    "claim_type": "projection",
+    "description": "Contracting T^{ab} W_c V^c with delta_{am} delta_{bn} yields T^{mn} W_c V^c",
+    "contracted_indices": ["m", "n"],
+    "result_free_indices": [],
+    "projection_operator": "delta_{am} * delta_{bn}",
+    "is_global_identity": false
+  },
+  "global_claim": {
+    "claim_id": "GLOBAL-TENSOR-001",
+    "claim_type": "global_tensor_identity",
+    "description": "T^{ab} * W_c * V^c is a rank-2 tensor field over spacetime",
+    "tensor_rank": 2,
+    "free_indices": ["a", "b"],
+    "is_projection": false
+  },
+  "distinction_verification": {
+    "projection_is_distinct_from_global": true,
+    "reason": "The projection claim involves a specific index contraction with a Kronecker delta, producing a scalar. The global claim asserts the tensor nature of the full expression without any projection. These are mathematically distinct statements.",
+    "projection_result_rank": 0,
+    "global_expression_rank": 2,
+    "rank_mismatch_confirmed": true
+  },
+  "index_validity_checks": {
+    "no_index_collisions": true,
+    "all_contractions_balanced": true,
+    "free_indices_consistent": true,
+    "dummy_indices_properly_scoped": true,
+    "einstein_convention_satisfied": true,
+    "summation_over_full_domain": true
+  },
+  "notes": "The projection relation (contract with deltas -> scalar) is mathematically distinct from the global tensor relation (rank-2 tensor field). The audit confirms these should not be conflated."
+}

@@ -1,0 +1,11 @@
+* text=auto
+*.json text eol=lf
+*.py text eol=lf
+*.md text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.toml text eol=lf
+*.tex text eol=lf
+*.cff text eol=lf
+*.template.md text eol=lf
+*.sh text eol=lf

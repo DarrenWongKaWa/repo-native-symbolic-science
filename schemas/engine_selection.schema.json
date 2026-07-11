@@ -1,0 +1,69 @@
+{
+  "$schema_version": "1.0.0",
+  "schema_name": "engine_selection.schema.json",
+  "created_by": "SLOOP_ENGINE_002",
+  "type": "object",
+  "required": [
+    "candidate_backends",
+    "capability_match",
+    "capability_gaps",
+    "selected_primary_backend",
+    "selected_supporting_backends",
+    "selected_verification_backends",
+    "selection_reason",
+    "license_constraints",
+    "availability_evidence",
+    "fallback_path",
+    "human_decision_required"
+  ],
+  "properties": {
+    "candidate_backends": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "engine_id": { "type": "string" },
+          "matched_capabilities": { "type": "array", "items": { "type": "string" } },
+          "unmatched_capabilities": { "type": "array", "items": { "type": "string" } },
+          "available": { "type": "boolean" }
+        }
+      }
+    },
+    "capability_match": {
+      "type": "object",
+      "properties": {
+        "all_capabilities_matched": { "type": "boolean" },
+        "exact_match_available": { "type": "boolean" },
+        "numeric_match_available": { "type": "boolean" }
+      }
+    },
+    "capability_gaps": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "selected_primary_backend": { "type": "string" },
+    "selected_supporting_backends": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "selected_verification_backends": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "selection_reason": { "type": "string" },
+    "license_constraints": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "availability_evidence": {
+      "type": "object",
+      "properties": {
+        "sympy": { "type": "string" },
+        "python_numeric": { "type": "string" },
+        "mathematica": { "type": "string" }
+      }
+    },
+    "fallback_path": { "type": "string" },
+    "human_decision_required": { "type": "boolean" }
+  }
+}

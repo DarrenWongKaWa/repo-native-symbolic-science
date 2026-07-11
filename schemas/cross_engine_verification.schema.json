@@ -1,0 +1,91 @@
+{
+  "$schema_version": "1.0.0",
+  "schema_name": "cross_engine_verification.schema.json",
+  "created_by": "SLOOP_ENGINE_002",
+  "type": "object",
+  "required": [
+    "primary_engine_result",
+    "secondary_engine_results",
+    "comparison_method",
+    "shared_assumptions",
+    "expression_translation",
+    "translation_loss",
+    "exact_comparison_status",
+    "structural_replay_status",
+    "numerical_regression_status",
+    "counterexample_status",
+    "claim_scope",
+    "maximum_authorized_claim",
+    "caveats"
+  ],
+  "properties": {
+    "primary_engine_result": {
+      "type": "object",
+      "properties": {
+        "engine_id": { "type": "string" },
+        "result_type": { "type": "string" },
+        "normalized_expression": { "type": "string" },
+        "execution_truth_id": { "type": "string" }
+      }
+    },
+    "secondary_engine_results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "engine_id": { "type": "string" },
+          "result_type": { "type": "string" },
+          "normalized_expression": { "type": "string" },
+          "execution_truth_id": { "type": "string" }
+        }
+      }
+    },
+    "comparison_method": {
+      "enum": ["EXACT_SYMBOLIC_IDENTITY", "STRUCTURAL_REPLAY", "NUMERICAL_REGRESSION", "HIGH_PRECISION_SUPPORT", "MIXED"]
+    },
+    "shared_assumptions": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "expression_translation": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "from_engine": { "type": "string" },
+          "to_engine": { "type": "string" },
+          "translation_method": { "type": "string" },
+          "unsupported_constructs": { "type": "array", "items": { "type": "string" } },
+          "translation_loss_detected": { "type": "boolean" }
+        }
+      }
+    },
+    "translation_loss": { "type": "boolean" },
+    "exact_comparison_status": {
+      "enum": ["PASS", "FAIL", "NOT_APPLICABLE", "PENDING"]
+    },
+    "structural_replay_status": {
+      "enum": ["PASS", "FAIL", "NOT_APPLICABLE", "PENDING"]
+    },
+    "numerical_regression_status": {
+      "enum": ["PASS", "FAIL", "NOT_APPLICABLE", "PENDING"]
+    },
+    "counterexample_status": {
+      "enum": ["NONE_FOUND", "COUNTEREXAMPLE_FOUND", "NOT_CHECKED"]
+    },
+    "claim_scope": {
+      "type": "object",
+      "properties": {
+        "symbolic_equality_claim_authorized": { "type": "boolean" },
+        "structural_replay_claim_authorized": { "type": "boolean" },
+        "numerical_support_claim_authorized": { "type": "boolean" },
+        "exact_cross_engine_verification_eligible": { "type": "boolean" }
+      }
+    },
+    "maximum_authorized_claim": { "type": "string" },
+    "caveats": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}

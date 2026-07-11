@@ -1,0 +1,89 @@
+{
+  "engine_id": "sympy",
+  "engine_family": "sympy",
+  "engine_type": "EXACT_SYMBOLIC",
+  "license_class": "OPEN_SOURCE",
+  "availability_status": "AVAILABLE",
+  "version": "1.14.0",
+  "exact_or_numeric": "EXACT",
+  "supported_expression_classes": [
+    "polynomial",
+    "rational",
+    "elementary",
+    "special_functions",
+    "matrices",
+    "tensors",
+    "indexed_expressions"
+  ],
+  "supported_operations": [
+    "subs",
+    "expand",
+    "factor",
+    "cancel",
+    "together",
+    "apart",
+    "diff",
+    "series",
+    "coefficient_extraction",
+    "exact_matrix_construction",
+    "exact_simplification",
+    "polynomial_simplification",
+    "rational_simplification",
+    "exact_reconstruction",
+    "structural_replay",
+    "noncommutative_symbolic_representation"
+  ],
+  "unsupported_operations": [
+    "unbounded_simplify",
+    "automatic_integration_claim_promotion",
+    "commutative_reordering_of_noncommutative_objects"
+  ],
+  "assumption_handling": {
+    "supports_explicit_assumptions": true,
+    "supports_domain_constraints": true,
+    "supports_positivity_constraints": true,
+    "default_assumptions": "complex"
+  },
+  "branch_handling": {
+    "branch_aware": true,
+    "principal_branch_default": "standard_principal_branch"
+  },
+  "noncommutative_support": {
+    "supported": true,
+    "mechanism": "SymPy Symbol with commutative=False",
+    "limitations": [
+      "noncommutative ordering must be manually preserved"
+    ]
+  },
+  "indexed_expression_support": {
+    "supported": true,
+    "free_indices": true,
+    "dummy_indices": true,
+    "einstein_summation": false
+  },
+  "special_function_support": {
+    "gamma": true,
+    "polygamma": true,
+    "zeta": true,
+    "hypergeometric": true,
+    "bessel": true
+  },
+  "series_support": {
+    "taylor": true,
+    "laurent": true,
+    "puiseux": false,
+    "multivariate": false
+  },
+  "integration_support": {
+    "indefinite": true,
+    "definite": true,
+    "numerical_quadrature": false
+  },
+  "precision_model": "EXACT_RATIONAL",
+  "determinism_status": "DETERMINISTIC",
+  "timeout_support": false,
+  "memory_limit_support": false,
+  "input_formats": ["python_sympy_expression", "sympy_latex", "sympy_string"],
+  "output_formats": ["python_sympy_expression", "python_string", "latex"],
+  "platform_constraints": ["requires_python3", "requires_sympy"]
+}

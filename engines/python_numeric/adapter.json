@@ -1,0 +1,14 @@
+{
+  "engine_id": "python_numeric",
+  "role": "NUMERICAL_AND_HIGH_PRECISION_SUPPORT_BACKEND",
+  "adapter_version": "1.0.0",
+  "created_by": "SLOOP_ENGINE_002",
+  "runner_script": "engines/python_numeric/runner.py",
+  "allowed_operations_file": "engines/python_numeric/allowed_operations.json",
+  "forbidden_operations_file": "engines/python_numeric/forbidden_operations.json",
+  "templates_dir": "engines/python_numeric/templates/",
+  "executable": "python3",
+  "executable_args": ["-c"],
+  "capability_profile": "engines/python_numeric/capability.json",
+  "requires_license_key": false
+}

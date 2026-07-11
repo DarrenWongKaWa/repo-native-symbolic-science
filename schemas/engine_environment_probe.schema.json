@@ -1,0 +1,43 @@
+{
+  "$schema_version": "1.0.0",
+  "schema_name": "engine_environment_probe.schema.json",
+  "created_by": "SLOOP_ENGINE_002",
+  "type": "object",
+  "required": [
+    "engine",
+    "executable_found",
+    "version_detected",
+    "license_or_activation_state_if_observable",
+    "probe_command",
+    "probe_exit_code",
+    "platform",
+    "required_dependencies",
+    "missing_dependencies",
+    "safe_to_execute"
+  ],
+  "properties": {
+    "engine": { "type": "string" },
+    "executable_found": { "type": "boolean" },
+    "version_detected": { "type": "string" },
+    "license_or_activation_state_if_observable": {
+      "type": "string",
+      "description": "Do NOT expose secret license keys, activation identifiers, tokens, or private credentials."
+    },
+    "probe_command": { "type": "string" },
+    "probe_exit_code": { "type": "integer" },
+    "platform": { "type": "string" },
+    "required_dependencies": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "missing_dependencies": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "safe_to_execute": { "type": "boolean" },
+    "caveats": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}

@@ -1,0 +1,199 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "schemas/scientific_adapter.schema.json",
+  "title": "Scientific Project Adapter",
+  "description": "Project-specific scientific metadata kept outside the generic engine. Must not contain generic task lifecycle implementation.",
+  "type": "object",
+  "required": [
+    "symbol_dictionary",
+    "index_role_dictionary",
+    "source_definitions",
+    "notation_mappings",
+    "assumptions",
+    "symmetry_rules",
+    "allowed_identities",
+    "forbidden_inferences",
+    "limit_order_rules",
+    "operator_order_rules",
+    "gauge_or_basis_conventions",
+    "integration_domain_assumptions",
+    "regression_targets",
+    "canonicalization_policy",
+    "required_human_gates"
+  ],
+  "properties": {
+    "symbol_dictionary": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["symbol", "description", "physical_role"],
+        "properties": {
+          "symbol": {"type": "string"},
+          "description": {"type": "string"},
+          "physical_role": {"type": "string"},
+          "domain": {"type": "string"},
+          "units": {"type": "string"},
+          "latex": {"type": "string"}
+        }
+      },
+      "description": "Dictionary of symbols with their physical meaning."
+    },
+    "index_role_dictionary": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["index", "role"],
+        "properties": {
+          "index": {"type": "string"},
+          "role": {"type": "string"},
+          "domain": {"type": "string"},
+          "rank": {"type": "string", "enum": ["contravariant", "covariant", "undefined"]}
+        }
+      },
+      "description": "Dictionary of index roles and their physical interpretation."
+    },
+    "source_definitions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["entity", "definition"],
+        "properties": {
+          "entity": {"type": "string"},
+          "definition": {"type": "string"},
+          "source_authority": {"type": "string"},
+          "expression_language": {"type": "string"}
+        }
+      },
+      "description": "Primary definitions from source authority."
+    },
+    "notation_mappings": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["canonical", "aliases"],
+        "properties": {
+          "canonical": {"type": "string"},
+          "aliases": {"type": "array", "items": {"type": "string"}}
+        }
+      },
+      "description": "Mappings between canonical notation and aliases."
+    },
+    "assumptions": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Project-level scientific assumptions."
+    },
+    "symmetry_rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["rule", "applies_to"],
+        "properties": {
+          "rule": {"type": "string"},
+          "applies_to": {"type": "string"},
+          "condition": {"type": "string"}
+        }
+      },
+      "description": "Project-specific symmetry rules."
+    },
+    "allowed_identities": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Identities explicitly allowed for use in transformations."
+    },
+    "forbidden_inferences": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Inferences explicitly forbidden even if mathematically plausible."
+    },
+    "limit_order_rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["limits", "order"],
+        "properties": {
+          "limits": {"type": "array", "items": {"type": "string"}},
+          "order": {"type": "string"},
+          "justification": {"type": "string"}
+        }
+      },
+      "description": "Ordered limit rules (e.g. DC limit before Gamma expansion)."
+    },
+    "operator_order_rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["operators", "rule"],
+        "properties": {
+          "operators": {"type": "array", "items": {"type": "string"}},
+          "rule": {"type": "string"},
+          "justification": {"type": "string"}
+        }
+      },
+      "description": "Operator ordering conventions and rules."
+    },
+    "gauge_or_basis_conventions": {
+      "type": "object",
+      "properties": {
+        "basis": {"type": "string"},
+        "gauge": {"type": "string"},
+        "representation": {"type": "string"},
+        "notes": {"type": "string"}
+      },
+      "description": "Basis, gauge, and representation conventions."
+    },
+    "integration_domain_assumptions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["domain", "boundary_condition"],
+        "properties": {
+          "domain": {"type": "string"},
+          "boundary_condition": {"type": "string"},
+          "periodicity": {"type": "boolean"},
+          "compact_support": {"type": "boolean"}
+        }
+      },
+      "description": "Integration domain assumptions and boundary conditions."
+    },
+    "regression_targets": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["target", "tolerance"],
+        "properties": {
+          "target": {},
+          "tolerance": {"type": "number"},
+          "assumptions": {"type": "array", "items": {"type": "string"}}
+        }
+      },
+      "description": "Project-level regression targets."
+    },
+    "canonicalization_policy": {
+      "type": "object",
+      "properties": {
+        "term_ordering": {"type": "string"},
+        "index_ordering": {"type": "string"},
+        "coefficient_normalization": {"type": "string"},
+        "function_normalization": {"type": "string"},
+        "dummy_index_canonicalization": {"type": "string"}
+      },
+      "description": "Canonicalization policy for normalization."
+    },
+    "required_human_gates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["gate_id", "description"],
+        "properties": {
+          "gate_id": {"type": "string"},
+          "description": {"type": "string"},
+          "trigger_condition": {"type": "string"},
+          "required_evidence": {"type": "array", "items": {"type": "string"}}
+        }
+      },
+      "description": "Human gates required by this project adapter."
+    }
+  },
+  "additionalProperties": true
+}

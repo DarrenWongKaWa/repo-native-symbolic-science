@@ -1,0 +1,73 @@
+{
+  "object_id": "RAW-TENSOR-INDEXED-001",
+  "source_sha256": "b4d8e0f2a6c8d0e2f4a6b8c0d2e4f6a8b0c2d4e6f8a0b2c4d6e8f0a2b4c6d8e0f2",
+  "held_representation": "T^{ab} * W_{c} * V^{c}",
+  "expression_language": "sympy_tensor",
+  "current_status": "RAW_INGESTED",
+  "expression_scope": "pointwise",
+  "external_indices": ["a", "b"],
+  "dummy_indices": ["c"],
+  "indexed_symbols": [
+    {
+      "symbol": "T",
+      "tensor_rank": 2,
+      "index_types": ["contravariant", "contravariant"],
+      "indices": ["a", "b"],
+      "role": "free_tensor"
+    },
+    {
+      "symbol": "W",
+      "tensor_rank": 1,
+      "index_types": ["covariant"],
+      "indices": ["c"],
+      "role": "contracted_tensor"
+    },
+    {
+      "symbol": "V",
+      "tensor_rank": 1,
+      "index_types": ["contravariant"],
+      "indices": ["c"],
+      "role": "contracted_tensor"
+    }
+  ],
+  "index_domains": {
+    "a": {"domain": "spacetime", "dimension": 4, "range": [0, 3]},
+    "b": {"domain": "spacetime", "dimension": 4, "range": [0, 3]},
+    "c": {"domain": "spacetime", "dimension": 4, "range": [0, 3]}
+  },
+  "summation_conventions": {
+    "style": "einstein",
+    "rule": "repeated_covariant_contravariant_summed",
+    "implied_sum_ranges": {
+      "c": "0..3"
+    }
+  },
+  "index_topology": {
+    "free_indices": ["a", "b"],
+    "dummy_indices": ["c"],
+    "contraction_pairs": [
+      {
+        "covariant": {"symbol": "W", "index": "c", "position": "lower"},
+        "contravariant": {"symbol": "V", "index": "c", "position": "upper"}
+      }
+    ]
+  },
+  "commutativity_profile": {
+    "operator_commutativity": {
+      "tensor_product": true,
+      "scalar_multiplication": true,
+      "index_contraction": true
+    },
+    "all_operators_commutative": true
+  },
+  "metadata": {
+    "ingested_at": "2025-07-11T12:00:00Z",
+    "ingestion_method": "sympy_tensor_parse",
+    "source_file": "examples/tensor_contraction.py",
+    "expression_tree_depth": 3,
+    "free_index_count": 2,
+    "dummy_index_count": 1,
+    "tensor_count": 3,
+    "contraction_count": 1
+  }
+}

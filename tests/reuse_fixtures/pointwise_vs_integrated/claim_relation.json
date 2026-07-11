@@ -1,0 +1,72 @@
+{
+  "claim_id": "CLAIM-PTWISE-TOTDERIV-001",
+  "object_id": "EXP-sigma-abc-totalderiv-001",
+  "relation_type": "pointwise_identity",
+  "scope": {
+    "expression_scope": "pointwise",
+    "domain": "R^d",
+    "coordinate_system": "cartesian",
+    "dimension": 3
+  },
+  "held_representation": "partial_mu (sigma^{mu nu}) = 0",
+  "claim_statement": "The divergence of sigma^{mu nu} vanishes pointwise for all x in the domain.",
+  "forbidden_promotions": [
+    {
+      "from_status": "PROVISIONAL",
+      "to_status": "HUMAN_ACCEPTED",
+      "forbidden_without": "integration_domain_assumptions",
+      "reason": "Promoting a pointwise identity to an accepted claim requires specifying the integration domain and verifying boundary conditions. Without explicit boundary assumptions (e.g., fields vanish at infinity, periodic boundary conditions), the pointwise identity alone does not justify an integrated identity."
+    }
+  ],
+  "assumptions": [
+    {
+      "assumption_id": "ASSUMP-001",
+      "type": "domain_geometry",
+      "description": "The domain is R^3 with standard Euclidean metric",
+      "required_for": ["pointwise_identity"]
+    },
+    {
+      "assumption_id": "ASSUMP-002",
+      "type": "smoothness",
+      "description": "sigma^{mu nu}(x) is C^1 in all coordinates",
+      "required_for": ["pointwise_identity"]
+    },
+    {
+      "assumption_id": "ASSUMP-003",
+      "type": "boundary_condition",
+      "description": "For integrated identity: sigma^{mu nu}(x) -> 0 as |x| -> infinity (must be explicitly stated)",
+      "required_for": ["integrated_identity"],
+      "status": "NOT_YET_SPECIFIED",
+      "note": "This boundary condition is NOT automatically satisfied and must be verified before promoting the pointwise identity to an integrated one."
+    },
+    {
+      "assumption_id": "ASSUMP-004",
+      "type": "integration_domain",
+      "description": "For integrated identity: the integration domain must be specified (e.g., all space, a finite volume with boundary terms)",
+      "required_for": ["integrated_identity"],
+      "status": "NOT_YET_SPECIFIED"
+    }
+  ],
+  "integrated_counterpart": {
+    "claim_id": "CLAIM-INTEG-TOTDERIV-001",
+    "relation_type": "integrated_identity",
+    "held_representation": "∫ d^3x partial_mu (sigma^{mu nu}) = 0",
+    "requires": [
+      "boundary_condition_verification",
+      "integration_domain_specification",
+      "surface_term_evaluation"
+    ],
+    "status": "NOT_YET_DERIVED",
+    "derivation_blocked_by": [
+      "ASSUMP-003 (boundary condition not specified)",
+      "ASSUMP-004 (integration domain not specified)"
+    ]
+  },
+  "metadata": {
+    "created_at": "2025-07-11T14:00:00Z",
+    "created_by": "planner_agent",
+    "review_status": "PROVISIONAL",
+    "claim_type": "conservation_law",
+    "physical_interpretation": "Conservation of sigma current (pointwise form)"
+  }
+}

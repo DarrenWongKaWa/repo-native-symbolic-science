@@ -1,0 +1,103 @@
+{
+  "$schema_version": "1.0.0",
+  "schema_name": "engine_request.schema.json",
+  "created_by": "SLOOP_ENGINE_002",
+  "type": "object",
+  "required": [
+    "request_id",
+    "source_task_id",
+    "source_artifact",
+    "source_sha",
+    "scientific_adapter",
+    "requested_capabilities",
+    "requested_operation_sequence",
+    "allowed_operations",
+    "forbidden_operations",
+    "declared_assumptions",
+    "expression_scope",
+    "expected_output_type",
+    "requested_claim_type",
+    "timeout",
+    "memory_limit",
+    "precision",
+    "determinism_requirement",
+    "preferred_backends",
+    "prohibited_backends",
+    "fallback_policy"
+  ],
+  "properties": {
+    "request_id": { "type": "string" },
+    "source_task_id": { "type": "string" },
+    "source_artifact": { "type": "string" },
+    "source_sha": { "type": "string" },
+    "scientific_adapter": { "type": "string" },
+    "requested_capabilities": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "requested_operation_sequence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "operation": { "type": "string" },
+          "target": { "type": "string" },
+          "parameters": { "type": "object" },
+          "order": { "type": "integer" }
+        },
+        "required": ["operation", "order"]
+      }
+    },
+    "allowed_operations": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "forbidden_operations": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "declared_assumptions": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "expression_scope": {
+      "type": "object",
+      "properties": {
+        "input_expression": { "type": "string" },
+        "expression_language": { "type": "string" },
+        "free_symbols": { "type": "array", "items": { "type": "string" } },
+        "indexed_symbols": { "type": "array", "items": { "type": "string" } },
+        "commutativity_metadata": { "type": "object" }
+      }
+    },
+    "expected_output_type": {
+      "enum": ["EXACT_SYMBOLIC", "NUMERICAL_SAMPLED", "STRUCTURAL_REPLAY", "HIGH_PRECISION_NUMERICAL", "ANY"]
+    },
+    "requested_claim_type": {
+      "enum": [
+        "literal_equality",
+        "exact_reconstruction",
+        "structural_replay",
+        "numerical_regression",
+        "high_precision_support",
+        "counterexample",
+        "inconclusive"
+      ]
+    },
+    "timeout": { "type": "number" },
+    "memory_limit": { "type": "number" },
+    "precision": { "type": "integer" },
+    "determinism_requirement": { "type": "boolean" },
+    "preferred_backends": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "prohibited_backends": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "fallback_policy": {
+      "enum": ["STRICT", "ALLOW_NUMERICAL_FALLBACK", "ALLOW_ANY_AVAILABLE"]
+    }
+  }
+}

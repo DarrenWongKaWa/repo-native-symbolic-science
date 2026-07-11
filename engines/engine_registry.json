@@ -1,0 +1,31 @@
+{
+  "registry_version": "1.0.0",
+  "created_by": "SLOOP_ENGINE_002",
+  "registered_engines": [
+    {
+      "engine_id": "sympy",
+      "adapter_path": "engines/sympy/adapter.json",
+      "required_for_generic_ci": true,
+      "optional": false,
+      "engine_family": "sympy",
+      "engine_type": "EXACT_SYMBOLIC"
+    },
+    {
+      "engine_id": "python_numeric",
+      "adapter_path": "engines/python_numeric/adapter.json",
+      "required_for_generic_ci": true,
+      "optional": false,
+      "engine_family": "python_numeric",
+      "engine_type": "NUMERICAL"
+    },
+    {
+      "engine_id": "mathematica",
+      "adapter_path": "engines/mathematica/adapter.json",
+      "required_for_generic_ci": false,
+      "optional": true,
+      "engine_family": "mathematica",
+      "engine_type": "EXACT_SYMBOLIC"
+    }
+  ],
+  "registry_rule": "The resolver must route by declared capabilities and availability evidence, not filenames or arbitrary preference."
+}

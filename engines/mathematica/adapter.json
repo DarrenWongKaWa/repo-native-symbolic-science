@@ -1,0 +1,16 @@
+{
+  "engine_id": "mathematica",
+  "role": "OPTIONAL_COMMERCIAL_HIGH_CAPABILITY_EXACT_BACKEND",
+  "adapter_version": "1.0.0",
+  "created_by": "SLOOP_ENGINE_002",
+  "runner_script": "engines/mathematica/runner.py",
+  "allowed_operations_file": "engines/mathematica/allowed_operations.json",
+  "forbidden_operations_file": "engines/mathematica/forbidden_operations.json",
+  "templates_dir": "engines/mathematica/templates/",
+  "executable": "wolframscript",
+  "executable_args": ["-code"],
+  "capability_profile": "engines/mathematica/capability.json",
+  "requires_license_key": true,
+  "optional": true,
+  "optional_boundary": "Framework remains usable when Mathematica is unavailable. Mathematica absence is not an implementation failure."
+}

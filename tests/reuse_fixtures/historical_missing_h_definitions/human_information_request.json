@@ -1,0 +1,107 @@
+{
+  "request_id": "HIR-2025-001",
+  "status": "PENDING",
+  "created_at": "2025-07-11T10:00:00Z",
+  "target_expression_id": "EXP-sigma-abc-042",
+  "human_prompt": "Please provide definitions for the missing matrix elements and semantic conventions listed below. The automated derivation is blocked until these are resolved.",
+  "blocked_task_ids": [
+    "TASK-sigma-abc-factor-042",
+    "TASK-sigma-abc-simplify-042",
+    "TASK-sigma-abc-validate-042"
+  ],
+  "search_universe": {
+    "scanned_repositories": [
+      "arxiv:hep-th/xxxx.xxxxx",
+      "arxiv:cond-mat.str-el/xxxx.xxxxx",
+      "doi:10.xxxx/PhysRevB.xx.xxxxxx"
+    ],
+    "scanned_directories": [
+      "src/symbols/",
+      "docs/conventions/",
+      "notes/sigma_abc_derivation/"
+    ],
+    "search_engines_consulted": ["internal_knowledge_graph", "local_tex_sources"],
+    "search_timestamp": "2025-07-11T09:45:00Z"
+  },
+  "missing_entities": [
+    {
+      "entity_name": "H_{ij} matrix element definition",
+      "entity_type": "matrix_element",
+      "classification": "absent_from_repo",
+      "description": "The definition of the matrix element H_{ij} = <i|H|j> is not found in any source file or derivation note. The Hamiltonian operator H acting on the basis states |i>, |j> must be explicitly given.",
+      "impact": "Blocks all simplifications that depend on the explicit form of H_{ij}",
+      "suggested_resolution": "Supply the explicit formula for H_{ij} in terms of the basis states, e.g., H_{ij} = E_i delta_{ij} + V_{ij}"
+    },
+    {
+      "entity_name": "bra-ket orientation convention",
+      "entity_type": "orientation_convention",
+      "classification": "absent_from_sources",
+      "description": "It is unclear whether <i| is the left eigenvector (bra) of the unperturbed or perturbed Hamiltonian. The orientation convention for the dual basis must be specified.",
+      "impact": "Blocks correct index placement in tensor contractions involving bras and kets",
+      "suggested_resolution": "Declare whether <i| denotes the unperturbed left eigenstate, the biorthogonal dual, or the Hermitian conjugate of |i>"
+    },
+    {
+      "entity_name": "external index roles a,b,c",
+      "entity_type": "index_role_assignment",
+      "classification": "absent_from_repo",
+      "description": "The roles of external indices a, b, c are not assigned: which are incoming/outgoing, which label band states vs. momentum states, and whether they run over the full Hilbert space or a restricted subspace.",
+      "impact": "Blocks correct classification of free and dummy indices in tensor contractions",
+      "suggested_resolution": "Label each external index with its physical role: band index, momentum, spin, etc., and specify its range."
+    },
+    {
+      "entity_name": "Taylor expansion prefactors",
+      "entity_type": "prefactor_convention",
+      "classification": "absent_from_sources",
+      "description": "The sign and factorial conventions for Taylor expansion terms (e.g., 1/n! prefactors) are not specified. Different conventions (physicist vs. mathematician) yield different signs in the effective Hamiltonian.",
+      "impact": "Blocks verification that the derived sigma coefficients match the reference",
+      "suggested_resolution": "State the Taylor expansion convention: e.g., H_eff = H + [H,V]/omega + ... with explicit prefactor rules"
+    },
+    {
+      "entity_name": "source operator sign convention",
+      "entity_type": "sign_convention",
+      "classification": "absent_from_repo",
+      "description": "The sign of the source operator S in the generating functional Z[J] = ∫ Dphi exp(iS[phi] + i∫ J phi) is not fixed. The sign convention affects the sign of all n-point correlators.",
+      "impact": "Blocks sign consistency across derived expressions",
+      "suggested_resolution": "Specify the sign convention for the source coupling term"
+    },
+    {
+      "entity_name": "source authority for claimed identities",
+      "entity_type": "claim_provenance",
+      "classification": "absent_from_sources",
+      "description": "The claimed identities reference a source document that could not be located. Without the authoritative source, the claims cannot be independently verified.",
+      "impact": "Blocks validation that claimed identities are correctly transcribed",
+      "suggested_resolution": "Provide the exact citation (DOI/arXiv ID + equation numbers) for each claimed identity"
+    }
+  ],
+  "allowed_work": [
+    {
+      "task_id": "TASK-sigma-abc-lint-042",
+      "description": "Linting and formatting of existing code",
+      "rationale": "Does not depend on missing semantics"
+    },
+    {
+      "task_id": "TASK-sigma-abc-doc-042",
+      "description": "Documentation of already-validated results",
+      "rationale": "Uses only information already confirmed"
+    }
+  ],
+  "forbidden_work": [
+    {
+      "task_id": "TASK-sigma-abc-factor-042",
+      "description": "Factoring expressions that contain H_{ij}",
+      "rationale": "Missing H_{ij} definition means factorization may be incorrect"
+    },
+    {
+      "task_id": "TASK-sigma-abc-simplify-042",
+      "description": "Simplification using index contractions",
+      "rationale": "Missing index role assignment means contractions may be invalid"
+    },
+    {
+      "task_id": "TASK-sigma-abc-validate-042",
+      "description": "Validation against source paper",
+      "rationale": "Missing source authority means validation target is unknown"
+    }
+  ],
+  "deadline": "2025-07-25T00:00:00Z",
+  "contact": "human-scientist@example.com"
+}

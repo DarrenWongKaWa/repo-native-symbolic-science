@@ -1,0 +1,101 @@
+{
+  "registry_id": "MSR-2025-001",
+  "request_id": "HIR-2025-001",
+  "created_at": "2025-07-11T10:05:00Z",
+  "total_missing": 7,
+  "by_classification": {
+    "absent_from_repo": {
+      "count": 4,
+      "entities": [
+        {
+          "entity_name": "H_{ij} matrix element definition",
+          "entity_type": "matrix_element",
+          "search_paths_attempted": [
+            "src/symbols/hamiltonian.py",
+            "docs/conventions/matrix_elements.tex",
+            "notes/sigma_abc_derivation/definitions.md"
+          ],
+          "last_search": "2025-07-11T09:45:00Z",
+          "resolution_status": "PENDING_HUMAN"
+        },
+        {
+          "entity_name": "external index roles a,b,c",
+          "entity_type": "index_role_assignment",
+          "search_paths_attempted": [
+            "src/symbols/indices.py",
+            "docs/conventions/index_conventions.tex"
+          ],
+          "last_search": "2025-07-11T09:45:00Z",
+          "resolution_status": "PENDING_HUMAN"
+        },
+        {
+          "entity_name": "source operator sign convention",
+          "entity_type": "sign_convention",
+          "search_paths_attempted": [
+            "src/symbols/source.py",
+            "docs/conventions/sign_conventions.tex"
+          ],
+          "last_search": "2025-07-11T09:45:00Z",
+          "resolution_status": "PENDING_HUMAN"
+        },
+        {
+          "entity_name": "source authority for claimed identities",
+          "entity_type": "claim_provenance",
+          "search_paths_attempted": [
+            "references/",
+            "docs/bibliography.bib"
+          ],
+          "last_search": "2025-07-11T09:45:00Z",
+          "resolution_status": "PENDING_HUMAN"
+        }
+      ]
+    },
+    "absent_from_sources": {
+      "count": 3,
+      "entities": [
+        {
+          "entity_name": "bra-ket orientation convention",
+          "entity_type": "orientation_convention",
+          "search_paths_attempted": [
+            "docs/conventions/braket.tex",
+            "notes/sigma_abc_derivation/conventions.md"
+          ],
+          "last_search": "2025-07-11T09:45:00Z",
+          "resolution_status": "PENDING_HUMAN"
+        },
+        {
+          "entity_name": "Taylor expansion prefactors",
+          "entity_type": "prefactor_convention",
+          "search_paths_attempted": [
+            "docs/conventions/taylor.tex"
+          ],
+          "last_search": "2025-07-11T09:45:00Z",
+          "resolution_status": "PENDING_HUMAN"
+        },
+        {
+          "entity_name": "generating functional convention",
+          "entity_type": "convention",
+          "search_paths_attempted": [
+            "docs/conventions/functional_integral.tex"
+          ],
+          "last_search": "2025-07-11T09:45:00Z",
+          "resolution_status": "PENDING_HUMAN"
+        }
+      ]
+    }
+  },
+  "resolution_tracker": {
+    "resolved": [],
+    "in_progress": [],
+    "awaiting_human": [
+      "H_{ij} matrix element definition",
+      "bra-ket orientation convention",
+      "external index roles a,b,c",
+      "Taylor expansion prefactors",
+      "source operator sign convention",
+      "source authority for claimed identities"
+    ],
+    "unblockable": []
+  },
+  "notes": "None of the missing entities can be inferred from context or symmetry alone. Human input is required for all."
+}

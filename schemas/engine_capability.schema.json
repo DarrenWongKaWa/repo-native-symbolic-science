@@ -1,0 +1,143 @@
+{
+  "$schema_version": "1.0.0",
+  "schema_name": "engine_capability.schema.json",
+  "created_by": "SLOOP_ENGINE_002",
+  "type": "object",
+  "required": [
+    "engine_id",
+    "engine_family",
+    "engine_type",
+    "license_class",
+    "availability_status",
+    "version",
+    "exact_or_numeric",
+    "supported_expression_classes",
+    "supported_operations",
+    "unsupported_operations",
+    "assumption_handling",
+    "branch_handling",
+    "noncommutative_support",
+    "indexed_expression_support",
+    "special_function_support",
+    "series_support",
+    "integration_support",
+    "precision_model",
+    "determinism_status",
+    "timeout_support",
+    "memory_limit_support",
+    "input_formats",
+    "output_formats",
+    "platform_constraints"
+  ],
+  "properties": {
+    "engine_id": { "type": "string" },
+    "engine_family": {
+      "enum": ["sympy", "python_numeric", "mathematica", "other"]
+    },
+    "engine_type": {
+      "enum": ["EXACT_SYMBOLIC", "NUMERICAL", "HIGH_PRECISION_NUMERICAL", "HYBRID"]
+    },
+    "license_class": {
+      "enum": ["OPEN_SOURCE", "COMMERCIAL", "ACADEMIC", "FREEWARE"]
+    },
+    "availability_status": {
+      "enum": ["AVAILABLE", "UNAVAILABLE", "AVAILABLE_WITH_LIMITATIONS", "PROBE_FAILED", "NOT_CONFIGURED"]
+    },
+    "version": { "type": "string" },
+    "exact_or_numeric": {
+      "enum": ["EXACT", "NUMERIC", "BOTH", "NEITHER"]
+    },
+    "supported_expression_classes": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "supported_operations": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "unsupported_operations": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "assumption_handling": {
+      "type": "object",
+      "properties": {
+        "supports_explicit_assumptions": { "type": "boolean" },
+        "supports_domain_constraints": { "type": "boolean" },
+        "supports_positivity_constraints": { "type": "boolean" },
+        "default_assumptions": { "type": "string" }
+      }
+    },
+    "branch_handling": {
+      "type": "object",
+      "properties": {
+        "branch_aware": { "type": "boolean" },
+        "principal_branch_default": { "type": "string" }
+      }
+    },
+    "noncommutative_support": {
+      "type": "object",
+      "properties": {
+        "supported": { "type": "boolean" },
+        "mechanism": { "type": "string" },
+        "limitations": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "indexed_expression_support": {
+      "type": "object",
+      "properties": {
+        "supported": { "type": "boolean" },
+        "free_indices": { "type": "boolean" },
+        "dummy_indices": { "type": "boolean" },
+        "einstein_summation": { "type": "boolean" }
+      }
+    },
+    "special_function_support": {
+      "type": "object",
+      "properties": {
+        "gamma": { "type": "boolean" },
+        "polygamma": { "type": "boolean" },
+        "zeta": { "type": "boolean" },
+        "hypergeometric": { "type": "boolean" },
+        "bessel": { "type": "boolean" }
+      }
+    },
+    "series_support": {
+      "type": "object",
+      "properties": {
+        "taylor": { "type": "boolean" },
+        "laurent": { "type": "boolean" },
+        "puiseux": { "type": "boolean" },
+        "multivariate": { "type": "boolean" }
+      }
+    },
+    "integration_support": {
+      "type": "object",
+      "properties": {
+        "indefinite": { "type": "boolean" },
+        "definite": { "type": "boolean" },
+        "numerical_quadrature": { "type": "boolean" }
+      }
+    },
+    "precision_model": {
+      "enum": ["EXACT_RATIONAL", "ARBITRARY_PRECISION", "MACHINE_PRECISION", "MIXED"]
+    },
+    "determinism_status": {
+      "enum": ["DETERMINISTIC", "NONDETERMINISTIC", "CONDITIONALLY_DETERMINISTIC"]
+    },
+    "timeout_support": { "type": "boolean" },
+    "memory_limit_support": { "type": "boolean" },
+    "input_formats": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "output_formats": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "platform_constraints": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}

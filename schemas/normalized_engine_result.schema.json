@@ -1,0 +1,53 @@
+{
+  "$schema_version": "1.0.0",
+  "schema_name": "normalized_engine_result.schema.json",
+  "created_by": "SLOOP_ENGINE_002",
+  "type": "object",
+  "required": [
+    "request_id",
+    "engine_id",
+    "result_type",
+    "raw_output_preserved",
+    "normalization_applied",
+    "normalized_expression",
+    "claim_eligibility"
+  ],
+  "properties": {
+    "request_id": { "type": "string" },
+    "engine_id": { "type": "string" },
+    "result_type": {
+      "enum": [
+        "EXACT_SYMBOLIC_RESULT",
+        "EXACT_RECONSTRUCTION_PASS",
+        "STRUCTURAL_REPLAY_PASS",
+        "NUMERICAL_REGRESSION_PASS",
+        "HIGH_PRECISION_SUPPORT_PASS",
+        "COUNTEREXAMPLE_FOUND",
+        "INCONCLUSIVE",
+        "TIMEOUT",
+        "UNSUPPORTED_CAPABILITY",
+        "ENGINE_UNAVAILABLE",
+        "EXECUTION_FAILED",
+        "POLICY_VIOLATION"
+      ]
+    },
+    "raw_output_preserved": { "type": "string" },
+    "normalization_applied": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "List of normalization steps applied without changing scientific meaning"
+    },
+    "normalized_expression": { "type": "string" },
+    "claim_eligibility": {
+      "type": "object",
+      "properties": {
+        "eligible_for_exact_symbolic_equality": { "type": "boolean" },
+        "eligible_for_structural_replay": { "type": "boolean" },
+        "eligible_for_numerical_regression": { "type": "boolean" },
+        "eligible_for_high_precision_support": { "type": "boolean" },
+        "symbolic_equality_verified": { "type": "boolean" },
+        "caveats": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}

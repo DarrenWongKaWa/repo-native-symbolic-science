@@ -1,0 +1,112 @@
+{
+  "$schema_version": "1.0.0",
+  "schema_name": "engine_execution_truth.schema.json",
+  "created_by": "SLOOP_ENGINE_002",
+  "type": "object",
+  "required": [
+    "request_id",
+    "engine_id",
+    "engine_version",
+    "engine_executable",
+    "environment",
+    "working_directory_policy",
+    "input_artifacts",
+    "input_shas",
+    "generated_script",
+    "generated_script_sha",
+    "exact_command",
+    "started_at",
+    "completed_at",
+    "exit_code",
+    "stdout_path",
+    "stderr_path",
+    "timeout_state",
+    "memory_state",
+    "operations_requested",
+    "operations_observed",
+    "assumptions_requested",
+    "assumptions_observed",
+    "raw_output",
+    "raw_output_sha",
+    "normalized_output",
+    "normalized_output_sha",
+    "warnings",
+    "errors",
+    "partial_result_status",
+    "determinism_record"
+  ],
+  "properties": {
+    "request_id": { "type": "string" },
+    "engine_id": { "type": "string" },
+    "engine_version": { "type": "string" },
+    "engine_executable": { "type": "string" },
+    "environment": {
+      "type": "object",
+      "properties": {
+        "platform": { "type": "string" },
+        "python_version": { "type": "string" },
+        "dependencies": { "type": "object" }
+      }
+    },
+    "working_directory_policy": { "type": "string" },
+    "input_artifacts": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "input_shas": {
+      "type": "object"
+    },
+    "generated_script": { "type": "string" },
+    "generated_script_sha": { "type": "string" },
+    "exact_command": { "type": "string" },
+    "started_at": { "type": "string" },
+    "completed_at": { "type": "string" },
+    "exit_code": { "type": "integer" },
+    "stdout_path": { "type": "string" },
+    "stderr_path": { "type": "string" },
+    "timeout_state": { "type": "boolean" },
+    "memory_state": {
+      "enum": ["OK", "LIMITED", "EXCEEDED", "UNKNOWN"]
+    },
+    "operations_requested": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "operations_observed": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "assumptions_requested": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "assumptions_observed": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "raw_output": { "type": "string" },
+    "raw_output_sha": { "type": "string" },
+    "normalized_output": { "type": "string" },
+    "normalized_output_sha": { "type": "string" },
+    "warnings": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "errors": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "partial_result_status": {
+      "enum": ["COMPLETE", "PARTIAL", "NONE", "UNKNOWN"],
+      "description": "PARTIAL results must not be promoted to COMPLETE"
+    },
+    "determinism_record": {
+      "type": "object",
+      "properties": {
+        "declared_deterministic": { "type": "boolean" },
+        "observed_deterministic": { "type": "boolean" },
+        "reproducible": { "type": "boolean" }
+      }
+    }
+  }
+}

@@ -1,0 +1,96 @@
+{
+  "decomposition_id": "DECOMP-SCALAR-POLY-001",
+  "parent_object_id": "RAW-SCALAR-POLY-001",
+  "parent_expression": "a + 3*b*c - d^2 + 5*e*f*g",
+  "decomposition_strategy": "term_wise",
+  "created_at": "2025-07-11T11:05:00Z",
+  "children": [
+    {
+      "child_id": "CHILD-SCALAR-001-term-a",
+      "parent_id": "RAW-SCALAR-POLY-001",
+      "exact_expression": "a",
+      "transformation_rule": "term_extraction",
+      "source_location": {
+        "term_index": 0,
+        "position_in_parent": "first_addend"
+      },
+      "index_topology": {
+        "free_indices": [],
+        "dummy_indices": []
+      },
+      "operator_signature": {
+        "operators": ["identity"],
+        "commutativity": true
+      },
+      "coefficient": 1,
+      "sector_tags": ["scalar", "linear", "monomial"],
+      "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "child_id": "CHILD-SCALAR-002-term-3bc",
+      "parent_id": "RAW-SCALAR-POLY-001",
+      "exact_expression": "3*b*c",
+      "transformation_rule": "term_extraction",
+      "source_location": {
+        "term_index": 1,
+        "position_in_parent": "second_addend"
+      },
+      "index_topology": {
+        "free_indices": [],
+        "dummy_indices": []
+      },
+      "operator_signature": {
+        "operators": ["scalar_multiplication", "multiplication"],
+        "commutativity": true
+      },
+      "coefficient": 3,
+      "sector_tags": ["scalar", "bilinear", "monomial"],
+      "sha": "d7a8fbb307d7809469ca9abcb0082e4f8d5651e46d3cdb762d02d0bf37c9e592"
+    },
+    {
+      "child_id": "CHILD-SCALAR-003-term-neg-d2",
+      "parent_id": "RAW-SCALAR-POLY-001",
+      "exact_expression": "-d^2",
+      "transformation_rule": "term_extraction",
+      "source_location": {
+        "term_index": 2,
+        "position_in_parent": "third_addend"
+      },
+      "index_topology": {
+        "free_indices": [],
+        "dummy_indices": []
+      },
+      "operator_signature": {
+        "operators": ["negation", "power"],
+        "commutativity": true
+      },
+      "coefficient": -1,
+      "sector_tags": ["scalar", "quadratic", "monomial"],
+      "sha": "6e9c3a1b8f2d4e5a7c0b1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2"
+    },
+    {
+      "child_id": "CHILD-SCALAR-004-term-5efg",
+      "parent_id": "RAW-SCALAR-POLY-001",
+      "exact_expression": "5*e*f*g",
+      "transformation_rule": "term_extraction",
+      "source_location": {
+        "term_index": 3,
+        "position_in_parent": "fourth_addend"
+      },
+      "index_topology": {
+        "free_indices": [],
+        "dummy_indices": []
+      },
+      "operator_signature": {
+        "operators": ["scalar_multiplication", "multiplication"],
+        "commutativity": true
+      },
+      "coefficient": 5,
+      "sector_tags": ["scalar", "trilinear", "monomial"],
+      "sha": "1f3e5c7a9b1d2f4e6a8c0b1d3e5f7a9b1c3d5e7f9a1b3d5e7f9a1b3d5e7f9a1b"
+    }
+  ],
+  "child_count": 4,
+  "reconstruction_possible": true,
+  "reconstruction_formula": "CHILD-001 + CHILD-002 + CHILD-003 + CHILD-004"
+}

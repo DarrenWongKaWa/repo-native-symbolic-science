@@ -1,0 +1,116 @@
+{
+  "fixture_suite_version": "1.0.0",
+  "fixtures": [
+    {
+      "id": "E1",
+      "description": "Simple polynomial",
+      "type": "symbolic",
+      "backends": [
+        "sympy",
+        "python_numeric"
+      ]
+    },
+    {
+      "id": "E2",
+      "description": "Rational function",
+      "type": "symbolic",
+      "backends": [
+        "sympy",
+        "python_numeric"
+      ]
+    },
+    {
+      "id": "E3",
+      "description": "Square root expression",
+      "type": "symbolic",
+      "backends": [
+        "sympy",
+        "python_numeric"
+      ]
+    },
+    {
+      "id": "E4",
+      "description": "Exponential expression",
+      "type": "symbolic",
+      "backends": [
+        "sympy",
+        "python_numeric"
+      ]
+    },
+    {
+      "id": "E5",
+      "description": "Trigonometric sum",
+      "type": "symbolic",
+      "backends": [
+        "sympy",
+        "python_numeric"
+      ]
+    },
+    {
+      "id": "E6",
+      "description": "Logarithmic expression",
+      "type": "symbolic",
+      "backends": [
+        "sympy",
+        "python_numeric"
+      ]
+    },
+    {
+      "id": "E7",
+      "description": "Hyperbolic function",
+      "type": "symbolic",
+      "backends": [
+        "sympy",
+        "python_numeric"
+      ]
+    },
+    {
+      "id": "E8",
+      "description": "Special function",
+      "type": "symbolic",
+      "backends": [
+        "sympy",
+        "python_numeric"
+      ]
+    },
+    {
+      "id": "E9",
+      "description": "Vector dot product",
+      "type": "numeric",
+      "backends": [
+        "sympy",
+        "python_numeric"
+      ]
+    },
+    {
+      "id": "E10",
+      "description": "Matrix multiplication",
+      "type": "numeric",
+      "backends": [
+        "sympy",
+        "python_numeric"
+      ]
+    },
+    {
+      "id": "E11",
+      "description": "Tensor contraction (synthetic)",
+      "type": "symbolic",
+      "backends": [
+        "sympy"
+      ]
+    },
+    {
+      "id": "E12",
+      "description": "Indexed sum (synthetic)",
+      "type": "symbolic",
+      "backends": [
+        "sympy"
+      ]
+    }
+  ],
+  "caveats": [
+    "All fixtures are synthetic and redistributable",
+    "No private scientific expressions are included",
+    "E11-E12 may not pass on all backends (documented caveat)"
+  ]
+}

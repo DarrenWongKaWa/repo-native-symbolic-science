@@ -1,0 +1,61 @@
+{
+  "gate_check_id": "INTGATE-CHECK-001",
+  "claim_id": "CLAIM-PTWISE-TOTDERIV-001",
+  "checked_at": "2025-07-11T14:15:00Z",
+  "integration_gate_required": true,
+  "gate_results": {
+    "boundary_assumptions_satisfied": false,
+    "boundary_details": {
+      "required_assumptions": [
+        "sigma^{mu nu}(x) -> 0 as |x| -> infinity",
+        "Surface terms at the boundary of the integration domain vanish"
+      ],
+      "currently_specified": [],
+      "automatic_satisfaction": false,
+      "reason": "Boundary conditions depend on the physical system and cannot be assumed without explicit specification. The vanishing of surface terms is a nontrivial physical condition."
+    },
+    "domain_specification_complete": false,
+    "domain_details": {
+      "required": "An explicit integration domain (e.g., R^3, a finite box with boundary) must be provided.",
+      "currently_specified": null
+    },
+    "surface_term_evaluation": {
+      "status": "NOT_POSSIBLE",
+      "reason": "Without boundary conditions and integration domain, the surface terms ∫_{boundary} sigma^{mu nu} n_mu dS cannot be evaluated."
+    }
+  },
+  "promotion_path": {
+    "current_status": "PROVISIONAL",
+    "target_status": "HUMAN_ACCEPTED",
+    "blocked": true,
+    "blockage_summary": "Integration gate is required. Boundary assumptions (ASSUMP-003, ASSUMP-004) are not automatically satisfied. The pointwise identity is valid as stated but does not imply the integrated identity without additional physical input.",
+    "required_actions": [
+      {
+        "action": "SPECIFY_BOUNDARY_CONDITIONS",
+        "description": "State the physical boundary conditions: Do fields vanish at infinity? Is the domain periodic? Is there a finite boundary with specified field values?",
+        "assigned_to": "human_scientist"
+      },
+      {
+        "action": "SPECIFY_INTEGRATION_DOMAIN",
+        "description": "Define the exact integration domain: all space, a finite region, or a specific manifold.",
+        "assigned_to": "human_scientist"
+      },
+      {
+        "action": "EVALUATE_SURFACE_TERMS",
+        "description": "Once boundary conditions and domain are specified, evaluate the surface integral terms to confirm they vanish or provide their explicit value.",
+        "assigned_to": "executor_agent",
+        "prerequisite": ["SPECIFY_BOUNDARY_CONDITIONS", "SPECIFY_INTEGRATION_DOMAIN"]
+      }
+    ]
+  },
+  "what_can_proceed": {
+    "pointwise_manipulations": true,
+    "algebraic_simplifications": true,
+    "index_contractions": true,
+    "derivative_expansions": true,
+    "integration_claims": false,
+    "conservation_law_claims": false,
+    "global_charge_claims": false
+  },
+  "notes": "The integration gate check confirms that while the pointwise identity 'partial_mu sigma^{mu nu} = 0' is well-defined and can be manipulated algebraically, any claim that integrates this identity (e.g., to derive a conserved charge) requires additional assumptions that are not automatically satisfied. The gate prevents silent promotion of pointwise results to integrated results without human-specified boundary physics."
+}

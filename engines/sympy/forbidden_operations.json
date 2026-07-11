@@ -1,0 +1,18 @@
+{
+  "engine_id": "sympy",
+  "forbidden_operations": [
+    "invent_scientific_assumptions",
+    "change_index_meaning",
+    "authorize_IBP",
+    "decide_boundary_terms_vanish",
+    "promote_numerical_agreement_to_symbolic_equality",
+    "promote_candidate_to_canonical_state",
+    "unbounded_simplify",
+    "assume_commutativity_for_noncommutative_objects",
+    "implicit_assumption_invention",
+    "automatic_integration_level_claim_promotion",
+    "silent_downgrade_exact_to_numerical"
+  ],
+  "policy_enforcement": "All forbidden operations must be rejected at the request-validation stage. Adapters must not silently perform forbidden operations.",
+  "violation_response": "POLICY_VIOLATION"
+}

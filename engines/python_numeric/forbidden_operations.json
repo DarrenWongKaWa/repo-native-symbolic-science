@@ -1,0 +1,16 @@
+{
+  "engine_id": "python_numeric",
+  "forbidden_operations": [
+    "claim_symbolic_equality_from_finite_samples",
+    "claim_integrated_cancellation_without_error_and_boundary_analysis",
+    "silently_convert_exact_rationals_to_machine_precision",
+    "hide_convergence_failures",
+    "invent_scientific_assumptions",
+    "change_index_meaning",
+    "promote_numerical_agreement_to_symbolic_equality",
+    "promote_candidate_to_canonical_state",
+    "claim_symbolic_structure_from_numerical_evaluation"
+  ],
+  "claim_policy": "Numerical support can support or refute numerical claims, but cannot by itself establish symbolic equality.",
+  "violation_response": "POLICY_VIOLATION"
+}

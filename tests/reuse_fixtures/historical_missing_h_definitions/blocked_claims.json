@@ -1,0 +1,57 @@
+{
+  "document_id": "BLOCKED-CLAIMS-2025-001",
+  "request_id": "HIR-2025-001",
+  "generated_at": "2025-07-11T10:10:00Z",
+  "blocked_claims": [
+    {
+      "claim_id": "CLAIM-sigma-abc-identity-001",
+      "claim_text": "sigma_abc = sum_{ij} H_{ij} * coeff_{abc}^{ij}",
+      "blocked_by": ["H_{ij} matrix element definition"],
+      "blockage_type": "direct_dependency",
+      "dependent_tasks": [
+        "TASK-sigma-abc-factor-042",
+        "TASK-sigma-abc-simplify-042"
+      ]
+    },
+    {
+      "claim_id": "CLAIM-sigma-abc-identity-002",
+      "claim_text": "sigma_abc = sigma_acb (parity symmetry)",
+      "blocked_by": ["external index roles a,b,c"],
+      "blockage_type": "role_assignment_required",
+      "dependent_tasks": [
+        "TASK-sigma-abc-validate-042"
+      ]
+    },
+    {
+      "claim_id": "CLAIM-sigma-abc-identity-003",
+      "claim_text": "<i|H_eff|j> = E_i delta_{ij} + sigma_{ij}",
+      "blocked_by": ["bra-ket orientation convention", "H_{ij} matrix element definition"],
+      "blockage_type": "multiple_dependencies",
+      "dependent_tasks": [
+        "TASK-sigma-abc-simplify-042",
+        "TASK-sigma-abc-validate-042"
+      ]
+    },
+    {
+      "claim_id": "CLAIM-sigma-abc-identity-004",
+      "claim_text": "sigma expansion matches Ref. [1] Eq. (42)",
+      "blocked_by": ["Taylor expansion prefactors", "source authority for claimed identities"],
+      "blockage_type": "verification_blocked",
+      "dependent_tasks": [
+        "TASK-sigma-abc-validate-042"
+      ]
+    },
+    {
+      "claim_id": "CLAIM-sigma-abc-identity-005",
+      "claim_text": "sign(sigma_abc) = +1 for all a,b,c",
+      "blocked_by": ["source operator sign convention"],
+      "blockage_type": "sign_ambiguity",
+      "dependent_tasks": [
+        "TASK-sigma-abc-simplify-042"
+      ]
+    }
+  ],
+  "total_blocked": 5,
+  "total_dependent_tasks": 3,
+  "resolution_required_by": "2025-07-25T00:00:00Z"
+}

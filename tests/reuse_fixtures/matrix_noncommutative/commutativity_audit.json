@@ -1,0 +1,50 @@
+{
+  "audit_id": "COMM-AUDIT-MATRIX-001",
+  "object_id": "RAW-MATRIX-NONCOMM-001",
+  "audited_at": "2025-07-11T13:10:00Z",
+  "commutative_reorder_attempted": true,
+  "commutative_reorder_rejected": true,
+  "reorder_details": {
+    "attempted_operation": "swap_operands_in_product",
+    "target_expression": "A.B",
+    "attempted_result": "B.A",
+    "rejection_reason": "Matrix multiplication is noncommutative. A.B != B.A in general.",
+    "rejection_rule": "NONCOMMUTATIVE_OPERATOR_Dot"
+  },
+  "commutator_identity_preserved": true,
+  "commutator_check": {
+    "expression": "A.B - B.A",
+    "simplified_form": "A.B - B.A",
+    "commutator_not_simplified_to_zero": true,
+    "reason": "For noncommuting matrices A and B, the commutator [A,B] = A.B - B.A is nonzero in general."
+  },
+  "noncommutative_operators": ["Dot", "**"],
+  "order_preserved": true,
+  "order_preservation_details": {
+    "expression": "A.B - B.A",
+    "canonical_order": "A.B - B.A",
+    "order_changed_by_simplification": false,
+    "order_invariant_under_commutative_ops": true,
+    "term_orderings": [
+      {
+        "term": "A.B",
+        "operands_in_order": ["A", "B"],
+        "order_preserved": true
+      },
+      {
+        "term": "B.A",
+        "operands_in_order": ["B", "A"],
+        "order_preserved": true
+      }
+    ]
+  },
+  "validation_checks": {
+    "noncommutative_subexpressions_identified": true,
+    "commutative_operators_correctly_classified": true,
+    "no_false_commutation_applied": true,
+    "associativity_preserved": true,
+    "distributive_law_respected": true,
+    "scalar_multiplication_commutative": true
+  },
+  "notes": "The expression A.B - B.A is a proper commutator. Attempts to reorder A.B as B.A are correctly rejected. The expression preserves its noncommutative structure throughout all operations. Only scalar multiplication and addition/subtraction are commutative here."
+}

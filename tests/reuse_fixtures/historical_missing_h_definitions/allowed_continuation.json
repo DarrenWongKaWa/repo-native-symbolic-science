@@ -1,0 +1,88 @@
+{
+  "document_id": "ALLOWED-CONT-2025-001",
+  "request_id": "HIR-2025-001",
+  "generated_at": "2025-07-11T10:15:00Z",
+  "principle": "Work that does not transitively depend on any missing semantic entity may proceed. All other work is blocked pending human response.",
+  "continuable_tasks": [
+    {
+      "task_id": "TASK-sigma-abc-lint-042",
+      "description": "Run linters and auto-formatters on existing source files",
+      "dependencies_satisfied": true,
+      "reason": "Linting operates on syntax only and does not require semantic definitions",
+      "status": "READY",
+      "estimated_duration_minutes": 5
+    },
+    {
+      "task_id": "TASK-sigma-abc-doc-042",
+      "description": "Generate API documentation for already-validated modules",
+      "dependencies_satisfied": true,
+      "reason": "Documentation generation only processes docstrings and type annotations",
+      "status": "READY",
+      "estimated_duration_minutes": 10
+    },
+    {
+      "task_id": "TASK-sigma-abc-test-scaffold-042",
+      "description": "Write test scaffolding and fixture loaders that do not depend on specific numerical results",
+      "dependencies_satisfied": true,
+      "reason": "Test infrastructure can be built independent of semantic content",
+      "status": "READY",
+      "estimated_duration_minutes": 15
+    },
+    {
+      "task_id": "TASK-sigma-abc-types-042",
+      "description": "Define type stubs and data models for expressions",
+      "dependencies_satisfied": true,
+      "reason": "Type definitions are structural and do not require semantic content",
+      "status": "READY",
+      "estimated_duration_minutes": 20
+    }
+  ],
+  "noncontinuable_tasks": [
+    {
+      "task_id": "TASK-sigma-abc-factor-042",
+      "description": "Algebraic factorization of sigma expressions",
+      "blocked_by": ["H_{ij} matrix element definition"],
+      "status": "BLOCKED"
+    },
+    {
+      "task_id": "TASK-sigma-abc-simplify-042",
+      "description": "Symbolic simplification using index identities",
+      "blocked_by": [
+        "H_{ij} matrix element definition",
+        "external index roles a,b,c",
+        "source operator sign convention"
+      ],
+      "status": "BLOCKED"
+    },
+    {
+      "task_id": "TASK-sigma-abc-validate-042",
+      "description": "Validation against reference results",
+      "blocked_by": [
+        "Taylor expansion prefactors",
+        "source authority for claimed identities",
+        "bra-ket orientation convention"
+      ],
+      "status": "BLOCKED"
+    },
+    {
+      "task_id": "TASK-sigma-abc-integrate-042",
+      "description": "Integration over dummy indices",
+      "blocked_by": [
+        "external index roles a,b,c",
+        "bra-ket orientation convention"
+      ],
+      "status": "BLOCKED"
+    }
+  ],
+  "summary": {
+    "total_tasks": 8,
+    "continuable": 4,
+    "blocked": 4,
+    "blockage_categories": {
+      "matrix_element_undefined": 3,
+      "index_role_undefined": 3,
+      "convention_unspecified": 4,
+      "provenance_missing": 1
+    }
+  }
+}
