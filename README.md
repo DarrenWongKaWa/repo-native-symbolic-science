@@ -47,18 +47,105 @@ This project provides a repo-native framework for auditable human-agent symbolic
 
 6. **Alternate E2 Naming Caveat**: An alternate naming convention for E2 (end-to-end) fixtures exists as a separately documented view. This does not affect functional correctness but should be noted when comparing fixture naming across environments.
 
-## Quick Start
+## Quick Start with an Agent
+
+Clone the repository:
 
 ```bash
-# Install dependencies
-pip install sympy numpy scipy mpmath jsonschema
+git clone https://github.com/DarrenWongKaWa/repo-native-symbolic-science.git
+cd repo-native-symbolic-science
+```
 
-# Run public fixture suite
+Open the repository in an agent-enabled coding environment such as Codex or Claude Code.
+
+Then describe your scientific task in natural language. For example:
+
+> Use the Repo-Native Symbolic Science workflow to ingest my raw expression, identify missing scientific definitions, and prepare a verified simplification plan. Do not assume undefined index roles or scientific identities.
+
+The agent should begin by reading:
+
+```text
+AGENTS.md
+REPO_POLICY.md
+skills/scientific_symbolic_repo_entry/SKILL.md
+```
+
+It will then route the request through the appropriate repo-native workflow:
+
+```text
+scientific request
+→ raw-expression ingestion
+→ semantic completeness audit
+→ human information request, when needed
+→ planning
+→ bounded execution
+→ independent verification
+→ provenance-backed reporting
+```
+
+You do not need to manually select schemas, validators, task templates, or computation backends.
+
+When symbolic or numerical computation is required, the agent should probe the available backends and determine whether the requested capabilities are supported.
+
+Supported backends include:
+
+- SymPy for open-source exact symbolic computation;
+- NumPy, SciPy, and mpmath for numerical and high-precision support;
+- Mathematica as an optional commercial symbolic backend.
+
+If a required dependency or backend is unavailable, the agent should report the capability gap and request authorization before installing software or changing the environment. It must not silently replace an exact symbolic requirement with numerical sampling.
+
+## Example Scientific Request
+
+A new project can begin with a request such as:
+
+> I have a long multiband response expression in `input/raw_expression.txt`. Treat it as immutable input. The indices \(a,b,c\) are external tensor indices, while \(m,n,l\) are band indices. First audit whether the scientific definitions and assumptions are complete. Do not perform integration by parts or assume boundary terms vanish without my authorization.
+
+The expected interaction is:
+
+```text
+Human scientist
+→ provides the expression, definitions, assumptions, and scientific goal
+
+Agent
+→ freezes the input
+→ audits symbols, indices, assumptions, and allowed operations
+→ requests missing scientific information
+→ materializes a bounded task plan
+
+CAS or numerical backend
+→ performs only the authorized computation
+
+Independent verifier
+→ replays the result and adjudicates the permitted claim
+
+Human scientist
+→ authorizes scientific gates and canonical promotion
+```
+
+## Developer and Local Validation
+
+The following commands are intended for contributors, CI environments, and users who want to run the framework tests manually. They are not required merely to begin working with an agent.
+
+Install the open-source computation and validation dependencies:
+
+```bash
+python3 -m pip install sympy numpy scipy mpmath jsonschema
+```
+
+Run the public engine fixture suite:
+
+```bash
 python3 tests/engine_fixtures/run_fixture_suite.py
+```
 
-# Run reuse fixture suite
+Run the reusable-framework fixture suite:
+
+```bash
 python3 scripts/run_reuse_fixture_suite.py
 ```
+
+Mathematica is optional and is not required for the open-source fixture suites or the generic workflow.
 
 ## Project Structure
 
