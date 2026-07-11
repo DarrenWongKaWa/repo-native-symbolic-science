@@ -56,9 +56,14 @@ git clone https://github.com/DarrenWongKaWa/repo-native-symbolic-science.git
 cd repo-native-symbolic-science
 ```
 
-Open the repository in an agent-enabled coding environment such as Codex or Claude Code.
+Open the repository in an agent-enabled coding environment such as Codex or Claude Code. Then describe your scientific task in natural language.
 
-Then describe your scientific task in natural language. You do not need to manually choose schemas, scripts, validators, or computation backends.
+Users do not need to manually select schemas.
+Users do not need to manually select validators.
+Users do not need to manually select computation backends.
+Users do not need to run fixture suites before starting a project.
+
+When computation is needed, the agent probes available capabilities and requests authorization before installing dependencies or changing the environment.
 
 A useful first request is:
 
@@ -254,7 +259,7 @@ rejected result
 | Run an authorized backend | `bounded_computation_backend_execution` |
 | Compare exact and numerical evidence | `cross_engine_symbolic_and_numeric_verification` |
 
-## Developer Validation
+## Developer and Local Validation
 
 The following commands are for contributors, CI, or users who want to verify the installation manually. They are not required simply to start a scientific task through an agent.
 
@@ -266,6 +271,24 @@ python3 scripts/run_reuse_fixture_suite.py
 ```
 
 Mathematica is optional and is not required for the open-source core workflow.
+
+## Documentation
+
+| Document | Purpose |
+|----------|---------|
+| [Getting Started with an Agent](docs/GETTING_STARTED_WITH_AN_AGENT.md) | First-time user guide for agent-based interaction |
+| [Skill Cookbook](docs/SKILL_COOKBOOK.md) | Complete reference of all 11 public skills |
+| [End-to-End Workflow](docs/END_TO_END_WORKFLOW.md) | Synthetic walkthrough from raw input to report |
+| [Human Scientist Guide](docs/HUMAN_SCIENTIST_GUIDE.md) | Scientist responsibilities and best practices |
+| [Claim Types and Gates](docs/CLAIM_TYPES_AND_GATES.md) | Relation types, verification gates, and forbidden promotions |
+| [Troubleshooting](docs/TROUBLESHOOTING.md) | Common issues and resolutions |
+| [Architecture](docs/architecture.md) | Repository architecture and data flow |
+| [CAS Backends](docs/cas_backends.md) | Multi-backend adapter details |
+| [Human-Agent Workflow](docs/human_agent_workflow.md) | Responsibility split and escalation protocol |
+| [Limitations](docs/limitations.md) | Known limitations and caveats |
+| [Object and Task Lifecycle](docs/object_and_task_lifecycle.md) | Task and object state machine |
+| [Reporting Contract](docs/reporting_contract.md) | Required artifact formats and claim boundaries |
+| [Semantic Escalation](docs/semantic_escalation.md) | When and how the agent requests human input |
 
 ## Project Structure
 

@@ -1,116 +1,123 @@
 {
-  "fixture_suite_version": "1.0.0",
+  "fixture_suite_version": "1.1.0",
   "fixtures": [
     {
       "id": "E1",
-      "description": "Simple polynomial",
+      "description": "Exact commutative algebra via expand and factor — verifies exact reconstruction of expanded and refactored polynomial",
       "type": "symbolic",
       "backends": [
-        "sympy",
-        "python_numeric"
-      ]
+        "sympy"
+      ],
+      "behavior": "Expands (x+1)**2 then factors back; expects EXACT_RECONSTRUCTION_PASS"
     },
     {
       "id": "E2",
-      "description": "Rational function",
+      "description": "Noncommutative ordering protection — verifies that noncommutative matrix multiplication ordering is not silently reordered",
       "type": "symbolic",
       "backends": [
-        "sympy",
-        "python_numeric"
-      ]
+        "sympy"
+      ],
+      "behavior": "Submits A*B with noncommutative assumptions; expects POLICY_VIOLATION or preserved ordering"
     },
     {
       "id": "E3",
-      "description": "Square root expression",
-      "type": "symbolic",
+      "description": "Symbolic vs numerical boundary enforcement — verifies that numerical evaluation does not imply symbolic equality",
+      "type": "numeric",
       "backends": [
-        "sympy",
         "python_numeric"
-      ]
+      ],
+      "behavior": "Evaluates pi approximation numerically; asserts symbolic_equality_verified=false"
     },
     {
       "id": "E4",
-      "description": "Exponential expression",
-      "type": "symbolic",
+      "description": "Unsupported capability safe failure — verifies that requesting a nonexistent capability returns UNSUPPORTED_CAPABILITY",
+      "type": "governance",
       "backends": [
-        "sympy",
-        "python_numeric"
-      ]
+        "sympy"
+      ],
+      "behavior": "Requests a fabricated capability; expects UNSUPPORTED_CAPABILITY with safe failure"
     },
     {
       "id": "E5",
-      "description": "Trigonometric sum",
-      "type": "symbolic",
+      "description": "Optional Mathematica unavailability — verifies that Mathematica-only requests fail safely when Mathematica is prohibited",
+      "type": "governance",
       "backends": [
-        "sympy",
-        "python_numeric"
-      ]
+        "sympy"
+      ],
+      "behavior": "Prohibits sympy and python_numeric, requests Mathematica-only; expects UNSUPPORTED_CAPABILITY or ENGINE_UNAVAILABLE"
     },
     {
       "id": "E6",
-      "description": "Logarithmic expression",
-      "type": "symbolic",
+      "description": "Timeout and partial result protection — verifies that timeout does not silently promote partial results",
+      "type": "governance",
       "backends": [
-        "sympy",
-        "python_numeric"
-      ]
+        "sympy"
+      ],
+      "behavior": "Tests subprocess timeout handling; verifies TIMEOUT produces partial_result_not_promoted=true"
     },
     {
       "id": "E7",
-      "description": "Hyperbolic function",
+      "description": "Branch-sensitive expression handling — verifies that sqrt(x**2) requires explicit branch/sign assumptions",
       "type": "symbolic",
       "backends": [
-        "sympy",
-        "python_numeric"
-      ]
+        "sympy"
+      ],
+      "behavior": "Processes sqrt(x**2) with cancel; expects explicit assumption tracking or unresolved"
     },
     {
       "id": "E8",
-      "description": "Special function",
-      "type": "symbolic",
+      "description": "Exact primary plus numerical support separation — verifies that exact and numerical result types remain independent and never conflated",
+      "type": "both",
       "backends": [
         "sympy",
         "python_numeric"
-      ]
+      ],
+      "behavior": "Runs exact algebraic and numerical evaluation in parallel; verifies exact result is not typed as NUMERICAL and numerical result is not typed as EXACT_SYMBOLIC"
     },
     {
       "id": "E9",
-      "description": "Vector dot product",
-      "type": "numeric",
+      "description": "Translation loss detection — verifies that unsupported constructs between engine languages are detected and recorded",
+      "type": "governance",
       "backends": [
-        "sympy",
-        "python_numeric"
-      ]
+        "sympy"
+      ],
+      "behavior": "Checks that Piecewise translation to Mathematica reports translation_loss_detected=true and exact_cross_engine_verification_eligible=false"
     },
     {
       "id": "E10",
-      "description": "Matrix multiplication",
-      "type": "numeric",
+      "description": "Scientific-adapter rule enforcement — verifies that engines cannot reorder limits or expand protected parameters before their declared stage",
+      "type": "governance",
       "backends": [
-        "sympy",
-        "python_numeric"
-      ]
+        "sympy"
+      ],
+      "behavior": "Expands (a+b+c)**2 with forbidden limit-reordering and protected-parameter operations; expects no POLICY_VIOLATION"
     },
     {
       "id": "E11",
-      "description": "Tensor contraction (synthetic)",
-      "type": "symbolic",
+      "description": "Human semantic blocker — verifies that semantically ambiguous requests escalate to UNSUPPORTED_CAPABILITY rather than guessing",
+      "type": "governance",
       "backends": [
         "sympy"
-      ]
+      ],
+      "behavior": "Requests semantically_ambiguous_transformation with no backends; expects BLOCKED_SEMANTIC_UNDERDETERMINATION"
     },
     {
       "id": "E12",
-      "description": "Indexed sum (synthetic)",
-      "type": "symbolic",
+      "description": "Execution-truth completeness validation — verifies that missing execution truth fields (command, engine version, script SHA, exit status) cause validation failure",
+      "type": "governance",
       "backends": [
         "sympy"
-      ]
+      ],
+      "behavior": "Supplies incomplete execution truth record with only 4 of 22 required fields; expects validation to fail with specific missing-field errors"
     }
   ],
   "caveats": [
     "All fixtures are synthetic and redistributable",
     "No private scientific expressions are included",
-    "E11-E12 may not pass on all backends (documented caveat)"
+    "This catalog describes behavioral governance semantics, not mathematical expression types",
+    "Fixture types (symbolic/numeric/both/governance) describe the claim boundary, not the expression category",
+    "Backend listings reflect which backends are exercised, not which are eligible",
+    "E9 tests translation loss detection using a synthetic unsupported construct, not an actual cross-engine run",
+    "E5 tests Mathematica unavailability via backend prohibition, not actual Mathematica absence"
   ]
 }
