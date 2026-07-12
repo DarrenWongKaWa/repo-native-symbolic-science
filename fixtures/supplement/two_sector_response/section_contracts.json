@@ -1,0 +1,145 @@
+{
+  "sections": [
+    {
+      "section_id": "SEC_01_OVERVIEW",
+      "title": "Overview and Motivation",
+      "description": "Introduces the two-sector response kernel, its physical motivation, and the structure of the derivation.",
+      "parent_sections": [],
+      "child_sections": ["SEC_02_DEFINITIONS", "SEC_03_STARTING_EXPRESSION"],
+      "key_equations": [],
+      "prerequisites": ["General familiarity with field-theoretic response functions."],
+      "outputs_provided": ["Roadmap for the supplement", "Notation summary"]
+    },
+    {
+      "section_id": "SEC_02_DEFINITIONS",
+      "title": "Definitions and Notation",
+      "description": "Defines all symbols: R_ij(k), A_ij(k), B_ij(k), delta_ij, epsilon, Lambda, f(k), g(k), h(k), C_0, C_2, I_ij, F(k), G_ij(k). Establishes conventions for Einstein summation, dimension d = 2 + epsilon, and integration measure dk/k.",
+      "parent_sections": ["SEC_01_OVERVIEW"],
+      "child_sections": ["SEC_03_STARTING_EXPRESSION"],
+      "key_equations": ["eq:def_R", "eq:def_AB"],
+      "prerequisites": ["Tensor algebra in flat Euclidean space."],
+      "outputs_provided": ["definitions.json artifact with complete symbol table and conventions."]
+    },
+    {
+      "section_id": "SEC_03_STARTING_EXPRESSION",
+      "title": "Starting Expression",
+      "description": "Presents the defining integral for the two-point response kernel R_ij as a radial momentum integral of the sum of sector A and sector B kernels, with O(epsilon^2) error estimate.",
+      "parent_sections": ["SEC_02_DEFINITIONS"],
+      "child_sections": ["SEC_04_SCIENTIFIC_IDENTITY"],
+      "key_equations": ["eq:start"],
+      "prerequisites": ["Definitions from SEC_02."],
+      "outputs_provided": ["starting_expression.txt artifact."]
+    },
+    {
+      "section_id": "SEC_04_SCIENTIFIC_IDENTITY",
+      "title": "Scientific Identity: Product Rule",
+      "description": "Introduces the product rule identity partial_k [F(k) G_ij(k)] = F'(k) G_ij(k) + F(k) partial_k G_ij(k) as a tool for reorganizing the integrand. Lists assumptions: differentiability of F and G on (0, Lambda], flat-space index commutation.",
+      "parent_sections": ["SEC_03_STARTING_EXPRESSION"],
+      "child_sections": ["SEC_05_REORGANIZATION"],
+      "key_equations": ["eq:identity"],
+      "prerequisites": ["Single-variable calculus, tensor differentiability."],
+      "outputs_provided": ["scientific_identity.json artifact."]
+    },
+    {
+      "section_id": "SEC_05_REORGANIZATION",
+      "title": "Reorganization via Product Rule",
+      "description": "Applies the product rule identity to reorganize the integrand, separating total derivative terms (which may be evaluated by boundary conditions) from remainder terms.",
+      "parent_sections": ["SEC_04_SCIENTIFIC_IDENTITY"],
+      "child_sections": ["SEC_06_SECTOR_DECOMPOSITION"],
+      "key_equations": ["eq:reorganized"],
+      "prerequisites": ["Product rule identity from SEC_04."],
+      "outputs_provided": ["Reorganized expression, intermediate between starting and sector decomposition."]
+    },
+    {
+      "section_id": "SEC_06_SECTOR_DECOMPOSITION",
+      "title": "Sector Decomposition",
+      "description": "Decomposes the response kernel into Sector A (scalar + longitudinal, carrying f(k) and g(k)) and Sector B (transverse, carrying h(k)). Proves exact reconstruction: R_ij = R_ij^(A) + R_ij^(B).",
+      "parent_sections": ["SEC_05_REORGANIZATION"],
+      "child_sections": ["SEC_07_PROJECTION"],
+      "key_equations": ["eq:sector_A", "eq:sector_B"],
+      "prerequisites": ["Tensor projection operators: delta_ij, k_i k_j / k^2, and their orthogonal complements."],
+      "outputs_provided": ["sector_decomposition.json artifact."]
+    },
+    {
+      "section_id": "SEC_07_PROJECTION",
+      "title": "Projection onto Basis Tensors",
+      "description": "Projects the sector-decomposed expression onto the isotropic (delta_ij) and anisotropic (I_ij) basis tensors, reducing the tensorial structure to scalar coefficient equations.",
+      "parent_sections": ["SEC_06_SECTOR_DECOMPOSITION"],
+      "child_sections": ["SEC_08_INTEGRATION_SECTOR_A", "SEC_09_INTEGRATION_SECTOR_B"],
+      "key_equations": ["eq:projected"],
+      "prerequisites": ["Tensor contraction identities in d dimensions."],
+      "outputs_provided": ["Projected scalar equations for C_0 and C_2."],
+      "omission_justification": "Integration by parts was not used or authorized in this derivation."
+    },
+    {
+      "section_id": "SEC_08_INTEGRATION_SECTOR_A",
+      "title": "Integration of Sector A",
+      "description": "Carries out the radial momentum integration for sector A, evaluating boundary contributions at k = 0 and k = Lambda under physically motivated boundary conditions.",
+      "parent_sections": ["SEC_07_PROJECTION"],
+      "child_sections": ["SEC_10_INTEGRATED_RESULT"],
+      "key_equations": ["eq:integrated_A"],
+      "prerequisites": ["Radial integration with cutoff regularization."],
+      "outputs_provided": ["Integrated form of sector A contribution to C_0 and C_2."]
+    },
+    {
+      "section_id": "SEC_09_INTEGRATION_SECTOR_B",
+      "title": "Integration of Sector B",
+      "description": "Carries out the radial momentum integration for the transverse sector B, evaluating boundary terms and combining with sector A results.",
+      "parent_sections": ["SEC_07_PROJECTION"],
+      "child_sections": ["SEC_10_INTEGRATED_RESULT"],
+      "key_equations": ["eq:integrated_B"],
+      "prerequisites": ["Radial integration with cutoff regularization. Transverse projector properties."],
+      "outputs_provided": ["Integrated form of sector B contribution to C_0 and C_2."]
+    },
+    {
+      "section_id": "SEC_10_INTEGRATED_RESULT",
+      "title": "Integrated Result: R_ij = C_0 delta_ij + C_2 I_ij",
+      "description": "Combines the integrated sector A and sector B results to obtain the final compact form with two independent coefficients C_0 and C_2 multiplying basis tensors delta_ij and I_ij. Error terms are O(epsilon^2, 1/Lambda).",
+      "parent_sections": ["SEC_08_INTEGRATION_SECTOR_A", "SEC_09_INTEGRATION_SECTOR_B"],
+      "child_sections": ["SEC_11_NUMERIC_VERIFICATION", "SEC_12_PHYSICAL_INTERPRETATION", "SEC_13_LIMITING_CASE"],
+      "key_equations": ["eq:final"],
+      "prerequisites": ["Integration results from SEC_08 and SEC_09."],
+      "outputs_provided": ["integrated_result.txt artifact."]
+    },
+    {
+      "section_id": "SEC_11_NUMERIC_VERIFICATION",
+      "title": "Numerical Verification",
+      "description": "Provides numerical checks of the integrated result against the starting expression for sample values of f(k), g(k), h(k), epsilon, and Lambda. Confirms convergence within stated error bounds.",
+      "parent_sections": ["SEC_10_INTEGRATED_RESULT"],
+      "child_sections": [],
+      "key_equations": ["eq:long_expr"],
+      "prerequisites": ["Numerical integration methods. The 96-term expression in long_expression_artifact.txt."],
+      "outputs_provided": ["Numerical regression test results confirming R_ij - (C_0 delta_ij + C_2 I_ij) ~ O(epsilon^2, 1/Lambda)."]
+    },
+    {
+      "section_id": "SEC_12_PHYSICAL_INTERPRETATION",
+      "title": "Physical Interpretation",
+      "description": "Interprets the coefficients C_0 (isotropic response) and C_2 (anisotropic response) in terms of observable transport signatures. Discusses the physical meaning of the sector A (compressible) and sector B (incompressible) decomposition.",
+      "parent_sections": ["SEC_10_INTEGRATED_RESULT"],
+      "child_sections": [],
+      "key_equations": ["eq:final", "eq:sector_A", "eq:sector_B"],
+      "prerequisites": ["General knowledge of linear response theory."],
+      "outputs_provided": ["physical_interpretation_mapping.json, six interpretations covering all key equations."]
+    },
+    {
+      "section_id": "SEC_13_LIMITING_CASE",
+      "title": "Limiting Case: epsilon -> 0",
+      "description": "Analyzes the dimensional reduction limit epsilon -> 0 (d = 2). Shows that the anisotropic tensor I_ij vanishes identically in d = 2, leaving a purely isotropic response R_ij = C_0^(0) delta_ij.",
+      "parent_sections": ["SEC_10_INTEGRATED_RESULT"],
+      "child_sections": [],
+      "key_equations": ["eq:limit_eps0"],
+      "prerequisites": ["Results from SEC_10. Properties of symmetric traceless tensors in d = 2."],
+      "outputs_provided": ["limiting_case.txt artifact, limiting_case_report.json."]
+    },
+    {
+      "section_id": "SEC_14_SUPPLEMENT_REQUEST",
+      "title": "Supplement Request and Reproducibility Package",
+      "description": "Documents the complete supplement request including all artifacts, their SHAs, reproducibility instructions, and expected verification outcomes.",
+      "parent_sections": ["SEC_01_OVERVIEW"],
+      "child_sections": [],
+      "key_equations": [],
+      "prerequisites": ["All previous sections."],
+      "outputs_provided": ["supplement_request.json, reproducibility_package/ (manifest, build commands, environment)."]
+    }
+  ]
+}

@@ -1,0 +1,98 @@
+[
+  {
+    "authority_class": "SYMBOLICALLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "SEC_C0",
+    "source_locator": "sigma_xxx_simplification_supplement.pdf, raw row tables"
+  },
+  {
+    "authority_class": "SYMBOLICALLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "SEC_C1",
+    "source_locator": "sigma_xxx_simplification_supplement.pdf, raw row tables"
+  },
+  {
+    "authority_class": "SYMBOLICALLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "SEC_C2",
+    "source_locator": "sigma_xxx_simplification_supplement.pdf, raw row tables"
+  },
+  {
+    "authority_class": "SYMBOLICALLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "SEC_PG",
+    "source_locator": "raw row convention"
+  },
+  {
+    "authority_class": "SYMBOLICALLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "SEC_CENTER_FINAL",
+    "source_locator": "theoretical supplement, Supplementary Note 4"
+  },
+  {
+    "authority_class": "SYMBOLICALLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "SEC_PAIR_SHIFT",
+    "source_locator": "theoretical supplement, Supplementary Notes 5\u20138"
+  },
+  {
+    "authority_class": "SYMBOLICALLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "SEC_PAIR_VMINUS",
+    "source_locator": "theoretical supplement, Supplementary Notes 5\u20136"
+  },
+  {
+    "authority_class": "SYMBOLICALLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "SEC_PAIR_VPLUS",
+    "source_locator": "theoretical supplement, Supplementary Notes 5\u20136"
+  },
+  {
+    "authority_class": "SYMBOLICALLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "SEC_PAIR_VEPSILON",
+    "source_locator": "theoretical supplement, Supplementary Notes 5\u20136"
+  },
+  {
+    "authority_class": "SYMBOLICALLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "SEC_PAIR_X",
+    "source_locator": "pair_hkk_geometry_closure/gpt_review_prompt.md"
+  },
+  {
+    "authority_class": "SYMBOLICALLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "SEC_LOOP_REL",
+    "source_locator": "theoretical supplement, Supplementary Note 7"
+  },
+  {
+    "authority_class": "SYMBOLICALLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "SEC_LOOP_IML",
+    "source_locator": "theoretical supplement, Supplementary Note 7"
+  },
+  {
+    "authority_class": "HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "SEC_RESIDUAL_EARLY",
+    "source_locator": "sigma_xxx_simplification_supplement.pdf"
+  },
+  {
+    "authority_class": "SYMBOLICALLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "SEC_RM_LOOP_ZERO",
+    "source_locator": "theoretical supplement, Supplementary Note 10"
+  },
+  {
+    "authority_class": "SYMBOLICALLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "SEC_RM_CENTER_ODD",
+    "source_locator": "theoretical supplement, Supplementary Note 10"
+  },
+  {
+    "authority_class": "NUMERICALLY_SUPPORTED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "SEC_POST_RAW_GAMMA_SCALING",
+    "source_locator": "human project summary and Rice\u2013Mele validation"
+  }
+]

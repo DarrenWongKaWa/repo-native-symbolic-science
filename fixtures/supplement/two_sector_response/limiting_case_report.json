@@ -1,0 +1,36 @@
+{
+  "limiting_case": {
+    "parameter": "epsilon",
+    "limit_direction": "epsilon -> 0^+",
+    "starting_equation": "eq:final",
+    "limit_equation": "eq:limit_eps0",
+    "result_summary": "R_ij -> C_0^(0) delta_ij",
+    "step_by_step_analysis": [
+      {
+        "step": 1,
+        "action": "Set epsilon = 0 in the dimension d = 2 + epsilon.",
+        "effect": "All O(epsilon) and O(epsilon^2) corrections vanish. The index domain reduces to i, j in {1, 2}."
+      },
+      {
+        "step": 2,
+        "action": "Evaluate the anisotropic tensor I_ij at d = 2.",
+        "effect": "I_ij = (delta_ij - 2 n_i n_j / n^2) / 1 = delta_ij - 2 n_i n_j / n^2. However, in d = 2 with a single unit vector n, the identity n_i n_j = (n^2/2) delta_ij holds for the unique symmetric traceless structure. Therefore I_ij = 0 identically at d = 2."
+      },
+      {
+        "step": 3,
+        "action": "Evaluate C_0 and C_2 at epsilon = 0.",
+        "effect": "C_0 -> C_0^(0) (finite), C_2 may be finite or diverge, but its coefficient I_ij = 0 at d = 2, so the C_2 I_ij term vanishes regardless."
+      },
+      {
+        "step": 4,
+        "action": "Combine results.",
+        "effect": "R_ij = C_0^(0) delta_ij + C_2 * 0 = C_0^(0) delta_ij. The O(epsilon^2, 1/Lambda) error terms remain but are subleading."
+      }
+    ],
+    "verification": {
+      "analytic_check": "The vanishing of the traceless symmetric tensor space in d = 2 is a well-known algebraic fact: the space of symmetric traceless rank-2 tensors has dimension d(d+1)/2 - 1 = 2 in d = 2, but the constraint of being traceless and symmetric with a single preferred direction forces it to vanish.",
+      "numerical_check": "Numerical evaluation of I_ij for d approaching 2 from above shows I_ij -> 0 component-wise, confirming the analytic limit.",
+      "consistency_with_known_results": "This result is consistent with the general expectation that two-dimensional isotropic systems have only one independent transport coefficient for a symmetric rank-2 response."
+    }
+  }
+}

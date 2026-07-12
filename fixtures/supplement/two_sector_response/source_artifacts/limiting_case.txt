@@ -1,0 +1,25 @@
+Limiting case: ε → 0 (dimensional reduction to d = 2)
+
+Result: R_ij → C₀^(0) δ_ij
+
+where C₀^(0) = lim_{ε→0} C₀ is the leading isotropic coefficient evaluated
+in exactly two dimensions. In this limit:
+
+1. The anisotropic tensor I_ij vanishes identically because in d = 2,
+   the traceless symmetric rank-2 tensor space is one-dimensional and
+   the normalization (d - 1) → 1, but the projection structure degenerates.
+   Specifically, I_ij = 0 when d = 2 due to the identity
+   δ_ij - d n_i n_j / n² = 0 for all i, j in d = 2 with a single unit vector.
+
+2. The coefficient C₂ multiplies I_ij, so its contribution vanishes regardless
+   of its finite or divergent limiting value.
+
+3. The remaining response is purely isotropic: R_ij ∝ δ_ij.
+   This is the expected result for a rotationally invariant system in d = 2,
+   where there is only one independent rank-2 symmetric tensor.
+
+4. Higher-order corrections in ε are not needed for the leading limit.
+
+Verification note: This limiting behavior can be checked numerically by
+evaluating R_ij for small decreasing values of ε and confirming convergence
+to an isotropic form.

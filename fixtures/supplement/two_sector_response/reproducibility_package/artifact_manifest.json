@@ -1,0 +1,108 @@
+{
+  "manifest_version": "1.0",
+  "fixture_id": "synthetic_two_sector_response_kernel",
+  "generated": "2026-07-11",
+  "artifacts": [
+    {
+      "relative_path": "source_artifacts/definitions.json",
+      "sha256": "7e701a591f9e1e863dde09e4c57c0411e5e94571bc0b823892de13d1e55017ce",
+      "role": "Symbol definitions and notation conventions",
+      "format": "JSON",
+      "required_for_reproduction": true
+    },
+    {
+      "relative_path": "source_artifacts/starting_expression.txt",
+      "sha256": "d6a77de36ac11ac045f4026efe4c11419959405f595a2265f7d2d0f45f488749",
+      "role": "Starting integral expression for R_ij",
+      "format": "plaintext",
+      "required_for_reproduction": true
+    },
+    {
+      "relative_path": "source_artifacts/sector_decomposition.json",
+      "sha256": "687c8bf1e41cf92fcc667eff95af7a5b9cfe0a59bdc520dc6ca72f4a3fb70348",
+      "role": "Sector A and B decomposition with reconstruction formula",
+      "format": "JSON",
+      "required_for_reproduction": true
+    },
+    {
+      "relative_path": "source_artifacts/scientific_identity.json",
+      "sha256": "b1bfc084993ce873d882caef2083499aa4d44b9ca43c158aed0b3f64c536e5b2",
+      "role": "Product rule identity and assumptions",
+      "format": "JSON",
+      "required_for_reproduction": true
+    },
+    {
+      "relative_path": "source_artifacts/integrated_result.txt",
+      "sha256": "f323ed102537110118f3c2c9ee0d7a4ad4bc403c4a2e8353ab3efdf4ed218897",
+      "role": "Final integrated form of R_ij",
+      "format": "plaintext",
+      "required_for_reproduction": true
+    },
+    {
+      "relative_path": "source_artifacts/limiting_case.txt",
+      "sha256": "2d194276241199dd7f1cf28ef94181ff0cc24f06fdc7a967749b5413e2189472",
+      "role": "epsilon -> 0 limiting case analysis",
+      "format": "plaintext",
+      "required_for_reproduction": true
+    },
+    {
+      "relative_path": "source_artifacts/long_expression_artifact.txt",
+      "sha256": "eaf0200206a64698de6b82ea0a5888caf56b05c04fe0bccc6971cd365be1a18c",
+      "role": "Full 96-term expanded expression (electronic-only artifact)",
+      "format": "plaintext",
+      "required_for_reproduction": false
+    }
+  ],
+  "supplement_files": [
+    {
+      "relative_path": "derivation_graph.json",
+      "role": "Derivation graph with 12 nodes and 12 edges",
+      "format": "JSON"
+    },
+    {
+      "relative_path": "derivation_steps.jsonl",
+      "role": "13 derivation step objects (one per line)",
+      "format": "JSONL"
+    },
+    {
+      "relative_path": "equation_evidence_mapping.json",
+      "role": "13 equation-to-evidence mappings",
+      "format": "JSON"
+    },
+    {
+      "relative_path": "expression_presentation.json",
+      "role": "Presentation decisions for all 13 equations",
+      "format": "JSON"
+    },
+    {
+      "relative_path": "mathematical_omission_ledger.json",
+      "role": "Omission ledger for the 96-term expression",
+      "format": "JSON"
+    },
+    {
+      "relative_path": "physical_interpretation_mapping.json",
+      "role": "6 physical interpretations",
+      "format": "JSON"
+    },
+    {
+      "relative_path": "limiting_case_report.json",
+      "role": "epsilon -> 0 limit analysis report",
+      "format": "JSON"
+    },
+    {
+      "relative_path": "reader_pathways.json",
+      "role": "3 reader pathways",
+      "format": "JSON"
+    },
+    {
+      "relative_path": "section_contracts.json",
+      "role": "14 section contracts",
+      "format": "JSON"
+    },
+    {
+      "relative_path": "supplement_request.json",
+      "role": "Complete supplement request",
+      "format": "JSON"
+    }
+  ]
+}

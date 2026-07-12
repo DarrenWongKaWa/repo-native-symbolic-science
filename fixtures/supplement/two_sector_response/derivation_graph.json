@@ -1,0 +1,490 @@
+{
+  "graph_id": "GRAPH_TWO_SECTOR_RESPONSE_001",
+  "scientific_scope": "Derivation of the two-sector response kernel R_ij = C_0 delta_ij + C_2 I_ij from a radial momentum integral with sector A (scalar+longitudinal) and sector B (transverse) decomposition, including product-rule reorganization, projection, integration, limiting case, numerical verification, and physical interpretation.",
+  "source_manifest_sha": "d4a9838cf14e1c41285a753899c66308f97aa1625ce0fb2f4d2eaf95a6687323",
+  "nodes": [
+    {
+      "node_id": "N1",
+      "node_type": "definition",
+      "equation_or_object_id": "eq:def_R",
+      "scientific_scope": "Definition of the two-point response kernel R_ij(k) as a rank-2 symmetric tensor in momentum space.",
+      "claim_type": "definition",
+      "assumptions": [
+        "Symmetric tensor: R_ij = R_ji",
+        "Momentum-space representation is well-defined",
+        "Einstein summation convention applies"
+      ],
+      "source_artifact": "source_artifacts/definitions.json",
+      "source_sha": "7e701a591f9e1e863dde09e4c57c0411e5e94571bc0b823892de13d1e55017ce",
+      "verification_status": "NOT_APPLICABLE",
+      "canonical_status": "CANONICAL",
+      "caveats": []
+    },
+    {
+      "node_id": "N2",
+      "node_type": "definition",
+      "equation_or_object_id": "eq:def_AB",
+      "scientific_scope": "Definition of sector A kernel A_ij(k) = f(k) delta_ij + g(k) k_i k_j / k^2 and sector B kernel B_ij(k) = h(k) (delta_ij - k_i k_j / k^2).",
+      "claim_type": "definition",
+      "assumptions": [
+        "f(k), g(k), h(k) are real differentiable functions on (0, Lambda]",
+        "k^2 != 0 for all k > 0",
+        "Tensors obey standard flat-space index algebra"
+      ],
+      "source_artifact": "source_artifacts/definitions.json",
+      "source_sha": "7e701a591f9e1e863dde09e4c57c0411e5e94571bc0b823892de13d1e55017ce",
+      "verification_status": "NOT_APPLICABLE",
+      "canonical_status": "CANONICAL",
+      "caveats": []
+    },
+    {
+      "node_id": "N3",
+      "node_type": "raw_equation",
+      "equation_or_object_id": "eq:start",
+      "scientific_scope": "Starting integral: R_ij = integral_0^Lambda dk/k [A_ij(k) + B_ij(k)] + O(epsilon^2).",
+      "claim_type": "literal_equality",
+      "assumptions": [
+        "Integral converges for k in (0, Lambda]",
+        "O(epsilon^2) error estimate holds for the specified kernel functions",
+        "The measure dk/k is the correct radial measure in d = 2 + epsilon"
+      ],
+      "source_artifact": "source_artifacts/starting_expression.txt",
+      "source_sha": "d6a77de36ac11ac045f4026efe4c11419959405f595a2265f7d2d0f45f488749",
+      "verification_status": "UNVERIFIED",
+      "canonical_status": "CANDIDATE",
+      "caveats": [
+        "The O(epsilon^2) bound assumes specific regularity of f, g, h at the boundaries"
+      ]
+    },
+    {
+      "node_id": "N4",
+      "node_type": "identity",
+      "equation_or_object_id": "eq:identity",
+      "scientific_scope": "Product rule identity: partial_k [F(k) G_ij(k)] = F'(k) G_ij(k) + F(k) partial_k G_ij(k).",
+      "claim_type": "identity_under_assumptions",
+      "assumptions": [
+        "F(k) is differentiable on (0, Lambda]",
+        "G_ij(k) is differentiable on (0, Lambda]",
+        "Indices i, j are inert under partial_k in flat space"
+      ],
+      "source_artifact": "source_artifacts/scientific_identity.json",
+      "source_sha": "b1bfc084993ce873d882caef2083499aa4d44b9ca43c158aed0b3f64c536e5b2",
+      "verification_status": "VERIFIED",
+      "canonical_status": "CANONICAL",
+      "caveats": [
+        "This is a standard calculus identity; verification is trivial"
+      ]
+    },
+    {
+      "node_id": "N5",
+      "node_type": "transformation",
+      "equation_or_object_id": "eq:reorganized",
+      "scientific_scope": "Reorganized integrand after applying the product rule identity, separating total derivative and remainder contributions.",
+      "claim_type": "identity_under_assumptions",
+      "assumptions": [
+        "Product rule applies term-by-term to the integrand",
+        "Boundary terms at k=0 and k=Lambda are treated separately",
+        "No integration by parts is used \u2014 only reorganization of the integrand structure"
+      ],
+      "source_artifact": "source_artifacts/scientific_identity.json",
+      "source_sha": "b1bfc084993ce873d882caef2083499aa4d44b9ca43c158aed0b3f64c536e5b2",
+      "verification_status": "VERIFIED",
+      "canonical_status": "INTEGRATED",
+      "caveats": [
+        "This is a formal reorganization; the equality holds pointwise in k"
+      ]
+    },
+    {
+      "node_id": "N6",
+      "node_type": "decomposition",
+      "equation_or_object_id": "eq:sector_A,eq:sector_B",
+      "scientific_scope": "Sector decomposition into R_ij^(A) and R_ij^(B) with exact reconstruction formula R_ij = R_ij^(A) + R_ij^(B).",
+      "claim_type": "exact_reconstruction",
+      "assumptions": [
+        "The decomposition A_ij + B_ij reconstructs the full kernel by construction",
+        "No cross-terms between sectors exist at the kernel level",
+        "The decomposition is exact before integration"
+      ],
+      "source_artifact": "source_artifacts/sector_decomposition.json",
+      "source_sha": "687c8bf1e41cf92fcc667eff95af7a5b9cfe0a59bdc520dc6ca72f4a3fb70348",
+      "verification_status": "VERIFIED",
+      "canonical_status": "CANONICAL",
+      "caveats": []
+    },
+    {
+      "node_id": "N7",
+      "node_type": "projection",
+      "equation_or_object_id": "eq:projected",
+      "scientific_scope": "Projection of the sector-decomposed expression onto the isotropic (delta_ij) and anisotropic (I_ij) basis tensors.",
+      "claim_type": "projected_identity",
+      "assumptions": [
+        "The basis {delta_ij, I_ij} spans the space of symmetric rank-2 tensors in d dimensions with a single preferred direction",
+        "Projection operators are orthogonal under the natural inner product A_ij B_ij",
+        "Normalization: I_ij I_ij = 1"
+      ],
+      "source_artifact": "source_artifacts/sector_decomposition.json",
+      "source_sha": "687c8bf1e41cf92fcc667eff95af7a5b9cfe0a59bdc520dc6ca72f4a3fb70348",
+      "verification_status": "VERIFIED",
+      "canonical_status": "INTEGRATED",
+      "caveats": [
+        "The projection reduces tensorial equations to scalar coefficient equations"
+      ]
+    },
+    {
+      "node_id": "N8",
+      "node_type": "integration",
+      "equation_or_object_id": "eq:integrated_A",
+      "scientific_scope": "Radial momentum integration of sector A (scalar + longitudinal contribution).",
+      "claim_type": "integrated_identity",
+      "assumptions": [
+        "Boundary terms at k = 0 vanish due to infrared regularity of f(k) and g(k)",
+        "Boundary terms at k = Lambda are retained as cutoff-dependent constants",
+        "Integration commutes with tensor projection operators"
+      ],
+      "source_artifact": "source_artifacts/integrated_result.txt",
+      "source_sha": "f323ed102537110118f3c2c9ee0d7a4ad4bc403c4a2e8353ab3efdf4ed218897",
+      "verification_status": "NUMERICALLY_SUPPORTED",
+      "canonical_status": "VERIFIED",
+      "caveats": [
+        "Exact analytic integration depends on the functional forms of f(k) and g(k)"
+      ]
+    },
+    {
+      "node_id": "N9",
+      "node_type": "integration",
+      "equation_or_object_id": "eq:integrated_B",
+      "scientific_scope": "Radial momentum integration of sector B (transverse contribution).",
+      "claim_type": "integrated_identity",
+      "assumptions": [
+        "Boundary terms at k = 0 vanish due to infrared regularity of h(k)",
+        "Boundary terms at k = Lambda contribute to finite-cutoff corrections",
+        "Transverse projector k_i B_ij = 0 is preserved under integration"
+      ],
+      "source_artifact": "source_artifacts/integrated_result.txt",
+      "source_sha": "f323ed102537110118f3c2c9ee0d7a4ad4bc403c4a2e8353ab3efdf4ed218897",
+      "verification_status": "NUMERICALLY_SUPPORTED",
+      "canonical_status": "VERIFIED",
+      "caveats": [
+        "Exact analytic integration depends on the functional form of h(k)"
+      ]
+    },
+    {
+      "node_id": "N10",
+      "node_type": "limiting_case",
+      "equation_or_object_id": "eq:limit_eps0",
+      "scientific_scope": "Limiting case epsilon -> 0: R_ij -> C_0^(0) delta_ij, with I_ij vanishing identically in d = 2.",
+      "claim_type": "verified_candidate",
+      "assumptions": [
+        "The limit epsilon -> 0+ is taken after integration",
+        "C_0^(0) is the finite limit of C_0 as epsilon -> 0",
+        "I_ij = 0 is an algebraic identity in d = 2 for the defined normalization"
+      ],
+      "source_artifact": "source_artifacts/limiting_case.txt",
+      "source_sha": "2d194276241199dd7f1cf28ef94181ff0cc24f06fdc7a967749b5413e2189472",
+      "verification_status": "VERIFIED",
+      "canonical_status": "CANONICAL",
+      "caveats": []
+    },
+    {
+      "node_id": "N11",
+      "node_type": "verification",
+      "equation_or_object_id": "eq:long_expr,eq:final",
+      "scientific_scope": "Numerical verification of the integrated result against the 96-term expanded expression for sample parameter values.",
+      "claim_type": "numerical_regression",
+      "assumptions": [
+        "Sample values for f(k), g(k), h(k), epsilon, Lambda are representative",
+        "Numerical integration errors are controlled below O(epsilon^2, 1/Lambda)",
+        "The 96-term expression is the complete expansion of the starting integral after reorganization and decomposition"
+      ],
+      "source_artifact": "source_artifacts/long_expression_artifact.txt",
+      "source_sha": "eaf0200206a64698de6b82ea0a5888caf56b05c04fe0bccc6971cd365be1a18c",
+      "verification_status": "NUMERICALLY_SUPPORTED",
+      "canonical_status": "VERIFIED",
+      "caveats": [
+        "Numerical verification is not a proof; it supports but does not establish the analytic result"
+      ]
+    },
+    {
+      "node_id": "N12",
+      "node_type": "physical_interpretation",
+      "equation_or_object_id": "eq:final,eq:sector_A,eq:sector_B,eq:limit_eps0",
+      "scientific_scope": "Physical interpretation of C_0 as isotropic response coefficient, C_2 as anisotropic response coefficient, and the sector decomposition as compressible vs. incompressible mode separation.",
+      "claim_type": "not_established",
+      "assumptions": [
+        "Linear response theory provides the physical context",
+        "The preferred direction n has a physical origin (e.g., external field or boundary)",
+        "Observable signatures are accessible via directional transport measurements"
+      ],
+      "source_artifact": "source_artifacts/integrated_result.txt",
+      "source_sha": "f323ed102537110118f3c2c9ee0d7a4ad4bc403c4a2e8353ab3efdf4ed218897",
+      "verification_status": "NOT_APPLICABLE",
+      "canonical_status": "CANONICAL",
+      "caveats": [
+        "Physical interpretation is model-dependent; alternative interpretations may exist"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "edge_id": "E1",
+      "edge_type": "defined_by",
+      "parent_node_ids": [
+        "N1"
+      ],
+      "child_node_id": "N3",
+      "derivation_step_id": "step_raw_eq",
+      "claim_type": "definition",
+      "assumption_scope": [],
+      "projection_scope": "",
+      "pointwise_or_integrated_scope": "pointwise",
+      "evidence_ids": [
+        "source_artifacts/definitions.json",
+        "source_artifacts/starting_expression.txt"
+      ],
+      "verification_status": "NOT_APPLICABLE",
+      "caveats": []
+    },
+    {
+      "edge_id": "E2",
+      "edge_type": "defined_by",
+      "parent_node_ids": [
+        "N2"
+      ],
+      "child_node_id": "N3",
+      "derivation_step_id": "step_raw_eq",
+      "claim_type": "definition",
+      "assumption_scope": [],
+      "projection_scope": "",
+      "pointwise_or_integrated_scope": "pointwise",
+      "evidence_ids": [
+        "source_artifacts/definitions.json"
+      ],
+      "verification_status": "NOT_APPLICABLE",
+      "caveats": []
+    },
+    {
+      "edge_id": "E3",
+      "edge_type": "derived_from",
+      "parent_node_ids": [
+        "N3"
+      ],
+      "child_node_id": "N5",
+      "derivation_step_id": "step_product_rule",
+      "claim_type": "identity_under_assumptions",
+      "assumption_scope": [
+        "F(k), G_ij(k) differentiable on (0, Lambda]"
+      ],
+      "projection_scope": "",
+      "pointwise_or_integrated_scope": "pointwise",
+      "evidence_ids": [
+        "source_artifacts/scientific_identity.json"
+      ],
+      "verification_status": "VERIFIED",
+      "caveats": []
+    },
+    {
+      "edge_id": "E4",
+      "edge_type": "decomposed_into",
+      "parent_node_ids": [
+        "N5"
+      ],
+      "child_node_id": "N6",
+      "derivation_step_id": "step_decompose",
+      "claim_type": "exact_reconstruction",
+      "assumption_scope": [
+        "Decomposition is exact: A_ij + B_ij reconstructs full kernel"
+      ],
+      "projection_scope": "",
+      "pointwise_or_integrated_scope": "pointwise",
+      "evidence_ids": [
+        "source_artifacts/sector_decomposition.json"
+      ],
+      "verification_status": "VERIFIED",
+      "caveats": []
+    },
+    {
+      "edge_id": "E5",
+      "edge_type": "projected_to",
+      "parent_node_ids": [
+        "N6"
+      ],
+      "child_node_id": "N7",
+      "derivation_step_id": "step_project",
+      "claim_type": "projected_identity",
+      "assumption_scope": [
+        "{delta_ij, I_ij} is a complete basis for symmetric rank-2 tensors"
+      ],
+      "projection_scope": "Contraction with delta_ij and I_ij to extract scalar coefficients C_0 and C_2",
+      "pointwise_or_integrated_scope": "pointwise",
+      "evidence_ids": [
+        "source_artifacts/sector_decomposition.json"
+      ],
+      "verification_status": "VERIFIED",
+      "caveats": []
+    },
+    {
+      "edge_id": "E6",
+      "edge_type": "integrated_to",
+      "parent_node_ids": [
+        "N7"
+      ],
+      "child_node_id": "N8",
+      "derivation_step_id": "step_integ_A",
+      "claim_type": "integrated_identity",
+      "assumption_scope": [
+        "Integration over k from 0 to Lambda",
+        "Boundary terms vanish at k=0"
+      ],
+      "projection_scope": "",
+      "pointwise_or_integrated_scope": "integrated",
+      "evidence_ids": [
+        "source_artifacts/integrated_result.txt"
+      ],
+      "verification_status": "NUMERICALLY_SUPPORTED",
+      "caveats": []
+    },
+    {
+      "edge_id": "E7",
+      "edge_type": "integrated_to",
+      "parent_node_ids": [
+        "N7"
+      ],
+      "child_node_id": "N9",
+      "derivation_step_id": "step_integ_B",
+      "claim_type": "integrated_identity",
+      "assumption_scope": [
+        "Integration over k from 0 to Lambda",
+        "Transverse projector property: k_i B_ij = 0"
+      ],
+      "projection_scope": "",
+      "pointwise_or_integrated_scope": "integrated",
+      "evidence_ids": [
+        "source_artifacts/integrated_result.txt"
+      ],
+      "verification_status": "NUMERICALLY_SUPPORTED",
+      "caveats": []
+    },
+    {
+      "edge_id": "E8",
+      "edge_type": "reconstructed_from",
+      "parent_node_ids": [
+        "N8",
+        "N9"
+      ],
+      "child_node_id": "N12",
+      "derivation_step_id": "step_combine",
+      "claim_type": "exact_reconstruction",
+      "assumption_scope": [
+        "R_ij = R_ij^(A) + R_ij^(B) reconstruction holds after integration"
+      ],
+      "projection_scope": "",
+      "pointwise_or_integrated_scope": "integrated",
+      "evidence_ids": [
+        "source_artifacts/integrated_result.txt"
+      ],
+      "verification_status": "VERIFIED",
+      "caveats": []
+    },
+    {
+      "edge_id": "E9",
+      "edge_type": "numerically_supported_by",
+      "parent_node_ids": [
+        "N8",
+        "N9"
+      ],
+      "child_node_id": "N11",
+      "derivation_step_id": "step_numeric",
+      "claim_type": "numerical_regression",
+      "assumption_scope": [
+        "Sample parameter values are representative"
+      ],
+      "projection_scope": "Numerical evaluation of 96-term expression vs. 2-term result",
+      "pointwise_or_integrated_scope": "integrated",
+      "evidence_ids": [
+        "source_artifacts/long_expression_artifact.txt"
+      ],
+      "verification_status": "NUMERICALLY_SUPPORTED",
+      "caveats": [
+        "Numerical support is not a proof"
+      ]
+    },
+    {
+      "edge_id": "E10",
+      "edge_type": "derived_from",
+      "parent_node_ids": [
+        "N8",
+        "N9"
+      ],
+      "child_node_id": "N10",
+      "derivation_step_id": "step_limit",
+      "claim_type": "verified_candidate",
+      "assumption_scope": [
+        "epsilon -> 0+ limit commutes with integration (uniform convergence assumed)"
+      ],
+      "projection_scope": "",
+      "pointwise_or_integrated_scope": "integrated",
+      "evidence_ids": [
+        "source_artifacts/limiting_case.txt"
+      ],
+      "verification_status": "VERIFIED",
+      "caveats": []
+    },
+    {
+      "edge_id": "E11",
+      "edge_type": "interpreted_as",
+      "parent_node_ids": [
+        "N10",
+        "N9"
+      ],
+      "child_node_id": "N12",
+      "derivation_step_id": "step_interpret",
+      "claim_type": "not_established",
+      "assumption_scope": [
+        "Linear response theory framework"
+      ],
+      "projection_scope": "",
+      "pointwise_or_integrated_scope": "not_applicable",
+      "evidence_ids": [],
+      "verification_status": "NOT_APPLICABLE",
+      "caveats": [
+        "Interpretation is self-referential in this synthetic fixture"
+      ]
+    },
+    {
+      "edge_id": "E12",
+      "edge_type": "equal_under_assumptions",
+      "parent_node_ids": [
+        "N4"
+      ],
+      "child_node_id": "N5",
+      "derivation_step_id": "step_product_rule",
+      "claim_type": "identity_under_assumptions",
+      "assumption_scope": [
+        "F and G are differentiable on (0, Lambda]",
+        "Partial_k commutes with tensor indices in flat space"
+      ],
+      "projection_scope": "",
+      "pointwise_or_integrated_scope": "pointwise",
+      "evidence_ids": [
+        "source_artifacts/scientific_identity.json"
+      ],
+      "verification_status": "VERIFIED",
+      "caveats": []
+    }
+  ],
+  "topological_orders": [
+    "N1",
+    "N2",
+    "N4",
+    "N3",
+    "N5",
+    "N6",
+    "N7",
+    "N8",
+    "N9",
+    "N10",
+    "N11",
+    "N12"
+  ],
+  "unresolved_intermediate_steps": []
+}

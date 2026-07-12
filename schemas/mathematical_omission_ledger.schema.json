@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/scientific-symbolic-repo/schemas/mathematical_omission_ledger.schema.json",
+  "title": "Mathematical Omission Ledger",
+  "description": "Records terms omitted from displayed expressions due to length constraints. Each omission includes the full expression SHA-256, term count, and reconstruction rules so the complete expression can be recovered.",
+  "version": "0.1.0",
+  "type": "object",
+  "required": [
+    "omission_id",
+    "equation_label",
+    "full_expression_sha256",
+    "total_term_count",
+    "displayed_term_count",
+    "omitted_term_count",
+    "omission_pattern",
+    "reconstruction_rule"
+  ],
+  "properties": {
+    "omission_id": {
+      "type": "string",
+      "description": "Unique identifier for this omission entry."
+    },
+    "equation_label": {
+      "type": "string",
+      "description": "Equation label from the INTERFACE CONTRACT."
+    },
+    "full_expression_sha256": {
+      "type": "string",
+      "description": "SHA-256 hash of the complete (unabbreviated) expression."
+    },
+    "total_term_count": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Total number of terms in the complete expression."
+    },
+    "displayed_term_count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of terms actually displayed in the supplement."
+    },
+    "omitted_term_count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of terms omitted from display."
+    },
+    "omission_pattern": {
+      "type": "string",
+      "enum": [
+        "first_k_displayed",
+        "representative_sample",
+        "structured_ellipsis",
+        "typographic_grouping",
+        "block_diagram_replacement",
+        "index_range_notation"
+      ],
+      "description": "Pattern used to select terms for omission."
+    },
+    "reconstruction_rule": {
+      "type": "object",
+      "required": ["rule_type", "rule_description"],
+      "properties": {
+        "rule_type": {
+          "type": "string",
+          "enum": [
+            "permutation_symmetry",
+            "index_cyclic_extension",
+            "tensor_symmetry_closure",
+            "explicit_term_list",
+            "generating_function_substitution",
+            "computational_regeneration"
+          ]
+        },
+        "rule_description": {"type": "string"},
+        "rule_latex": {"type": "string"},
+        "rule_code": {"type": "string"}
+      }
+    },
+    "omitted_terms": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["term_index", "term_latex_snippet"],
+        "properties": {
+          "term_index": {"type": "integer"},
+          "term_latex_snippet": {"type": "string"},
+          "physical_origin": {"type": "string"},
+          "magnitude_estimate": {"type": "string"},
+          "symmetry_class": {"type": "string"}
+        }
+      },
+      "description": "List of omitted terms (when explicit listing is feasible)."
+    },
+    "displayed_terms": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["term_index", "term_latex_snippet"],
+        "properties": {
+          "term_index": {"type": "integer"},
+          "term_latex_snippet": {"type": "string"},
+          "display_rationale": {"type": "string"}
+        }
+      }
+    },
+    "validation": {
+      "type": "object",
+      "properties": {
+        "reconstruction_verified": {"type": "boolean"},
+        "reconstruction_residual": {"type": "string"},
+        "verification_timestamp": {"type": "string", "format": "date-time"}
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "created_at": {"type": "string", "format": "date-time"},
+        "source_artifact_sha256": {"type": "string"}
+      }
+    }
+  },
+  "additionalProperties": false
+}

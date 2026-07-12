@@ -1,0 +1,189 @@
+numerical_targets:
+- target_id: NUM001
+  observable: pointwise raw h-basis minus geometric decomposition
+  model: Rice–Mele
+  parameters:
+    t0: 1
+    m: 0.1
+    delta_t: 0.1
+  evaluation_point_or_range: documented validation set
+  expected_value_or_feature: maximum absolute difference 4.547479726686065e-13
+  tolerance: 1e-10
+  precision: MISSING_FROM_CONVERSATION
+  target_class: NUMERICAL_POINT
+  required: true
+  authority_class: NUMERICALLY_SUPPORTED
+  source_locator: sigma_xxx_simplification_supplement.pdf
+  caveat: Numerical support, not symbolic proof.
+- target_id: NUM002
+  observable: integrated normal result minus Modify4 Rice–Mele specialization
+  model: two-band spinless-TRS Rice–Mele
+  parameters:
+    t0: 1
+    m: 0.1
+    delta_t: 0.1
+  evaluation_point_or_range: refined regression set
+  expected_value_or_feature: maximum discrepancy 7.733361639332e-9
+  tolerance: 1e-8
+  precision: MISSING_FROM_CONVERSATION
+  target_class: NUMERICAL_POINT
+  required: true
+  authority_class: NUMERICALLY_SUPPORTED
+  source_locator: theoretical supplement, Supplementary Note 10
+  caveat: ''
+- target_id: NUM003
+  observable: sigma_xxx(mu,Gamma)
+  model: Rice–Mele exact finite-Gamma pipeline
+  parameters:
+    t0: 1
+    m: 0.1
+    delta_t: 0.1
+    beta: 1000/t0
+    Delta_half: 0.141421356237... t0
+  evaluation_point_or_range: mu/t0 in [-0.5,0.5], Gamma/t0 in [0.001,0.3]
+  expected_value_or_feature: finite-Gamma heatmap with band-edge features near mu=+/-Delta_half
+  tolerance: figure-level; exact pixel tolerance MISSING_FROM_CONVERSATION
+  precision: Nk=4001 periodic mesh
+  target_class: FIGURE_FEATURE
+  required: true
+  authority_class: NUMERICALLY_SUPPORTED
+  source_locator: fullmodify4_summary_report.pdf, Fig. 2(a)
+  caveat: ''
+- target_id: NUM004
+  observable: sigma_xxx(mu) line cuts
+  model: Rice–Mele exact finite-Gamma pipeline
+  parameters:
+    Gamma: 0.03 t0
+    beta_values:
+    - 5/t0
+    - 10/t0
+    - 30/t0
+    - 1000/t0
+  evaluation_point_or_range: mu/t0 approximately [-0.5,0.5]
+  expected_value_or_feature: direct line cuts agree with nearest heatmap row
+  tolerance: documented max absolute/relative difference 0
+  precision: Nk=4001 main mesh
+  target_class: FIGURE_FEATURE
+  required: true
+  authority_class: NUMERICALLY_SUPPORTED
+  source_locator: fullmodify4_summary_report.pdf, Sec. 9 and Appendix C
+  caveat: ''
+- target_id: NUM005
+  observable: mesh convergence
+  model: Rice–Mele exact finite-Gamma pipeline
+  parameters:
+    meshes:
+    - 2001
+    - 4001
+    - 8001
+    - 16001
+  evaluation_point_or_range: Fig. 2 heatmap/linecut checks
+  expected_value_or_feature: maximum tested difference to Nk=16001 approximately 1e-12
+  tolerance: use source table values
+  precision: periodic trapezoidal rule
+  target_class: NUMERICAL_POINT
+  required: true
+  authority_class: NUMERICALLY_SUPPORTED
+  source_locator: fullmodify4_summary_report.pdf, validation summary
+  caveat: ''
+- target_id: NUM006
+  observable: gauge-invariant geometric quantities and response
+  model: Rice–Mele
+  parameters:
+    t0: 1
+    m: 0.1
+    delta_t: 0.1
+  evaluation_point_or_range: tested BZ phase choices
+  expected_value_or_feature: gauge checks pass for reported geometric decomposition
+  tolerance: MISSING_FROM_CONVERSATION
+  precision: MISSING_FROM_CONVERSATION
+  target_class: SYMMETRY
+  required: true
+  authority_class: NUMERICALLY_SUPPORTED
+  source_locator: sigma_xxx_simplification_supplement.pdf and fullmodify4 validation
+    summary
+  caveat: Exact gauge-test script missing.
+- target_id: NUM007
+  observable: sigma_xxx versus Gamma
+  model: Rice–Mele low-temperature insulator
+  parameters:
+    mu: '0'
+    beta: 1000/t0
+    t0: 1
+    m: 0.1
+    delta_t: 0.1
+  evaluation_point_or_range: small Gamma after finite-Gamma formula established
+  expected_value_or_feature: leading O(Gamma^2) behavior
+  tolerance: fit tolerance MISSING_FROM_CONVERSATION
+  precision: MISSING_FROM_CONVERSATION
+  target_class: SCALING_EXPONENT
+  required: true
+  authority_class: NUMERICALLY_SUPPORTED
+  source_locator: human project summary and Rice–Mele scaling validation
+  caveat: Post-raw asymptotic fit only.
+- target_id: NUM008
+  observable: sigma_xxx versus Gamma
+  model: Rice–Mele metallic regime
+  parameters:
+    mu: 0.15 t0
+    t0: 1
+    m: 0.1
+    delta_t: 0.1
+  evaluation_point_or_range: small Gamma
+  expected_value_or_feature: predominantly O(Gamma) behavior
+  tolerance: fit tolerance MISSING_FROM_CONVERSATION
+  precision: MISSING_FROM_CONVERSATION
+  target_class: SCALING_EXPONENT
+  required: true
+  authority_class: NUMERICALLY_SUPPORTED
+  source_locator: human project summary and Rice–Mele scaling validation
+  caveat: ''
+- target_id: NUM009
+  observable: sigma_xxx versus Gamma
+  model: Rice–Mele high-temperature insulator
+  parameters:
+    mu: inside gap
+    beta_values:
+    - 5/t0
+    - 10/t0
+    - 30/t0
+  evaluation_point_or_range: small Gamma
+  expected_value_or_feature: leading O(Gamma) behavior
+  tolerance: MISSING_FROM_CONVERSATION
+  precision: MISSING_FROM_CONVERSATION
+  target_class: SCALING_EXPONENT
+  required: true
+  authority_class: NUMERICALLY_SUPPORTED
+  source_locator: human project summary and mini-review discussion
+  caveat: Exact fit window missing.
+- target_id: NUM010
+  observable: zero crossings, absolute signs, exact peak locations
+  model: Rice–Mele exact finite-Gamma pipeline
+  parameters: {}
+  evaluation_point_or_range: figures
+  expected_value_or_feature: MISSING_FROM_CONVERSATION beyond band-edge features near
+    +/-Delta_half
+  tolerance: MISSING_FROM_CONVERSATION
+  precision: MISSING_FROM_CONVERSATION
+  target_class: FIGURE_FEATURE
+  required: false
+  authority_class: MISSING_FROM_CONVERSATION
+  source_locator: not recovered from available conversation text
+  caveat: Do not infer signs or exact peak locations.
+- target_id: NUM011
+  observable: early truncated sigma_xxx
+  model: Rice–Mele superseded plotting branch
+  parameters:
+    t0: 1
+    delta_t: 0.5
+    m: 0.2
+    beta: 1000/t0
+  evaluation_point_or_range: mu and Gamma plot
+  expected_value_or_feature: Gamma sigma^(1)+Gamma^2 sigma^(2)
+  tolerance: not an active validation target
+  precision: MISSING_FROM_CONVERSATION
+  target_class: FIGURE_FEATURE
+  required: false
+  authority_class: SUPERSEDED
+  source_locator: rice_mele_plot_report.pdf
+  caveat: Not exact finite-Gamma pipeline.

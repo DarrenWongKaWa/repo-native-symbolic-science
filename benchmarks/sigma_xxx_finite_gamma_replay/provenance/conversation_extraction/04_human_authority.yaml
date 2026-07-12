@@ -1,0 +1,105 @@
+execution_mode: NON_INTERACTIVE_GUIDED_REPLAY
+ask_human_during_run: false
+scientific_structure:
+  human_supplied: true
+  previously_verified: true
+  autonomous_discovery_claim: forbidden
+scientific_order:
+  dc_limit_first: true
+  gamma_finite_and_exact_for_raw_object: true
+  pre_raw_gamma_expansion: forbidden
+operations:
+- operation: exact expansion
+  classification: PREAUTHORIZED
+  conditions: Preserve finite-Gamma dependence and require exact parent reconstruction.
+  authority_class: HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED
+  source_locator: raw row serialization and reconstruction reports
+- operation: collection
+  classification: PREAUTHORIZED
+  conditions: Collect only by explicit PolyGamma order, branch, Gamma power, band
+    pattern, monomial, and denominator.
+  authority_class: HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED
+  source_locator: sigma_xxx_simplification_supplement.pdf, raw rows
+- operation: factorization
+  classification: REQUIRES_EXPLICIT_CONDITIONS
+  conditions: Exact factorization only; residuals remain explicit and must reconstruct
+    the parent.
+  authority_class: HUMAN_CONFIRMED
+  source_locator: Modify4 residual-class policy
+- operation: dummy-index relabeling
+  classification: PREAUTHORIZED
+  conditions: Preserve ordered-pair/triple constraints and sign maps.
+  authority_class: HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED
+  source_locator: band abstraction and loop-orbit canonicalization
+- operation: band-index separation
+  classification: PREAUTHORIZED
+  conditions: Pair a!=b; loop a,b,c mutually distinct.
+  authority_class: HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED
+  source_locator: theoretical supplement, Supplementary Notes 1–3
+- operation: PolyGamma separation
+  classification: PREAUTHORIZED
+  conditions: Retain r, eta, and exact z^eta_a.
+  authority_class: HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED
+  source_locator: raw row convention and Modify5-v2
+- operation: sector decomposition
+  classification: PREAUTHORIZED
+  conditions: Must pass exact center+pair+loop parent reconstruction.
+  authority_class: SYMBOLICALLY_VERIFIED
+  source_locator: 118-row validation ledger
+- operation: product rules
+  classification: PREAUTHORIZED
+  conditions: Only explicit derivative/product identities registered in 08_identity_registry.yaml.
+  authority_class: HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED
+  source_locator: pair closure and PG derivative rule
+- operation: h-matrix identities
+  classification: PREAUTHORIZED
+  conditions: Only documented projected identities and stated band conditions.
+  authority_class: HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED
+  source_locator: sigma_xxx_simplification_supplement.pdf, Sec. 3
+- operation: covariant derivative identities
+  classification: AMBIGUOUS
+  conditions: Mentioned in project history, but a complete explicit formula registry
+    is absent.
+  authority_class: MISSING_FROM_CONVERSATION
+  source_locator: project discussion of covariant normalization
+- operation: integration by parts
+  classification: REQUIRES_EXPLICIT_CONDITIONS
+  conditions: Authorized only for verified pair-sector primitives with exact reconstruction
+    and periodic-BZ conditions.
+  authority_class: HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED
+  source_locator: theoretical supplement, Supplementary Note 6
+- operation: boundary-term removal
+  classification: REQUIRES_EXPLICIT_CONDITIONS
+  conditions: Only an explicit periodic BZ total derivative with supplied primitive
+    and reconstruction verifier.
+  authority_class: HUMAN_CONFIRMED
+  source_locator: F_pair_total claim boundary
+- operation: integrated cancellation
+  classification: REQUIRES_EXPLICIT_CONDITIONS
+  conditions: Allowed for verified pair total derivative and Rice–Mele TRS-odd center
+    integrand.
+  authority_class: HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED
+  source_locator: theoretical supplement, Supplementary Note 10
+- operation: limit reordering
+  classification: FORBIDDEN
+  conditions: Do not place a Gamma expansion before the finite-Gamma post-DC raw object.
+  authority_class: HUMAN_CONFIRMED
+  source_locator: direct human correction
+- operation: Gamma expansion
+  classification: REQUIRES_EXPLICIT_CONDITIONS
+  conditions: Forbidden before raw; allowed only later as separately labeled numerical/asymptotic
+    validation.
+  authority_class: HUMAN_CONFIRMED
+  source_locator: raw boundary and scaling validation
+- operation: numerical sampling
+  classification: PREAUTHORIZED
+  conditions: Use documented meshes/ranges and never promote numerical agreement to
+    symbolic equality.
+  authority_class: HUMAN_CONFIRMED
+  source_locator: fullmodify4 validation and project instructions
+- operation: canonical promotion
+  classification: FORBIDDEN
+  conditions: Replay may verify named historical objects but may not promote a new
+    formula.
+  authority_class: HUMAN_CONFIRMED
+  source_locator: current extraction instructions

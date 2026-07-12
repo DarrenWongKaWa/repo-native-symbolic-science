@@ -1,0 +1,231 @@
+sectors:
+- sector_id: SEC_C0
+  parent_object: I_raw
+  definition: No-internal-band / center provenance sector.
+  membership_rule: Rows with sector label s=0.
+  index_conditions:
+  - single external band
+  special_function_conditions:
+  - all retained r and eta
+  expected_term_count: 8
+  child_objects:
+  - I_center_raw
+  reconstruction_relation: Part of I_raw=I_center_raw+I_pair_raw+I_loop_raw.
+  authority_class: SYMBOLICALLY_VERIFIED
+  source_locator: sigma_xxx_simplification_supplement.pdf, raw row tables
+  status: ACTIVE_EXACT_ALGEBRAIC_PARTITION
+- sector_id: SEC_C1
+  parent_object: I_raw
+  definition: Single-internal-band / pair provenance sector.
+  membership_rule: Rows with sector label s=1.
+  index_conditions:
+  - m!=n
+  special_function_conditions:
+  - all retained r and eta
+  expected_term_count: 50
+  child_objects:
+  - I_pair_raw
+  reconstruction_relation: Part of exact raw reconstruction.
+  authority_class: SYMBOLICALLY_VERIFIED
+  source_locator: sigma_xxx_simplification_supplement.pdf, raw row tables
+  status: ACTIVE_EXACT_ALGEBRAIC_PARTITION
+- sector_id: SEC_C2
+  parent_object: I_raw
+  definition: Genuine three-band loop provenance sector.
+  membership_rule: Rows with sector label s=2.
+  index_conditions:
+  - m!=n
+  - l!=n,m
+  special_function_conditions:
+  - all retained r and eta
+  expected_term_count: 60
+  child_objects:
+  - I_loop_raw
+  reconstruction_relation: Part of exact raw reconstruction.
+  authority_class: SYMBOLICALLY_VERIFIED
+  source_locator: sigma_xxx_simplification_supplement.pdf, raw row tables
+  status: ACTIVE_EXACT_ALGEBRAIC_PARTITION
+- sector_id: SEC_PG
+  parent_object: I_raw
+  definition: PolyGamma block partition.
+  membership_rule: Fixed r and eta with exact z^eta_a.
+  index_conditions:
+  - band label retained
+  special_function_conditions:
+  - r=0,...,4
+  - eta=+/-
+  expected_term_count: null
+  child_objects:
+  - PG^eta_{r,a} coefficient blocks
+  reconstruction_relation: Exact sum over r and eta.
+  authority_class: SYMBOLICALLY_VERIFIED
+  source_locator: raw row convention
+  status: ACTIVE_EXACT_ALGRAIC_PARTITION
+- sector_id: SEC_CENTER_FINAL
+  parent_object: I_center_raw
+  definition: Single-band velocity-power sector sum_a v_a^3 K_c(a).
+  membership_rule: Single-band diagonal rows after physical collection.
+  index_conditions:
+  - one band a
+  special_function_conditions:
+  - PG orders entering K_c
+  expected_term_count: null
+  child_objects:
+  - K_c
+  reconstruction_relation: Exact center expansion.
+  authority_class: SYMBOLICALLY_VERIFIED
+  source_locator: theoretical supplement, Supplementary Note 4
+  status: ACTIVE_FINAL_CLASSIFICATION
+- sector_id: SEC_PAIR_SHIFT
+  parent_object: I_pair
+  definition: R_ab |A_ab|^2 K_R(a,b).
+  membership_rule: Antisymmetric oriented hxx pair combination.
+  index_conditions:
+  - a!=b
+  special_function_conditions:
+  - all PG blocks contributing to K_R
+  expected_term_count: null
+  child_objects:
+  - K_R
+  reconstruction_relation: Survives pair IBP.
+  authority_class: SYMBOLICALLY_VERIFIED
+  source_locator: theoretical supplement, Supplementary Notes 5–8
+  status: ACTIVE_FINAL_CLASSIFICATION
+- sector_id: SEC_PAIR_VMINUS
+  parent_object: I_pair_preIBP
+  definition: (v_b-v_a)|A_ab|^2 K_vminus.
+  membership_rule: Pair velocity-difference basis.
+  index_conditions:
+  - a!=b
+  special_function_conditions: []
+  expected_term_count: null
+  child_objects: []
+  reconstruction_relation: Absorbed into partial_k F_pair_total.
+  authority_class: SYMBOLICALLY_VERIFIED
+  source_locator: theoretical supplement, Supplementary Notes 5–6
+  status: ACTIVE_PRE_IBP_THEN_EXACT_DERIVATIVE
+- sector_id: SEC_PAIR_VPLUS
+  parent_object: I_pair_preIBP
+  definition: (v_a+v_b)|A_ab|^2 K_vplus.
+  membership_rule: Pair velocity-sum basis.
+  index_conditions:
+  - a!=b
+  special_function_conditions: []
+  expected_term_count: null
+  child_objects: []
+  reconstruction_relation: Absorbed into partial_k F_pair_total.
+  authority_class: SYMBOLICALLY_VERIFIED
+  source_locator: theoretical supplement, Supplementary Notes 5–6
+  status: ACTIVE_PRE_IBP_THEN_EXACT_DERIVATIVE
+- sector_id: SEC_PAIR_VEPSILON
+  parent_object: I_pair_preIBP
+  definition: (epsilon_b-epsilon_a)(v_b-v_a)|A_ab|^2 K_vepsilon.
+  membership_rule: Energy-weighted pair velocity basis.
+  index_conditions:
+  - a!=b
+  special_function_conditions: []
+  expected_term_count: null
+  child_objects: []
+  reconstruction_relation: Absorbed into partial_k F_pair_total.
+  authority_class: SYMBOLICALLY_VERIFIED
+  source_locator: theoretical supplement, Supplementary Notes 5–6
+  status: ACTIVE_PRE_IBP_THEN_EXACT_DERIVATIVE
+- sector_id: SEC_PAIR_X
+  parent_object: oriented hxx pair rows
+  definition: Derivative-like pair basis B_X=partial_k[(epsilon_b-epsilon_a)^2 |A_ab|^2].
+  membership_rule: Symmetric hxx pair combination.
+  index_conditions:
+  - a!=b
+  special_function_conditions: []
+  expected_term_count: 12
+  child_objects:
+  - IBP candidates
+  reconstruction_relation: Exact pair closure before BZ IBP.
+  authority_class: SYMBOLICALLY_VERIFIED
+  source_locator: pair_hkk_geometry_closure/gpt_review_prompt.md
+  status: ACTIVE_DERIVATIVE_BASIS
+- sector_id: SEC_LOOP_REL
+  parent_object: I_loop_raw
+  definition: Re[A_ab A_bc A_ca] K_ReL.
+  membership_rule: Forward/reverse loop-orbit real combination.
+  index_conditions:
+  - a,b,c mutually distinct
+  special_function_conditions: []
+  expected_term_count: null
+  child_objects:
+  - K_ReL
+  reconstruction_relation: Exact loop canonicalization.
+  authority_class: SYMBOLICALLY_VERIFIED
+  source_locator: theoretical supplement, Supplementary Note 7
+  status: ACTIVE_FINAL_CLASSIFICATION
+- sector_id: SEC_LOOP_IML
+  parent_object: I_loop_raw
+  definition: Im[A_ab A_bc A_ca] K_ImL.
+  membership_rule: Forward/reverse loop-orbit imaginary combination.
+  index_conditions:
+  - a,b,c mutually distinct
+  special_function_conditions: []
+  expected_term_count: null
+  child_objects:
+  - K_ImL
+  reconstruction_relation: Exact loop canonicalization.
+  authority_class: SYMBOLICALLY_VERIFIED
+  source_locator: theoretical supplement, Supplementary Note 7
+  status: ACTIVE_FINAL_CLASSIFICATION
+- sector_id: SEC_RESIDUAL_EARLY
+  parent_object: early two-band h-basis kernel
+  definition: K_vcenter|A|^2, K_Re(hkk h), K_wnn, K_wmm, K_intra, K_rest.
+  membership_rule: Terms not yet reduced to final multiband physical/IBP basis.
+  index_conditions:
+  - two-band
+  special_function_conditions: []
+  expected_term_count: null
+  child_objects:
+  - later pair and center structures
+  reconstruction_relation: Residual retained explicitly; K_rest=0 in exported table.
+  authority_class: HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED
+  source_locator: sigma_xxx_simplification_supplement.pdf
+  status: HISTORICAL_CLASSIFICATION_SUPERSEDED_BY_FINAL_PAIR_IBP
+- sector_id: SEC_RM_LOOP_ZERO
+  parent_object: I_loop
+  definition: Two-band Rice–Mele loop sector.
+  membership_rule: Requires three distinct bands.
+  index_conditions:
+  - N=2
+  special_function_conditions: []
+  expected_term_count: 0
+  child_objects: []
+  reconstruction_relation: I_loop^RM=0 exactly.
+  authority_class: SYMBOLICALLY_VERIFIED
+  source_locator: theoretical supplement, Supplementary Note 10
+  status: MODEL_SPECIFIC_VANISHING
+- sector_id: SEC_RM_CENTER_ODD
+  parent_object: I_center
+  definition: Rice–Mele center velocity-power integrand.
+  membership_rule: Spinless TRS makes energy even and velocity odd.
+  index_conditions:
+  - two bands
+  - spinless TRS
+  special_function_conditions: []
+  expected_term_count: null
+  child_objects: []
+  reconstruction_relation: Pointwise generally nonzero; BZ integral zero.
+  authority_class: SYMBOLICALLY_VERIFIED
+  source_locator: theoretical supplement, Supplementary Note 10
+  status: MODEL_SPECIFIC_INTEGRATED_CANCELLATION
+- sector_id: SEC_POST_RAW_GAMMA_SCALING
+  parent_object: finite-Gamma Rice–Mele response
+  definition: Later asymptotic classification into O(Gamma) and O(Gamma^2) regimes.
+  membership_rule: Small-Gamma numerical fit after exact raw object and closed form
+    exist.
+  index_conditions: []
+  special_function_conditions:
+  - temperature and chemical-potential regimes
+  expected_term_count: null
+  child_objects:
+  - low-T insulator O(Gamma^2)
+  - high-T or metal O(Gamma)
+  reconstruction_relation: Asymptotic/numerical relation only.
+  authority_class: NUMERICALLY_SUPPORTED
+  source_locator: human project summary and Rice–Mele validation
+  status: POST_RAW_ASYMPTOTIC_CLASSIFICATION

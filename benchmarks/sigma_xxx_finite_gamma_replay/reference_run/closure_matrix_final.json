@@ -1,0 +1,310 @@
+{
+  "closures": {
+    "CANDIDATE_CLOSED_FORM_VERIFIED": {
+      "blocking_findings": [],
+      "bounded_caveats": [],
+      "complete_artifact_shas": [
+        {
+          "path": "symbolic_oracle_comparison.json",
+          "sha256": "af1d2d0d5869d260edd67528fbb70277810b0fe543e720791b40aa21fb614bf1"
+        }
+      ],
+      "evidence_artifacts": [
+        "symbolic_oracle_comparison.json"
+      ],
+      "prerequisites": [],
+      "required_tests": [],
+      "status": "PASS",
+      "tests_executed": [
+        "all required symbolic oracle files SHA-match"
+      ],
+      "tests_failed": [],
+      "tests_passed": [
+        "all required symbolic oracle files SHA-match"
+      ]
+    },
+    "CASE_STUDY_REPORTING_CLOSED": {
+      "blocking_findings": [],
+      "bounded_caveats": [
+        "Public release authorization was granted after this reference run."
+      ],
+      "complete_artifact_shas": [
+        {
+          "path": "case003r1_report.md",
+          "sha256": "9463d55cb600b6db759c4bca34055abdf8a825b25a4fd0d953027a7d241ee074"
+        },
+        {
+          "path": "validation_summary.md",
+          "sha256": "379b9e89688fbc8683fd0ce23e1a3d057a0996bd73b1ae7f7377ffe01431cc7f"
+        },
+        {
+          "path": "final_case_study_report.md",
+          "sha256": "548de0f8c8d438e8aa59127e16f6e0290dbdaa3eee7851c30c9b0bf8689236e1"
+        },
+        {
+          "path": "workflow_diagram.md",
+          "sha256": "3b07cb6b4a76dde377875ea411704f3b08e3a62d56c37a0344745cedbf1df413"
+        }
+      ],
+      "evidence_artifacts": [
+        "case003r1_report.md",
+        "validation_summary.md",
+        "final_case_study_report.md",
+        "workflow_diagram.md"
+      ],
+      "prerequisites": [],
+      "required_tests": [],
+      "status": "PASS",
+      "tests_executed": [
+        "required reports generated"
+      ],
+      "tests_failed": [],
+      "tests_passed": [
+        "required reports generated"
+      ]
+    },
+    "DERIVATION_GRAPH_CLOSED": {
+      "blocking_findings": [],
+      "bounded_caveats": [],
+      "complete_artifact_shas": [
+        {
+          "path": "derivation_graph_verification.json",
+          "sha256": "67e894071dcabe1adeabc796678d86a925a400f7aff74d585c27010cc931315e"
+        }
+      ],
+      "evidence_artifacts": [
+        "derivation_graph_verification.json"
+      ],
+      "prerequisites": [],
+      "required_tests": [],
+      "status": "PASS",
+      "tests_executed": [
+        "unique step IDs",
+        "all required inputs resolve",
+        "dependency cycles = 0",
+        "required orphan steps = 0"
+      ],
+      "tests_failed": [],
+      "tests_passed": [
+        "unique step IDs",
+        "all required inputs resolve",
+        "dependency cycles = 0",
+        "required orphan steps = 0"
+      ]
+    },
+    "EXACT_PARENT_RECONSTRUCTION_CLOSED": {
+      "blocking_findings": [],
+      "bounded_caveats": [],
+      "complete_artifact_shas": [
+        {
+          "path": "parent_reconstruction_results.json",
+          "sha256": "24993af53991f61116255a435fe7e95d2f5086ffff2e0eff61327ed499efed34"
+        }
+      ],
+      "evidence_artifacts": [
+        "parent_reconstruction_results.json"
+      ],
+      "prerequisites": [],
+      "required_tests": [],
+      "status": "PASS",
+      "tests_executed": [
+        "child sectors reconstruct parent by supplied exact validation evidence"
+      ],
+      "tests_failed": [],
+      "tests_passed": [
+        "child sectors reconstruct parent by supplied exact validation evidence"
+      ]
+    },
+    "FIGURE_FEATURE_REGRESSION_CLOSED": {
+      "blocking_findings": [],
+      "bounded_caveats": [],
+      "complete_artifact_shas": [
+        {
+          "path": "figure_feature_results.json",
+          "sha256": "bf8e2f0a9641e6e4ad9b951623742c80a943531bd9ce45f62a0ca7beefc40a12"
+        }
+      ],
+      "evidence_artifacts": [
+        "figure_feature_results.json"
+      ],
+      "prerequisites": [],
+      "required_tests": [],
+      "status": "PASS",
+      "tests_executed": [
+        "heatmap data verified",
+        "linecut data verified"
+      ],
+      "tests_failed": [],
+      "tests_passed": [
+        "heatmap data verified",
+        "linecut data verified"
+      ]
+    },
+    "GAMMA_SCALING_REGRESSION_CLOSED": {
+      "blocking_findings": [],
+      "bounded_caveats": [],
+      "complete_artifact_shas": [
+        {
+          "path": "gamma_scaling_results.json",
+          "sha256": "79c46a87ba9b241813276ea97eaaddb3dcde10765611c552b51d0d600ada99c9"
+        }
+      ],
+      "evidence_artifacts": [
+        "gamma_scaling_results.json"
+      ],
+      "prerequisites": [],
+      "required_tests": [],
+      "status": "PASS",
+      "tests_executed": [
+        "insulating slope in O(Gamma^2) window",
+        "metallic slope in O(Gamma) window"
+      ],
+      "tests_failed": [],
+      "tests_passed": [
+        "insulating slope in O(Gamma^2) window",
+        "metallic slope in O(Gamma) window"
+      ]
+    },
+    "INPUT_PACKAGE_CLOSED": {
+      "blocking_findings": [],
+      "bounded_caveats": [],
+      "complete_artifact_shas": [
+        {
+          "path": "input_integrity_verification.json",
+          "sha256": "1ec2c3ddda7524b2a45ad4e36576c9c61743b25e6c6bb0e472ae83a7c21de40b"
+        },
+        {
+          "path": "input_sha_manifest.json",
+          "sha256": "8d02b989377bfc186e8321f5ad21353603e80de7753a28c9c66dac6c1f41bb39"
+        }
+      ],
+      "evidence_artifacts": [
+        "input_integrity_verification.json",
+        "input_sha_manifest.json"
+      ],
+      "prerequisites": [],
+      "required_tests": [],
+      "status": "PASS",
+      "tests_executed": [
+        "12/12 required targets present",
+        "0 placeholders",
+        "0 SHA mismatches",
+        "0 ambiguous active-role sources"
+      ],
+      "tests_failed": [],
+      "tests_passed": [
+        "12/12 required targets present",
+        "0 placeholders",
+        "0 SHA mismatches",
+        "0 ambiguous active-role sources"
+      ]
+    },
+    "LOCAL_EXACT_ALGEBRA_CLOSED": {
+      "blocking_findings": [],
+      "bounded_caveats": [
+        "The package supplies source/evidence steps, not every algebraic transformation as standalone executable before/after expressions."
+      ],
+      "complete_artifact_shas": [
+        {
+          "path": "local_exact_algebra_results.json",
+          "sha256": "d94ae866efbe75a91a7d43d02b9551be9d55edc63a18c015817cc7e37d376ede"
+        }
+      ],
+      "evidence_artifacts": [
+        "local_exact_algebra_results.json"
+      ],
+      "prerequisites": [],
+      "required_tests": [],
+      "status": "PASS_WITH_CAVEAT",
+      "tests_executed": [
+        "exact reconstruction evidence parsed",
+        "declared differences zero"
+      ],
+      "tests_failed": [],
+      "tests_passed": [
+        "exact reconstruction evidence parsed",
+        "declared differences zero"
+      ]
+    },
+    "NUMERICAL_REGRESSION_CLOSED": {
+      "blocking_findings": [],
+      "bounded_caveats": [
+        "Numerical regression is not promoted to symbolic equality."
+      ],
+      "complete_artifact_shas": [
+        {
+          "path": "numerical_regression_results.json",
+          "sha256": "78695eeb0ff9c717bb00d05dcd4ce5b1ee73aa8d1a0121274e4589b8867da2b7"
+        }
+      ],
+      "evidence_artifacts": [
+        "numerical_regression_results.json"
+      ],
+      "prerequisites": [],
+      "required_tests": [],
+      "status": "PASS",
+      "tests_executed": [
+        "CSV rows/columns/SHAs match",
+        "normal-form tolerance passed",
+        "IBP-reduced tolerance passed"
+      ],
+      "tests_failed": [],
+      "tests_passed": [
+        "CSV rows/columns/SHAs match",
+        "normal-form tolerance passed",
+        "IBP-reduced tolerance passed"
+      ]
+    },
+    "SCIENTIFIC_SEMANTICS_CLOSED": {
+      "blocking_findings": [],
+      "bounded_caveats": [],
+      "complete_artifact_shas": [
+        {
+          "path": "semantic_closure_verification.json",
+          "sha256": "f4bf47ff99fe490cd7344534d9d575bf4a2ce5bd72f68018e89b41061f8351d4"
+        }
+      ],
+      "evidence_artifacts": [
+        "semantic_closure_verification.json"
+      ],
+      "prerequisites": [],
+      "required_tests": [],
+      "status": "PASS",
+      "tests_executed": [
+        "definition coverage categories populated"
+      ],
+      "tests_failed": [],
+      "tests_passed": [
+        "definition coverage categories populated"
+      ]
+    },
+    "SECTOR_DECOMPOSITION_CLOSED": {
+      "blocking_findings": [],
+      "bounded_caveats": [],
+      "complete_artifact_shas": [
+        {
+          "path": "sector_decomposition_results.json",
+          "sha256": "1d68cd290fec3d879b8e939fa1547b6b909fe395ab203a4f7c8ae53b2f06879b"
+        }
+      ],
+      "evidence_artifacts": [
+        "sector_decomposition_results.json"
+      ],
+      "prerequisites": [],
+      "required_tests": [],
+      "status": "PASS",
+      "tests_executed": [
+        "all active terms classified",
+        "unique active ownership",
+        "declared sector counts match"
+      ],
+      "tests_failed": [],
+      "tests_passed": [
+        "all active terms classified",
+        "unique active ownership",
+        "declared sector counts match"
+      ]
+    }
+  },
+  "final_verdict": "NONINTERACTIVE_REPLAY_COMPLETED_WITH_BOUNDED_CAVEATS"
+}

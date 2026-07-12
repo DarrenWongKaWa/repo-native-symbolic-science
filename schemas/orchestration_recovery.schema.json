@@ -1,0 +1,125 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "OrchestrationRecovery",
+  "description": "Recovery record for a failed, interrupted, or timed-out orchestration task. Failures are preserved, not overwritten. Schema version 1.0.0.",
+  "type": "object",
+  "required": [
+    "recovery_id",
+    "orchestration_id",
+    "failure_class",
+    "failed_task_id",
+    "last_valid_state",
+    "preserved_artifacts",
+    "invalid_or_partial_artifacts",
+    "retry_or_repair_task_id",
+    "irreversible_actions",
+    "required_human_gate_ids",
+    "resume_preconditions",
+    "recovery_status"
+  ],
+  "properties": {
+    "recovery_id": {
+      "type": "string",
+      "description": "Unique identifier for this recovery record."
+    },
+    "orchestration_id": {
+      "type": "string",
+      "description": "Reference to the affected orchestration."
+    },
+    "failure_class": {
+      "type": "string",
+      "enum": [
+        "SUBTASK_TIMEOUT",
+        "SUBTASK_CRASH",
+        "OUTPUT_VALIDATION_FAILURE",
+        "SHA_MISMATCH",
+        "PARTIAL_ARTIFACT",
+        "CONTRACT_VIOLATION",
+        "VERIFIER_REJECTION",
+        "ENVIRONMENT_LOSS",
+        "DEPENDENCY_STALL",
+        "HUMAN_GATE_EXPIRY",
+        "PARALLELISM_CONFLICT"
+      ],
+      "description": "Classification of the failure."
+    },
+    "failed_task_id": {
+      "type": "string",
+      "description": "The task ID that failed or was interrupted."
+    },
+    "last_valid_state": {
+      "type": "string",
+      "description": "Last orchestration state before the failure."
+    },
+    "preserved_artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "sha256", "valid"],
+        "properties": {
+          "path": { "type": "string" },
+          "sha256": { "type": "string" },
+          "valid": { "type": "boolean" }
+        }
+      },
+      "description": "Artifacts that remain valid and are preserved."
+    },
+    "invalid_or_partial_artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "issue"],
+        "properties": {
+          "path": { "type": "string" },
+          "issue": { "type": "string" },
+          "sha256": { "type": "string" }
+        }
+      },
+      "description": "Artifacts that are invalid, partial, or corrupted."
+    },
+    "retry_or_repair_task_id": {
+      "type": "string",
+      "description": "New task ID for the retry or repair attempt. Uses a new identifier."
+    },
+    "irreversible_actions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Actions that should not be automatically repeated on recovery."
+    },
+    "required_human_gate_ids": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Human gates that must be resolved before recovery proceeds."
+    },
+    "resume_preconditions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Conditions that must be satisfied before resuming.",
+      "minItems": 1
+    },
+    "recovery_status": {
+      "type": "string",
+      "enum": ["RECORDED", "ANALYZED", "READY_FOR_RETRY", "RETRYING", "RECOVERED", "ABANDONED"],
+      "description": "Current status of the recovery process."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "recovered_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "recovery_evidence": {
+      "type": "object",
+      "properties": {
+        "recovery_log_path": { "type": "string" },
+        "recovery_actions": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

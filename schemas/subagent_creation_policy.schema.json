@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SubagentCreationPolicy",
+  "description": "Policy governing subagent creation: launch preconditions, mandatory context rules, and lifecycle management. Schema version 1.0.0.",
+  "type": "object",
+  "required": [
+    "policy_version",
+    "launch_preconditions",
+    "mandatory_context_rules",
+    "lifecycle_rules",
+    "prohibited_configurations"
+  ],
+  "properties": {
+    "policy_version": {
+      "type": "string",
+      "description": "Semantic version of this policy."
+    },
+    "launch_preconditions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["condition_id", "description", "validation"],
+        "properties": {
+          "condition_id": { "type": "string" },
+          "description": { "type": "string" },
+          "validation": {
+            "type": "string",
+            "enum": ["manual", "automatic", "script"]
+          },
+          "script_path": { "type": "string" }
+        }
+      }
+    },
+    "mandatory_context_rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["rule_id", "description"],
+        "properties": {
+          "rule_id": { "type": "string" },
+          "description": { "type": "string" },
+          "enforcement": {
+            "type": "string",
+            "enum": ["hard", "soft"]
+          }
+        }
+      }
+    },
+    "lifecycle_rules": {
+      "type": "object",
+      "required": ["creation", "execution", "completion", "termination"],
+      "properties": {
+        "creation": {
+          "type": "object",
+          "required": ["require_task_contract", "require_role_assignment"],
+          "properties": {
+            "require_task_contract": { "type": "boolean" },
+            "require_role_assignment": { "type": "boolean" },
+            "require_frozen_inputs": { "type": "boolean" },
+            "require_dependency_gate_pass": { "type": "boolean" }
+          }
+        },
+        "execution": {
+          "type": "object",
+          "required": ["isolated_context"],
+          "properties": {
+            "isolated_context": { "type": "boolean" },
+            "max_wall_time_seconds": { "type": "integer" },
+            "heartbeat_interval_seconds": { "type": "integer" }
+          }
+        },
+        "completion": {
+          "type": "object",
+          "required": ["require_result_envelope", "require_output_sha_manifest"],
+          "properties": {
+            "require_result_envelope": { "type": "boolean" },
+            "require_output_sha_manifest": { "type": "boolean" },
+            "require_artifact_contract_satisfied": { "type": "boolean" },
+            "require_validation_pass": { "type": "boolean" }
+          }
+        },
+        "termination": {
+          "type": "object",
+          "required": ["preserve_artifacts", "preserve_logs"],
+          "properties": {
+            "preserve_artifacts": { "type": "boolean" },
+            "preserve_logs": { "type": "boolean" },
+            "cleanup_scratch": { "type": "boolean" }
+          }
+        }
+      }
+    },
+    "prohibited_configurations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["config_id", "description"],
+        "properties": {
+          "config_id": { "type": "string" },
+          "description": { "type": "string" },
+          "detection_script": { "type": "string" }
+        }
+      }
+    },
+    "role_to_context_mapping": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["context_type", "required_isolation"],
+        "properties": {
+          "context_type": { "type": "string" },
+          "required_isolation": { "type": "boolean" },
+          "shared_with": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

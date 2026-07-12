@@ -1,0 +1,20 @@
+{
+  "omissions": [
+    {
+      "omission_id": "OMIT_001",
+      "equation_label": "eq:long_expr",
+      "artifact_file": "source_artifacts/long_expression_artifact.txt",
+      "artifact_sha": "eaf0200206a64698de6b82ea0a5888caf56b05c04fe0bccc6971cd365be1a18c",
+      "term_count_or_complexity_measure": {
+        "term_count": 96
+      },
+      "reason_not_inlined": "The full expanded expression contains 96 tensor-integral terms spanning all possible contractions of scalar coefficient functions f(k), g(k), h(k) with their derivatives up to third order, cross-multiplied with epsilon and 1/Lambda expansions, Levi-Civita contractions, and directional projection factors n_i. Displaying all 96 terms inline would require approximately 4 journal pages of dense notation without adding physical insight. The complete expression is provided as a machine-readable electronic artifact for verification and reproducibility.",
+      "provided_in": "electronic_supplement",
+      "reader_guidance": "Readers interested in the full expansion should consult the electronic artifact long_expression_artifact.txt. The main text retains only the leading terms necessary to establish the integrated result R_ij = C_0 delta_ij + C_2 I_ij.",
+      "full_expression_sha": "eaf0200206a64698de6b82ea0a5888caf56b05c04fe0bccc6971cd365be1a18c",
+      "full_expression_artifact": "source_artifacts/long_expression_artifact.txt",
+      "verification_status": "VERIFIED",
+      "exact_reconstruction_status": "NOT_APPLICABLE"
+    }
+  ]
+}

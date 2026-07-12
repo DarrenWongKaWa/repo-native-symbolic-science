@@ -1,0 +1,374 @@
+identities:
+- identity_id: ID001
+  name: Off-diagonal Hamiltonian derivative identity
+  formula_lhs: h^x_nm
+  formula_rhs: i Delta_nm A_nm
+  index_conditions:
+  - n!=m
+  assumptions:
+  - differentiable nondegenerate eigenvalue equation
+  allowed_scope: projected one-dimensional band basis
+  forbidden_scope: degenerate subspace without covariant treatment
+  source_type: DERIVED_IN_CONVERSATION
+  authority_class: HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED
+  exact_or_structural: EXACT
+  used_in_steps:
+  - H007
+  source_locator: sigma_xxx_simplification_supplement.pdf, Sec. 3
+  caveat: Delta_nm=epsilon_n-epsilon_m.
+- identity_id: ID002
+  name: Pair magnitude identity
+  formula_lhs: h^x_nm h^x_mn
+  formula_rhs: Delta_nm^2 |A_nm|^2
+  index_conditions:
+  - n!=m
+  assumptions:
+  - Hermitian H
+  allowed_scope: projected ordered band pair
+  forbidden_scope: ''
+  source_type: DERIVED_IN_CONVERSATION
+  authority_class: HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED
+  exact_or_structural: EXACT
+  used_in_steps:
+  - H007
+  source_locator: sigma_xxx_simplification_supplement.pdf, Sec. 3
+  caveat: ''
+- identity_id: ID003
+  name: Velocity-difference identity
+  formula_lhs: v_nm
+  formula_rhs: h_nn-h_mm=partial_k Delta_nm
+  index_conditions:
+  - ordered pair n,m
+  assumptions: []
+  allowed_scope: projected one-dimensional band basis
+  forbidden_scope: ''
+  source_type: DERIVED_IN_CONVERSATION
+  authority_class: HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED
+  exact_or_structural: EXACT
+  used_in_steps:
+  - H007
+  source_locator: sigma_xxx_simplification_supplement.pdf, Sec. 3
+  caveat: Sign follows chosen Delta_nm convention.
+- identity_id: ID004
+  name: Shift-vector definition
+  formula_lhs: R_ab
+  formula_rhs: partial_k arg A_ba + A_aa - A_bb
+  index_conditions:
+  - a!=b
+  assumptions:
+  - smooth local gauge
+  allowed_scope: projected one-dimensional ordered pair
+  forbidden_scope: ''
+  source_type: HUMAN_SUPPLIED
+  authority_class: HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED
+  exact_or_structural: EXACT_DEFINITION
+  used_in_steps:
+  - H007
+  - H008
+  - H018
+  source_locator: theoretical supplement, Supplementary Note 1
+  caveat: Index ordering differs from some source-paper conventions.
+- identity_id: ID005
+  name: Local two-band h-matrix representation of R12
+  formula_lhs: R_12
+  formula_rhs: Im(h^{xx}_{12}/h^x_{12})
+  index_conditions:
+  - two-band local convention
+  assumptions:
+  - h^x_12 nonzero locally
+  allowed_scope: two-band projected one-dimensional local convention
+  forbidden_scope: general N-band identity
+  source_type: HUMAN_SUPPLIED
+  authority_class: AMBIGUOUS
+  exact_or_structural: MISSING_UNAMBIGUOUS_MACHINE_FORMULA
+  used_in_steps:
+  - H007
+  - H018
+  source_locator: sigma_xxx_simplification_supplement.pdf, Sec. 3
+  caveat: OCR can render ratio ambiguously; use source TeX/WL.
+- identity_id: ID006
+  name: Raw sector reconstruction
+  formula_lhs: I_raw-(I_center_raw+I_pair_raw+I_loop_raw)
+  formula_rhs: '0'
+  index_conditions: []
+  assumptions: []
+  allowed_scope: 118-row projected expression
+  forbidden_scope: ''
+  source_type: DERIVED_IN_CONVERSATION
+  authority_class: SYMBOLICALLY_VERIFIED
+  exact_or_structural: EXACT
+  used_in_steps:
+  - H005
+  - H006
+  source_locator: theoretical supplement, Supplementary Note 2
+  caveat: ''
+- identity_id: ID007
+  name: Antisymmetric oriented pair closure
+  formula_lhs: P_R-P_L
+  formula_rhs: 2 i (epsilon_b-epsilon_a)^2 R_ab |A_ab|^2
+  index_conditions:
+  - a!=b
+  assumptions: []
+  allowed_scope: pair hxx closure
+  forbidden_scope: ''
+  source_type: DERIVED_IN_CONVERSATION
+  authority_class: SYMBOLICALLY_VERIFIED
+  exact_or_structural: EXACT
+  used_in_steps:
+  - H008
+  source_locator: pair_hkk_geometry_closure/gpt_review_prompt.md and final supplement
+  caveat: ''
+- identity_id: ID008
+  name: Final symmetric oriented pair closure
+  formula_lhs: P_R+P_L
+  formula_rhs: B_X_ab + 2 B^{v,epsilon}_ab
+  index_conditions:
+  - a!=b
+  assumptions: []
+  allowed_scope: final pair-sector geometric closure
+  forbidden_scope: ''
+  source_type: DERIVED_IN_CONVERSATION
+  authority_class: SYMBOLICALLY_VERIFIED
+  exact_or_structural: EXACT
+  used_in_steps:
+  - H008
+  source_locator: sigma_xxx_theoretical_derivation_supplement.pdf, Supplementary Note
+    5
+  caveat: Overrides earlier provisional review wording P_R+P_L=X.
+- identity_id: ID009
+  name: Provisional symmetric pair closure
+  formula_lhs: P_R+P_L
+  formula_rhs: partial_k[(epsilon_b-epsilon_a)^2 |A_ab|^2] = X_ab
+  index_conditions:
+  - a!=b
+  assumptions: []
+  allowed_scope: historical pair_hkk review proposal
+  forbidden_scope: final active closure without B^{v,epsilon} correction
+  source_type: GPT_PROPOSED
+  authority_class: SUPERSEDED
+  exact_or_structural: PROVISIONAL
+  used_in_steps: []
+  source_locator: pair_hkk_geometry_closure/gpt_review_prompt.md
+  caveat: Superseded by ID008.
+- identity_id: ID010
+  name: Center velocity-power form
+  formula_lhs: I_center
+  formula_rhs: sum_a v_a^3 K_c(a)
+  index_conditions:
+  - single band a
+  assumptions: []
+  allowed_scope: projected center sector
+  forbidden_scope: ''
+  source_type: DERIVED_IN_CONVERSATION
+  authority_class: SYMBOLICALLY_VERIFIED
+  exact_or_structural: EXACT
+  used_in_steps:
+  - H009
+  source_locator: theoretical supplement, Supplementary Note 4
+  caveat: Not claimed Berry-geometric or IBP-exact.
+- identity_id: ID011
+  name: Loop product canonicalization
+  formula_lhs: oriented genuine three-band products
+  formula_rhs: Re L_abc and Im L_abc, with L_abc=A_ab A_bc A_ca
+  index_conditions:
+  - a,b,c mutually distinct
+  assumptions: []
+  allowed_scope: genuine three-band loop sector
+  forbidden_scope: two-band model
+  source_type: DERIVED_IN_CONVERSATION
+  authority_class: SYMBOLICALLY_VERIFIED
+  exact_or_structural: EXACT_ORBIT_CANONICALIZATION
+  used_in_steps:
+  - H010
+  - H016
+  source_locator: theoretical supplement, Supplementary Note 7
+  caveat: Does not prove coefficient equality with Anan Eq. (7).
+- identity_id: ID012
+  name: Total pair-velocity derivative
+  formula_lhs: B_vminus K_vminus + B_vplus K_vplus + B_vepsilon K_vepsilon
+  formula_rhs: partial_k F_pair_total
+  index_conditions:
+  - a!=b
+  assumptions:
+  - documented primitives
+  - periodic BZ
+  allowed_scope: verified projected pair sector
+  forbidden_scope: center and loop sectors
+  source_type: DERIVED_IN_CONVERSATION
+  authority_class: SYMBOLICALLY_VERIFIED
+  exact_or_structural: EXACT
+  used_in_steps:
+  - H012
+  - H013
+  - H014
+  - H015
+  - H016
+  source_locator: theoretical supplement, Supplementary Note 6 and Appendix B
+  caveat: Explicit primitive formulas are external files.
+- identity_id: ID013
+  name: Two-band loop absence
+  formula_lhs: sum_{b!=a} sum_{c!=a,b} C2(a,b,c)
+  formula_rhs: 0 for N=2
+  index_conditions:
+  - N=2
+  assumptions: []
+  allowed_scope: two-band specialization
+  forbidden_scope: general multiband
+  source_type: DERIVED_IN_CONVERSATION
+  authority_class: SYMBOLICALLY_VERIFIED
+  exact_or_structural: EXACT
+  used_in_steps:
+  - H018
+  source_locator: theoretical supplement, Supplementary Note 10
+  caveat: ''
+- identity_id: ID014
+  name: Spinless-TRS center parity
+  formula_lhs: integral_BZ dk/(2 pi) sum_a v_a(k)^3 K_c(a,k)
+  formula_rhs: '0'
+  index_conditions:
+  - two-band spinless TRS
+  assumptions:
+  - epsilon_a(k)=epsilon_a(-k)
+  - symmetric periodic BZ
+  allowed_scope: Rice–Mele specialization
+  forbidden_scope: general multiband
+  source_type: DERIVED_IN_CONVERSATION
+  authority_class: SYMBOLICALLY_VERIFIED
+  exact_or_structural: EXACT_INTEGRATED_CANCELLATION
+  used_in_steps:
+  - H018
+  source_locator: theoretical supplement, Supplementary Note 10
+  caveat: Integrand not pointwise zero.
+- identity_id: ID015
+  name: Rice–Mele band energies
+  formula_lhs: epsilon_1, epsilon_2
+  formula_rhs: -E(k), +E(k)
+  index_conditions:
+  - two-band Rice–Mele
+  assumptions: []
+  allowed_scope: Rice–Mele model
+  forbidden_scope: ''
+  source_type: HUMAN_SUPPLIED
+  authority_class: HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED
+  exact_or_structural: EXACT_DEFINITION
+  used_in_steps:
+  - H018
+  source_locator: fullmodify4_summary_report.pdf, Sec. 7
+  caveat: ''
+- identity_id: ID016
+  name: Periodic-BZ total derivative
+  formula_lhs: integral_BZ dk partial_k F(k)
+  formula_rhs: '0'
+  index_conditions: []
+  assumptions:
+  - F periodic and nonsingular
+  allowed_scope: explicit verified primitives
+  forbidden_scope: implicit boundary removal without a primitive
+  source_type: HUMAN_SUPPLIED
+  authority_class: HUMAN_CONFIRMED
+  exact_or_structural: EXACT_UNDER_CONDITIONS
+  used_in_steps:
+  - H012
+  - H013
+  - H014
+  - H015
+  - H016
+  - H018
+  source_locator: pair IBP chain
+  caveat: Boundary regularity must be checked by replay.
+- identity_id: ID017
+  name: Band-index relabeling
+  formula_lhs: explicit labels 1,2,3
+  formula_rhs: n,m,l
+  index_conditions: []
+  assumptions:
+  - preserve row ownership and distinctness
+  allowed_scope: projected band abstraction
+  forbidden_scope: promotion to independent Cartesian indices
+  source_type: DERIVED_IN_CONVERSATION
+  authority_class: STRUCTURALLY_VERIFIED
+  exact_or_structural: STRUCTURAL
+  used_in_steps:
+  - H003
+  source_locator: band_sum_abstractor.wl and scope audit
+  caveat: ''
+- identity_id: ID018
+  name: Modify5 X12 identity
+  formula_lhs: X_12 = Re(h^{xx}_{12} h^x_{21})
+  formula_rhs: 1/2 partial_k |h^x_{12}|^2 + d v |A_12|^2
+  index_conditions:
+  - lower-to-upper two-band pair
+  assumptions: []
+  allowed_scope: Modify5-v2 Rice–Mele normal form
+  forbidden_scope: unqualified general N-band use
+  source_type: DERIVED_IN_CONVERSATION
+  authority_class: HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED
+  exact_or_structural: EXACT
+  used_in_steps:
+  - H019
+  source_locator: modify5_v2_complete_1d_kkk.pdf
+  caveat: ''
+- identity_id: ID019
+  name: Modify5 diagonal acceleration identities
+  formula_lhs: w_11, w_22
+  formula_rhs: -E''+2 d |A_12|^2 ; E''-2 d |A_12|^2
+  index_conditions:
+  - two-band Rice–Mele
+  assumptions: []
+  allowed_scope: Modify5-v2 Rice–Mele normal form
+  forbidden_scope: unqualified multiband use
+  source_type: DERIVED_IN_CONVERSATION
+  authority_class: HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED
+  exact_or_structural: EXACT
+  used_in_steps:
+  - H019
+  source_locator: modify5_v2_complete_1d_kkk.pdf
+  caveat: ''
+- identity_id: ID020
+  name: PolyGamma k-derivative rule
+  formula_lhs: partial_k PG^eta_{r,n}
+  formula_rhs: -s_eta i beta/(2 pi) v_n PG^eta_{r+1,n}
+  index_conditions:
+  - eta=+/-
+  assumptions:
+  - mu,beta,Gamma held fixed
+  allowed_scope: finite-Gamma PG representation
+  forbidden_scope: ''
+  source_type: DERIVED_IN_CONVERSATION
+  authority_class: HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED
+  exact_or_structural: EXACT_FORMULA_WITH_NUMERICAL_CHECK
+  used_in_steps:
+  - H012
+  - H013
+  - H014
+  source_locator: fullmodify6_report.pdf, Sec. 5
+  caveat: Report records finite-difference relative error 8.997e-04; exact source
+    should be used.
+- identity_id: ID021
+  name: Band-completeness relation
+  formula_lhs: MISSING_EXPLICIT_FORMULA
+  formula_rhs: MISSING_EXPLICIT_FORMULA
+  index_conditions: []
+  assumptions: []
+  allowed_scope: only if supplied by source file
+  forbidden_scope: invented replay identity
+  source_type: GPT_PROPOSED
+  authority_class: MISSING_FROM_CONVERSATION
+  exact_or_structural: MISSING_EXPLICIT_FORMULA
+  used_in_steps: []
+  source_locator: requested coverage; not recovered explicitly
+  caveat: ''
+- identity_id: ID022
+  name: Covariant derivative relation
+  formula_lhs: MISSING_EXPLICIT_FORMULA
+  formula_rhs: MISSING_EXPLICIT_FORMULA
+  index_conditions: []
+  assumptions: []
+  allowed_scope: only after explicit human-supplied formula is mounted
+  forbidden_scope: automatic authorization
+  source_type: GPT_PROPOSED
+  authority_class: MISSING_FROM_CONVERSATION
+  exact_or_structural: MISSING_EXPLICIT_FORMULA
+  used_in_steps: []
+  source_locator: project discussion of covariant normalization
+  caveat: ''

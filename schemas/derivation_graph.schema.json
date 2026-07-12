@@ -1,0 +1,156 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/scientific-symbolic-repo/schemas/derivation_graph.schema.json",
+  "title": "Derivation Graph",
+  "description": "Graph representation of a theoretical derivation with typed nodes (10 types) and edges (9 types). Each node represents a derivation stage; each edge connects stages with a defined relationship.",
+  "version": "0.1.0",
+  "type": "object",
+  "required": ["graph_id", "nodes", "edges", "root_node_id", "leaf_node_ids"],
+  "properties": {
+    "graph_id": {
+      "type": "string",
+      "description": "Unique identifier for this derivation graph."
+    },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["node_id", "node_type", "label", "equation_label", "step_id", "derivation_step_ref"],
+        "properties": {
+          "node_id": {
+            "type": "string",
+            "description": "Unique identifier for this node within the graph."
+          },
+          "node_type": {
+            "type": "string",
+            "enum": [
+              "definition",
+              "raw_equation",
+              "decomposition",
+              "identity",
+              "transformation",
+              "projection",
+              "integration",
+              "limiting_case",
+              "verification",
+              "physical_interpretation"
+            ],
+            "description": "Type of derivation stage represented by this node."
+          },
+          "label": {
+            "type": "string",
+            "description": "Human-readable label for this node."
+          },
+          "equation_label": {
+            "type": "string",
+            "description": "Equation label from the INTERFACE CONTRACT (e.g., eq:def_R, eq:start, eq:final)."
+          },
+          "step_id": {
+            "type": "string",
+            "enum": [
+              "step_def_R", "step_def_AB", "step_raw_eq", "step_product_rule",
+              "step_reorganize", "step_decompose", "step_project",
+              "step_integ_A", "step_integ_B", "step_combine",
+              "step_limit", "step_numeric", "step_interpret"
+            ],
+            "description": "Step identifier from the INTERFACE CONTRACT step IDs."
+          },
+          "derivation_step_ref": {
+            "type": "string",
+            "description": "Reference to the corresponding derivation_step artifact."
+          },
+          "latex_snippet": {
+            "type": "string",
+            "description": "Key LaTeX content for this node."
+          },
+          "dependencies": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Node IDs that this node directly depends on."
+          },
+          "assumptions": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Assumptions required for this node."
+          }
+        }
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["edge_id", "source_node_id", "target_node_id", "edge_type"],
+        "properties": {
+          "edge_id": {
+            "type": "string",
+            "description": "Unique identifier for this edge."
+          },
+          "source_node_id": {
+            "type": "string",
+            "description": "Source node ID."
+          },
+          "target_node_id": {
+            "type": "string",
+            "description": "Target node ID."
+          },
+          "edge_type": {
+            "type": "string",
+            "enum": [
+              "derived_from",
+              "defined_by",
+              "decomposed_into",
+              "reconstructed_from",
+              "equal_under_assumptions",
+              "projected_to",
+              "integrated_to",
+              "numerically_supported_by",
+              "interpreted_as"
+            ],
+            "description": "Relationship type between source and target nodes."
+          },
+          "conditions": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Conditions under which this edge is valid."
+          },
+          "bidirectional": {
+            "type": "boolean",
+            "description": "Whether the relation is symmetric/reversible.",
+            "default": false
+          }
+        }
+      }
+    },
+    "root_node_id": {
+      "type": "string",
+      "description": "Node ID of the root (starting point) of the derivation graph."
+    },
+    "leaf_node_ids": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Node IDs of the leaf (final results) of the derivation graph."
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "author": {"type": "string"},
+        "created_at": {"type": "string", "format": "date-time"},
+        "updated_at": {"type": "string", "format": "date-time"},
+        "source_checkpoint": {"type": "string"},
+        "derivation_branch": {"type": "string"}
+      }
+    },
+    "validation": {
+      "type": "object",
+      "properties": {
+        "graph_is_connected": {"type": "boolean"},
+        "all_nodes_referenced": {"type": "boolean"},
+        "no_cycles": {"type": "boolean"},
+        "node_type_edge_type_consistency": {"type": "boolean"},
+        "validation_errors": {"type": "array", "items": {"type": "string"}}
+      }
+    }
+  },
+  "additionalProperties": false
+}

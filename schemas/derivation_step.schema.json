@@ -1,0 +1,261 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/DarrenWongKaWa/repo-native-symbolic-science/schemas/derivation_step.schema.json",
+  "title": "Derivation Step",
+  "description": "A single step in a theoretical derivation. Fields aligned with accepted fixture records.",
+  "version": "0.1.0",
+  "type": "object",
+  "required": [
+    "step_id",
+    "section_id",
+    "relation_type",
+    "parent_equation_ids",
+    "child_equation_id",
+    "mathematical_operation",
+    "human_readable_reason",
+    "assumptions",
+    "index_scope",
+    "pointwise_or_integrated_scope",
+    "machine_verification_status",
+    "canonical_status",
+    "caveats"
+  ],
+  "properties": {
+    "step_id": {
+      "type": "string"
+    },
+    "section_id": {
+      "type": "string"
+    },
+    "parent_equation_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "child_equation_id": {
+      "type": "string"
+    },
+    "mathematical_operation": {
+      "type": "string"
+    },
+    "human_readable_reason": {
+      "type": "string"
+    },
+    "scientific_identity_used": {
+      "type": "string"
+    },
+    "identity_derivation_reference": {
+      "type": "string"
+    },
+    "assumptions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "index_scope": {
+      "type": "object",
+      "required": [
+        "free_indices",
+        "dummy_indices",
+        "index_domains"
+      ],
+      "properties": {
+        "free_indices": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "dummy_indices": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "index_domains": {
+          "type": "object"
+        },
+        "summation_conventions": {
+          "type": "string"
+        },
+        "symmetry_properties": {
+          "type": "object"
+        },
+        "role_preserving_renames": {
+          "type": "array"
+        }
+      },
+      "additionalProperties": false
+    },
+    "projection_scope": {
+      "type": "string"
+    },
+    "pointwise_or_integrated_scope": {
+      "type": "string",
+      "enum": [
+        "pointwise",
+        "integrated",
+        "not_applicable"
+      ]
+    },
+    "limit_order": {
+      "type": "integer"
+    },
+    "boundary_conditions": {
+      "type": "string"
+    },
+    "relation_type": {
+      "type": "string",
+      "enum": [
+        "definition",
+        "literal_equality",
+        "finite_role_preserving_rename",
+        "identity_under_assumptions",
+        "pointwise_identity",
+        "projected_identity",
+        "integrated_identity",
+        "structural_replay",
+        "exact_reconstruction",
+        "numerical_regression",
+        "counterexample",
+        "not_established",
+        "verified_candidate",
+        "canonical_result",
+        "historical_result",
+        "rejected_result"
+      ]
+    },
+    "machine_verification_status": {
+      "type": "string",
+      "enum": [
+        "VERIFIED",
+        "NUMERICALLY_SUPPORTED",
+        "UNVERIFIED",
+        "NOT_APPLICABLE"
+      ]
+    },
+    "source_task": {
+      "type": "string"
+    },
+    "source_artifact": {
+      "type": "string"
+    },
+    "source_sha": {
+      "type": "string"
+    },
+    "verifier": {
+      "type": "string"
+    },
+    "human_gate": {
+      "type": "string"
+    },
+    "caveats": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "canonical_status": {
+      "type": "string",
+      "enum": [
+        "CANONICAL",
+        "INTEGRATED",
+        "VERIFIED",
+        "CANDIDATE",
+        "NOT_ESTABLISHED"
+      ]
+    },
+    "derivative_semantics": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "status",
+            "derivative_variable",
+            "derivative_order",
+            "held_fixed_variables",
+            "sign_provenance",
+            "coefficient_provenance",
+            "source_definition"
+          ],
+          "properties": {
+            "status": {
+              "const": "ACTIVE_DERIVATIVE"
+            },
+            "derivative_variable": {
+              "type": "string"
+            },
+            "derivative_order": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "held_fixed_variables": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "sign_provenance": {
+              "type": "string"
+            },
+            "coefficient_provenance": {
+              "type": "string"
+            },
+            "source_definition": {
+              "type": "string"
+            },
+            "mixed_derivative_ordering": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "derivative_operator": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "status",
+            "derivative_source_step_id",
+            "inheritance_reason"
+          ],
+          "properties": {
+            "status": {
+              "const": "INHERITED_PROVENANCE"
+            },
+            "derivative_source_step_id": {
+              "type": "string"
+            },
+            "inheritance_reason": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "status",
+            "reason"
+          ],
+          "properties": {
+            "status": {
+              "const": "NOT_APPLICABLE"
+            },
+            "reason": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    }
+  },
+  "additionalProperties": false
+}

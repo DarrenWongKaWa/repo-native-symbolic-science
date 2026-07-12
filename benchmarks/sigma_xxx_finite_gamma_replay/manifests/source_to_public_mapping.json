@@ -1,0 +1,142 @@
+[
+  {
+    "public_path": "sigma_xxx_finite_gamma_replay/inputs/00_case_manifest.yaml",
+    "public_sha256": "2c641b980ba297f78dd0d2652023d8e8fce9642f900d2a6e7367cbe3fa7aad23",
+    "source": "00_case_manifest.yaml",
+    "source_sha256": "f7382c47c5bd1f3ad7e670a06fbf7f330d94bea7aea709b07ae7cbbd42a0acf4",
+    "status": "SANITIZED_IN_DERIVED_PUBLIC_FILE"
+  },
+  {
+    "public_path": "sigma_xxx_finite_gamma_replay/inputs/01_raw_sigma_xxx.txt",
+    "public_sha256": "f613a4ce5bdb0972c32b7f799fbb408be237c94648fb9945e1b055914cfacace",
+    "source": "01_raw_sigma_xxx.txt",
+    "source_sha256": "f613a4ce5bdb0972c32b7f799fbb408be237c94648fb9945e1b055914cfacace",
+    "status": "SANITIZED_IN_DERIVED_PUBLIC_FILE"
+  },
+  {
+    "public_path": "sigma_xxx_finite_gamma_replay/inputs/02_scientific_definitions.yaml",
+    "public_sha256": "bb9ed5aed0bd01f55071ab8904bf183e261623b05c3caccdc8a395d1700b7876",
+    "source": "02_scientific_definitions.yaml",
+    "source_sha256": "bb9ed5aed0bd01f55071ab8904bf183e261623b05c3caccdc8a395d1700b7876",
+    "status": "SANITIZED_IN_DERIVED_PUBLIC_FILE"
+  },
+  {
+    "public_path": "sigma_xxx_finite_gamma_replay/inputs/03_model_and_parameters.yaml",
+    "public_sha256": "2fca2882168ee79a7a723477cb6dd88c24fea1dd7bf9cbf5970eec48189b7bca",
+    "source": "03_model_and_parameters.yaml",
+    "source_sha256": "2fca2882168ee79a7a723477cb6dd88c24fea1dd7bf9cbf5970eec48189b7bca",
+    "status": "SANITIZED_IN_DERIVED_PUBLIC_FILE"
+  },
+  {
+    "public_path": "sigma_xxx_finite_gamma_replay/inputs/04_human_authority.yaml",
+    "public_sha256": "e1d2148fc611aa58907ee5aa9379bd8041fa8ad897b516abec308c8583f4a138",
+    "source": "04_human_authority.yaml",
+    "source_sha256": "e1d2148fc611aa58907ee5aa9379bd8041fa8ad897b516abec308c8583f4a138",
+    "status": "SANITIZED_IN_DERIVED_PUBLIC_FILE"
+  },
+  {
+    "public_path": "sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+    "public_sha256": "7dd3e9b5c4e899d8ba4bb64f682f22cc97a65f184a2e3b375b9abf8ce2863aad",
+    "source": "05_derivation_steps.jsonl",
+    "source_sha256": "7dd3e9b5c4e899d8ba4bb64f682f22cc97a65f184a2e3b375b9abf8ce2863aad",
+    "status": "SANITIZED_IN_DERIVED_PUBLIC_FILE"
+  },
+  {
+    "public_path": "sigma_xxx_finite_gamma_replay/inputs/06_sector_decomposition.yaml",
+    "public_sha256": "102843f14e9b891903642ce97762bf06c8065956d53f5ff5f6f6a247edd93d23",
+    "source": "06_sector_decomposition.yaml",
+    "source_sha256": "102843f14e9b891903642ce97762bf06c8065956d53f5ff5f6f6a247edd93d23",
+    "status": "SANITIZED_IN_DERIVED_PUBLIC_FILE"
+  },
+  {
+    "public_path": "sigma_xxx_finite_gamma_replay/inputs/07_identity_registry.yaml",
+    "public_sha256": "78ef4dd6747a0b1b59cb0088ecb4ca24186a86b56bf32e2e923dbc9d6a1d5700",
+    "source": "07_identity_registry.yaml",
+    "source_sha256": "78ef4dd6747a0b1b59cb0088ecb4ca24186a86b56bf32e2e923dbc9d6a1d5700",
+    "status": "SANITIZED_IN_DERIVED_PUBLIC_FILE"
+  },
+  {
+    "public_path": "sigma_xxx_finite_gamma_replay/inputs/08_expected_symbolic_results.yaml",
+    "public_sha256": "b34e3be2a3e12593ffea13cfbc25ba6de0e013614929eb29b33e7c8720ad2f6c",
+    "source": "08_expected_symbolic_results.yaml",
+    "source_sha256": "b34e3be2a3e12593ffea13cfbc25ba6de0e013614929eb29b33e7c8720ad2f6c",
+    "status": "SANITIZED_IN_DERIVED_PUBLIC_FILE"
+  },
+  {
+    "public_path": "sigma_xxx_finite_gamma_replay/inputs/09_expected_numerical_and_scaling_results.yaml",
+    "public_sha256": "6d022aa3de43939d3718f37f6ee62e7a0e2025e90a3cda7b7e476ef0ffa50f9d",
+    "source": "09_expected_numerical_and_scaling_results.yaml",
+    "source_sha256": "6d022aa3de43939d3718f37f6ee62e7a0e2025e90a3cda7b7e476ef0ffa50f9d",
+    "status": "SANITIZED_IN_DERIVED_PUBLIC_FILE"
+  },
+  {
+    "public_path": "sigma_xxx_finite_gamma_replay/inputs/10_source_and_generation_note.md",
+    "public_sha256": "223f100cf0466f969b6b53e809968f88368cd1a3136087fb19f9acc49ba7f4ec",
+    "source": "10_source_and_generation_note.md",
+    "source_sha256": "223f100cf0466f969b6b53e809968f88368cd1a3136087fb19f9acc49ba7f4ec",
+    "status": "SANITIZED_IN_DERIVED_PUBLIC_FILE"
+  },
+  {
+    "public_path": "sigma_xxx_finite_gamma_replay/inputs/11_attribution_and_permissions.md",
+    "public_sha256": "ee9e11b70a5b7a3be18805ce0da58d0ff611268e363bc1b3d86753978015093b",
+    "source": "11_attribution_and_permissions.md",
+    "source_sha256": "ee9e11b70a5b7a3be18805ce0da58d0ff611268e363bc1b3d86753978015093b",
+    "status": "SANITIZED_IN_DERIVED_PUBLIC_FILE"
+  },
+  {
+    "public_path": "sigma_xxx_finite_gamma_replay/reference_run/case003r1_result.json",
+    "public_sha256": "40d2212447f202032700e9908f2ffbe0c11e4f4ce50dbf018432bfeb6b998d4c",
+    "source": "case003r1_result.json",
+    "source_sha256": "76034c99b92cb50e0fe5027ada110e429c6651f2744eb2fc541ac647f6ed0426",
+    "status": "SANITIZED_IN_DERIVED_PUBLIC_FILE"
+  },
+  {
+    "public_path": "sigma_xxx_finite_gamma_replay/reference_run/closure_matrix_final.json",
+    "public_sha256": "a53ba9f180171f7e54e6d3998be57c1c953c90330c2802a396c26ee353215369",
+    "source": "closure_matrix_final.json",
+    "source_sha256": "01a4e9e14003881d966285642061c73df40ca7ef4692d4232f65f4177e67c76e",
+    "status": "SANITIZED_IN_DERIVED_PUBLIC_FILE"
+  },
+  {
+    "public_path": "sigma_xxx_finite_gamma_replay/reference_run/validation_summary.md",
+    "public_sha256": "041f5e393adbc38c11a18767345714dea5a5fdb54a5cbaecc2a09e7098e73f2e",
+    "source": "validation_summary.md",
+    "source_sha256": "379b9e89688fbc8683fd0ce23e1a3d057a0996bd73b1ae7f7377ffe01431cc7f",
+    "status": "SANITIZED_IN_DERIVED_PUBLIC_FILE"
+  },
+  {
+    "public_path": "sigma_xxx_finite_gamma_replay/reference_run/final_case_study_report.md",
+    "public_sha256": "548de0f8c8d438e8aa59127e16f6e0290dbdaa3eee7851c30c9b0bf8689236e1",
+    "source": "final_case_study_report.md",
+    "source_sha256": "548de0f8c8d438e8aa59127e16f6e0290dbdaa3eee7851c30c9b0bf8689236e1",
+    "status": "SANITIZED_IN_DERIVED_PUBLIC_FILE"
+  },
+  {
+    "public_path": "sigma_xxx_finite_gamma_replay/reference_run/gamma_scaling_results.json",
+    "public_sha256": "79c46a87ba9b241813276ea97eaaddb3dcde10765611c552b51d0d600ada99c9",
+    "source": "gamma_scaling_results.json",
+    "source_sha256": "79c46a87ba9b241813276ea97eaaddb3dcde10765611c552b51d0d600ada99c9",
+    "status": "SANITIZED_IN_DERIVED_PUBLIC_FILE"
+  },
+  {
+    "public_path": "sigma_xxx_finite_gamma_replay/reference_run/symbolic_oracle_comparison.json",
+    "public_sha256": "af1d2d0d5869d260edd67528fbb70277810b0fe543e720791b40aa21fb614bf1",
+    "source": "symbolic_oracle_comparison.json",
+    "source_sha256": "af1d2d0d5869d260edd67528fbb70277810b0fe543e720791b40aa21fb614bf1",
+    "status": "SANITIZED_IN_DERIVED_PUBLIC_FILE"
+  },
+  {
+    "public_path": "sigma_xxx_finite_gamma_replay/reference_run/parent_reconstruction_results.json",
+    "public_sha256": "24993af53991f61116255a435fe7e95d2f5086ffff2e0eff61327ed499efed34",
+    "source": "parent_reconstruction_results.json",
+    "source_sha256": "24993af53991f61116255a435fe7e95d2f5086ffff2e0eff61327ed499efed34",
+    "status": "SANITIZED_IN_DERIVED_PUBLIC_FILE"
+  },
+  {
+    "public_path": "sigma_xxx_finite_gamma_replay/reference_run/local_exact_algebra_results.json",
+    "public_sha256": "d94ae866efbe75a91a7d43d02b9551be9d55edc63a18c015817cc7e37d376ede",
+    "source": "local_exact_algebra_results.json",
+    "source_sha256": "d94ae866efbe75a91a7d43d02b9551be9d55edc63a18c015817cc7e37d376ede",
+    "status": "SANITIZED_IN_DERIVED_PUBLIC_FILE"
+  }
+]

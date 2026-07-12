@@ -1,0 +1,52 @@
+{
+  "interpretations": [
+    {
+      "interpretation_id": "INT_01",
+      "target": "eq:final",
+      "physical_quantity": "Two-point response kernel R_ij",
+      "interpretation": "The response kernel decomposes into an isotropic part (proportional to delta_ij with coefficient C_0) and an anisotropic traceless part (proportional to I_ij with coefficient C_2). This is the most general symmetric rank-2 tensor in d dimensions consistent with rotational symmetry about a preferred axis n.",
+      "observable_signature": "The ratio C_2 / C_0 controls the degree of anisotropy in the response. When C_2 = 0, the system is fully isotropic. A nonzero C_2 indicates a preferred direction in the response, which could be probed by directional transport measurements.",
+      "regime_of_validity": "d = 2 + epsilon, to linear order in epsilon, with UV cutoff Lambda."
+    },
+    {
+      "interpretation_id": "INT_02",
+      "target": "eq:sector_A",
+      "physical_quantity": "Sector A response R_ij^(A)",
+      "interpretation": "Sector A captures the scalar (trace) and longitudinal (k_i k_j) contributions. In configuration space, the longitudinal part corresponds to gradient-of-gradient terms, encoding compressible modes of the response.",
+      "observable_signature": "The longitudinal projection k_i R_ij^(A) k_j is nonzero, indicating coupling to density fluctuations.",
+      "regime_of_validity": "Valid for all k < Lambda, independent of epsilon."
+    },
+    {
+      "interpretation_id": "INT_03",
+      "target": "eq:sector_B",
+      "physical_quantity": "Sector B response R_ij^(B)",
+      "interpretation": "Sector B captures purely transverse (divergence-free) contributions, satisfying k_i R_ij^(B) = 0. These encode incompressible or solenoidal response modes.",
+      "observable_signature": "The transverse condition k_i R_ij^(B) = 0 implies insensitivity to longitudinal perturbations, which can be tested by comparing responses to compressible vs. incompressible driving.",
+      "regime_of_validity": "Valid for all k < Lambda, independent of epsilon."
+    },
+    {
+      "interpretation_id": "INT_04",
+      "target": "eq:limit_eps0",
+      "physical_quantity": "R_ij in exactly two dimensions",
+      "interpretation": "In d = 2, rotational symmetry combined with the rank-2 symmetric tensor structure forces the response to be purely isotropic. The anisotropic tensor I_ij vanishes identically, leaving only C_0^(0) delta_ij.",
+      "observable_signature": "Any directional dependence of the response in d = 2 would signal either a symmetry-breaking perturbation or contributions beyond the two-sector decomposition.",
+      "regime_of_validity": "Exact limit epsilon -> 0, holding all other parameters fixed."
+    },
+    {
+      "interpretation_id": "INT_05",
+      "target": "eq:projected",
+      "physical_quantity": "Projected response under delta_ij contraction",
+      "interpretation": "The trace projection R_ii = d C_0 isolates the isotropic coefficient. This projection eliminates all anisotropic and transverse structure, providing the simplest experimental signature: the angle-averaged response.",
+      "observable_signature": "The trace R_ii can be measured in any experiment that integrates over all directions, such as total absorbed power or angle-integrated cross sections.",
+      "regime_of_validity": "Valid in any dimension d."
+    },
+    {
+      "interpretation_id": "INT_06",
+      "target": "eq:integrated_A,eq:integrated_B",
+      "physical_quantity": "Integrated sector contributions",
+      "interpretation": "After integration over the radial momentum coordinate k, each sector reduces to a linear combination of the two basis tensors delta_ij and I_ij. The coefficients encode the integrated weight of each kernel function f(k), g(k), h(k). The cross-cancellation between sectors A and B leads to the compact final form with only two independent parameters.",
+      "observable_signature": "The separation of C_0 and C_2 into integrals of f+g+h and g-h combinations reflects a sum rule: the isotropic coefficient receives additive contributions from all three kernel functions, while the anisotropic coefficient measures the difference between longitudinal and transverse spectral weight.",
+      "regime_of_validity": "To leading order in epsilon, with corrections of O(epsilon^2, 1/Lambda)."
+    }
+  ]
+}

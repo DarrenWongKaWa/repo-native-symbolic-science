@@ -1,0 +1,122 @@
+[
+  {
+    "authority_class": "HUMAN_CONFIRMED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "SYM001",
+    "source_locator": "authoritative raw-object boundary"
+  },
+  {
+    "authority_class": "SYMBOLICALLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "SYM002",
+    "source_locator": "theoretical supplement, Supplementary Note 2"
+  },
+  {
+    "authority_class": "SYMBOLICALLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "SYM003",
+    "source_locator": "theoretical supplement validation ledger"
+  },
+  {
+    "authority_class": "SYMBOLICALLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "SYM004",
+    "source_locator": "theoretical supplement, Supplementary Note 4"
+  },
+  {
+    "authority_class": "SYMBOLICALLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "SYM005",
+    "source_locator": "theoretical supplement, Supplementary Note 5"
+  },
+  {
+    "authority_class": "SYMBOLICALLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "SYM006",
+    "source_locator": "pair_hkk_geometry_closure/gpt_review_prompt.md"
+  },
+  {
+    "authority_class": "SYMBOLICALLY_VERIFIED",
+    "classification": "SEMANTIC_MATCH",
+    "conversation_id": "SYM007",
+    "source_locator": "theoretical supplement, Supplementary Note 7"
+  },
+  {
+    "authority_class": "SYMBOLICALLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "SYM008",
+    "source_locator": "theoretical supplement reduction diagram"
+  },
+  {
+    "authority_class": "SYMBOLICALLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "SYM009",
+    "source_locator": "final_pair_reduction_validation.wl"
+  },
+  {
+    "authority_class": "SYMBOLICALLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "SYM010",
+    "source_locator": "theoretical supplement, Supplementary Note 6 and Appendix B"
+  },
+  {
+    "authority_class": "HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "SYM011",
+    "source_locator": "theoretical supplement, Supplementary Note 8 and Appendix C"
+  },
+  {
+    "authority_class": "HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "SYM012",
+    "source_locator": "theoretical supplement, Appendix D"
+  },
+  {
+    "authority_class": "EXPLICITLY_STATED_IN_CONVERSATION",
+    "classification": "NO_AUTHORITATIVE_SOURCE_FOUND",
+    "conversation_id": "SYM013",
+    "source_locator": "Sigma_abc_dc_1D-separated.txt and raw row appendix"
+  },
+  {
+    "authority_class": "SYMBOLICALLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "SYM014",
+    "source_locator": "theoretical supplement, Supplementary Note 9"
+  },
+  {
+    "authority_class": "STRUCTURALLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "SYM015",
+    "source_locator": "theoretical supplement, Supplementary Note 9"
+  },
+  {
+    "authority_class": "SYMBOLICALLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "SYM016",
+    "source_locator": "theoretical supplement, Supplementary Note 10"
+  },
+  {
+    "authority_class": "SYMBOLICALLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "SYM017",
+    "source_locator": "theoretical supplement, Supplementary Note 10"
+  },
+  {
+    "authority_class": "HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "SYM018",
+    "source_locator": "theoretical supplement, Supplementary Note 10; Modify5-v2"
+  },
+  {
+    "authority_class": "HUMAN_CONFIRMED",
+    "classification": "SEMANTIC_MATCH",
+    "conversation_id": "SYM019",
+    "source_locator": "scope audit and theoretical supplement Appendix D"
+  },
+  {
+    "authority_class": "HUMAN_CONFIRMED",
+    "classification": "SEMANTIC_MATCH",
+    "conversation_id": "SYM020",
+    "source_locator": "current extraction instructions"
+  }
+]

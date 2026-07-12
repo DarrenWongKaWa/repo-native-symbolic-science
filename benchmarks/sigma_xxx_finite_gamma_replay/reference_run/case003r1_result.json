@@ -1,0 +1,38 @@
+{
+  "ask_human_during_run": false,
+  "authorized_input_root": "benchmarks/sigma_xxx_finite_gamma_replay/inputs",
+  "bounded_caveats": [
+    "The package supplies source/evidence steps, not every algebraic transformation as standalone executable before/after expressions.",
+    "Numerical regression is not promoted to symbolic equality.",
+    "Public release authorization was granted after this reference run."
+  ],
+  "execution_mode": "NON_INTERACTIVE_GUIDED_REPLAY",
+  "final_verdict": "NONINTERACTIVE_REPLAY_COMPLETED_WITH_BOUNDED_CAVEATS",
+  "framework_checkout_modified": false,
+  "framework_pin_actual_commit": "f4384a2319e323780a4b6b560f3ed822210eb4c8",
+  "framework_pin_expected_commit": "f4384a2319e323780a4b6b560f3ed822210eb4c8",
+  "framework_pin_manifest_commit": "f4384a2319e323780a4b6b560f3ed822210eb4c8",
+  "framework_pin_match": true,
+  "generated_utc": "2026-07-12T08:16:07Z",
+  "hard_stop_condition": null,
+  "not_established": [
+    "mathematical structure autonomously discovered",
+    "general tensorial sigma_abc solved",
+    "canonical scientific status automatically assigned",
+    "public release authorized"
+  ],
+  "package_readiness_authority": "AUTHORIZED_HUMAN_PACKAGE_READY_FOR_REPLAY",
+  "run_id": "SLOOP_SIGMAXXX_CASE_MVP_003R1_EXECUTE_NONINTERACTIVE_HUMAN_SPECIFIED_REPLAY_AND_CLOSURE",
+  "successful_state": {
+    "Gamma scaling automatically checked": true,
+    "Rice-Mele numerical targets automatically checked": true,
+    "closure matrix automatically evaluated": true,
+    "declared decomposition automatically tested": true,
+    "finite-Gamma symbolic target automatically checked": true,
+    "human-specified sigma_xxx workflow automatically replayed": true,
+    "parent reconstruction automatically tested": true,
+    "provenance-backed flagship report generated": true,
+    "routine human intervention was unnecessary": true
+  },
+  "workspace": "benchmarks/sigma_xxx_finite_gamma_replay"
+}

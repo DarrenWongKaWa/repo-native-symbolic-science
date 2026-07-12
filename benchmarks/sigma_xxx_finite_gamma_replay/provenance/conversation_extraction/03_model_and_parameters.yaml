@@ -1,0 +1,89 @@
+general_sigma_xxx_derivation:
+  scope: Projected one-dimensional multiband sigma^dc_kkk.
+  hamiltonian: Generic H(k); no model-specific matrix is fixed.
+  basis: Bloch-band eigenbasis |u_a(k)>.
+  band_indices: Pair sums a!=b; loop sums use distinct a,b,c.
+  thermal_blocks: PG^eta_{r,a}=psi^(r)(z^eta_a), r=0,...,4, eta=+/-.
+  integration: (e^3/h) integral_BZ dk/(2 pi).
+  authority_class: HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED
+  source_locator: sigma_xxx_theoretical_derivation_supplement.pdf
+rice_mele_specialization:
+  hamiltonian: H(k)=t0 cos(k) sigma_x + delta_t sin(k) sigma_y + m sigma_z
+  bloch_components:
+    d_x: t0 cos(k)
+    d_y: delta_t sin(k)
+    d_z: m
+  basis: Two-band Bloch eigenbasis.
+  eigenstate_convention:
+    value: MISSING_FROM_CONVERSATION
+    authority_class: MISSING_FROM_CONVERSATION
+  band_energies:
+    E(k): sqrt(t0^2 cos^2(k)+delta_t^2 sin^2(k)+m^2)
+    epsilon_1: -E(k)
+    epsilon_2: +E(k)
+  final_exact_parameter_set:
+    t0: '1'
+    m: 0.1 t0
+    delta_t: 0.1 t0
+    Delta_half: sqrt(m^2+delta_t^2)=0.141421356237... t0
+    authority_class: HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED
+    source_locator: fullmodify4_summary_report.pdf, Sec. 7
+  symmetry:
+    time_reversal: spinless TRS; epsilon_a(k)=epsilon_a(-k), v_a(k)=-v_a(-k)
+    inversion: broken for nonzero m and delta_t
+  authority_class: HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED
+  source_locator: theoretical supplement and fullmodify4 report
+numerical_plotting_choices:
+  final_finite_Gamma_Fig2:
+    beta: 1000/t0
+    mu_range: '[-0.5,0.5] t0'
+    Gamma_range: '[0.001,0.3] t0'
+    main_BZ_mesh: 4001
+    mesh_checks:
+    - 2001
+    - 4001
+    - 8001
+    - 16001
+    integration_domain: '[-pi,pi)'
+    heatmap_linecut_consistency: max absolute and relative difference 0 in the documented
+      check
+    authority_class: NUMERICALLY_SUPPORTED
+    source_locator: fullmodify4_summary_report.pdf, Secs. 8–9
+  linecuts:
+    Gamma: 0.03 t0
+    beta_values:
+    - 5/t0
+    - 10/t0
+    - 30/t0
+    - 1000/t0
+    authority_class: NUMERICALLY_SUPPORTED
+    source_locator: fullmodify4 summary figures and project history
+  scaling_checks:
+    insulating_low_temperature:
+      mu: '0'
+      beta: 1000/t0
+      expected: O(Gamma^2)
+    metallic:
+      mu: 0.15 t0
+      expected: predominantly O(Gamma)
+    insulating_high_temperature:
+      mu: inside the gap
+      expected: O(Gamma)
+    authority_class: NUMERICALLY_SUPPORTED
+    source_locator: human project summary and Rice–Mele validation discussion
+  precision:
+    value: MISSING_FROM_CONVERSATION
+    authority_class: MISSING_FROM_CONVERSATION
+superseded_numerical_branch:
+  model_parameters:
+    t0: 1
+    delta_t: 0.5
+    m: 0.2
+    beta: 1000/t0
+    Gamma: 0.03 t0 for line cuts
+  formula: sigma_xxx(mu,Gamma) approximately Gamma sigma^(1)(mu)+Gamma^2 sigma^(2)(mu)
+  status: SUPERSEDED
+  authority_class: SUPERSEDED
+  source_locator: rice_mele_plot_report.pdf
+  caveat: This folder explicitly lacked the exact finite-Gamma response and is not
+    the active final validation.

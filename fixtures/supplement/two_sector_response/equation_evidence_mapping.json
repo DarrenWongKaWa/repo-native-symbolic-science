@@ -1,0 +1,357 @@
+[
+  {
+    "mapping_id": "map_001",
+    "equation_label": "eq:def_R",
+    "derivation_step_id": "step_def_R",
+    "source_task": "Define primary response tensor R_ij(k)",
+    "source_artifact": "source_artifacts/definitions.json",
+    "source_sha": "7e701a591f9e1e863dde09e4c57c0411e5e94571bc0b823892de13d1e55017ce",
+    "transformation_record": "R_ij introduced as rank-2 symmetric tensor. No transformation applied \u2014 pure definition.",
+    "verification_verdict": "NOT_APPLICABLE",
+    "claim_type": "definition",
+    "assumption_scope": [
+      "R_ij = R_ji (symmetry)"
+    ],
+    "human_decision": "PASS",
+    "object_role": "primary_object",
+    "canonical_status": "CANONICAL",
+    "caveats": [],
+    "displayed_in_sections": [
+      "SEC_02_DEFINITIONS"
+    ],
+    "reader_pathways": [
+      "physics_first",
+      "derivation_checking",
+      "machine_reproduction"
+    ]
+  },
+  {
+    "mapping_id": "map_002",
+    "equation_label": "eq:def_AB",
+    "derivation_step_id": "step_def_AB",
+    "source_task": "Define sector kernels A_ij(k) and B_ij(k)",
+    "source_artifact": "source_artifacts/definitions.json",
+    "source_sha": "7e701a591f9e1e863dde09e4c57c0411e5e94571bc0b823892de13d1e55017ce",
+    "transformation_record": "A_ij(k) = f(k) delta_ij + g(k) k_i k_j / k^2; B_ij(k) = h(k) (delta_ij - k_i k_j / k^2). Pure definition.",
+    "verification_verdict": "NOT_APPLICABLE",
+    "claim_type": "definition",
+    "assumption_scope": [
+      "f, g, h are differentiable",
+      "k^2 != 0 for k > 0"
+    ],
+    "human_decision": "PASS",
+    "object_role": "decomposition_components",
+    "canonical_status": "CANONICAL",
+    "caveats": [],
+    "displayed_in_sections": [
+      "SEC_02_DEFINITIONS",
+      "SEC_06_SECTOR_DECOMPOSITION"
+    ],
+    "reader_pathways": [
+      "physics_first",
+      "derivation_checking",
+      "machine_reproduction"
+    ]
+  },
+  {
+    "mapping_id": "map_003",
+    "equation_label": "eq:start",
+    "derivation_step_id": "step_raw_eq",
+    "source_task": "Write starting integral expression",
+    "source_artifact": "source_artifacts/starting_expression.txt",
+    "source_sha": "d6a77de36ac11ac045f4026efe4c11419959405f595a2265f7d2d0f45f488749",
+    "transformation_record": "R_ij = integral_0^Lambda dk/k [A_ij(k) + B_ij(k)] + O(epsilon^2). Direct substitution of sector definitions into the defining integral.",
+    "verification_verdict": "UNVERIFIED",
+    "claim_type": "literal_equality",
+    "assumption_scope": [
+      "Integral convergence",
+      "O(epsilon^2) error bound"
+    ],
+    "human_decision": "PASS",
+    "object_role": "starting_point",
+    "canonical_status": "CANDIDATE",
+    "caveats": [
+      "Error bound assumes regularity of f, g, h"
+    ],
+    "displayed_in_sections": [
+      "SEC_03_STARTING_EXPRESSION"
+    ],
+    "reader_pathways": [
+      "derivation_checking",
+      "machine_reproduction"
+    ]
+  },
+  {
+    "mapping_id": "map_004",
+    "equation_label": "eq:identity",
+    "derivation_step_id": "step_product_rule",
+    "source_task": "State product rule identity",
+    "source_artifact": "source_artifacts/scientific_identity.json",
+    "source_sha": "b1bfc084993ce873d882caef2083499aa4d44b9ca43c158aed0b3f64c536e5b2",
+    "transformation_record": "partial_k [F(k) G_ij(k)] = F'(k) G_ij(k) + F(k) partial_k G_ij(k). Standard calculus identity, no derivation needed.",
+    "verification_verdict": "VERIFIED",
+    "claim_type": "identity_under_assumptions",
+    "assumption_scope": [
+      "F and G differentiable on (0, Lambda]",
+      "Flat-space index commutation"
+    ],
+    "human_decision": "PASS",
+    "object_role": "scientific_identity",
+    "canonical_status": "CANONICAL",
+    "caveats": [],
+    "displayed_in_sections": [
+      "SEC_04_SCIENTIFIC_IDENTITY"
+    ],
+    "reader_pathways": [
+      "derivation_checking",
+      "machine_reproduction"
+    ]
+  },
+  {
+    "mapping_id": "map_005",
+    "equation_label": "eq:reorganized",
+    "derivation_step_id": "step_reorganize",
+    "source_task": "Reorganize integrand via product rule",
+    "source_artifact": "source_artifacts/scientific_identity.json",
+    "source_sha": "b1bfc084993ce873d882caef2083499aa4d44b9ca43c158aed0b3f64c536e5b2",
+    "transformation_record": "Application of product rule to each term in the integrand, separating partial_k[...] total derivatives from remainder terms. No integration performed at this stage.",
+    "verification_verdict": "VERIFIED",
+    "claim_type": "identity_under_assumptions",
+    "assumption_scope": [
+      "Product rule applies term-by-term",
+      "No IBP \u2014 algebraic reorganization only"
+    ],
+    "human_decision": "PASS",
+    "object_role": "intermediate_transformation",
+    "canonical_status": "INTEGRATED",
+    "caveats": [],
+    "displayed_in_sections": [
+      "SEC_05_REORGANIZATION"
+    ],
+    "reader_pathways": [
+      "derivation_checking",
+      "machine_reproduction"
+    ]
+  },
+  {
+    "mapping_id": "map_006",
+    "equation_label": "eq:sector_A",
+    "derivation_step_id": "step_decompose",
+    "source_task": "Decompose into sector A",
+    "source_artifact": "source_artifacts/sector_decomposition.json",
+    "source_sha": "687c8bf1e41cf92fcc667eff95af7a5b9cfe0a59bdc520dc6ca72f4a3fb70348",
+    "transformation_record": "R_ij^(A) = integral_0^Lambda dk/k A_ij(k). Extracted from reorganized expression by grouping all terms proportional to f(k) and g(k).",
+    "verification_verdict": "VERIFIED",
+    "claim_type": "exact_reconstruction",
+    "assumption_scope": [
+      "Decomposition is exact at kernel level"
+    ],
+    "human_decision": "PASS",
+    "object_role": "sector_component",
+    "canonical_status": "CANONICAL",
+    "caveats": [],
+    "displayed_in_sections": [
+      "SEC_06_SECTOR_DECOMPOSITION"
+    ],
+    "reader_pathways": [
+      "physics_first",
+      "derivation_checking",
+      "machine_reproduction"
+    ]
+  },
+  {
+    "mapping_id": "map_007",
+    "equation_label": "eq:sector_B",
+    "derivation_step_id": "step_decompose",
+    "source_task": "Decompose into sector B",
+    "source_artifact": "source_artifacts/sector_decomposition.json",
+    "source_sha": "687c8bf1e41cf92fcc667eff95af7a5b9cfe0a59bdc520dc6ca72f4a3fb70348",
+    "transformation_record": "R_ij^(B) = integral_0^Lambda dk/k B_ij(k). Extracted from reorganized expression by grouping all terms proportional to h(k).",
+    "verification_verdict": "VERIFIED",
+    "claim_type": "exact_reconstruction",
+    "assumption_scope": [
+      "Decomposition is exact at kernel level"
+    ],
+    "human_decision": "PASS",
+    "object_role": "sector_component",
+    "canonical_status": "CANONICAL",
+    "caveats": [],
+    "displayed_in_sections": [
+      "SEC_06_SECTOR_DECOMPOSITION"
+    ],
+    "reader_pathways": [
+      "physics_first",
+      "derivation_checking",
+      "machine_reproduction"
+    ]
+  },
+  {
+    "mapping_id": "map_008",
+    "equation_label": "eq:projected",
+    "derivation_step_id": "step_project",
+    "source_task": "Project onto basis tensors delta_ij and I_ij",
+    "source_artifact": "source_artifacts/sector_decomposition.json",
+    "source_sha": "687c8bf1e41cf92fcc667eff95af7a5b9cfe0a59bdc520dc6ca72f4a3fb70348",
+    "transformation_record": "Contraction of R_ij^(A) and R_ij^(B) with delta_ij and I_ij using: delta_ij delta_ij = d, I_ij I_ij = 1, delta_ij I_ij = 0. Yields two scalar equations for C_0 and C_2.",
+    "verification_verdict": "VERIFIED",
+    "claim_type": "projected_identity",
+    "assumption_scope": [
+      "{delta_ij, I_ij} is a complete orthogonal basis",
+      "Contraction identities hold in any d"
+    ],
+    "human_decision": "PASS",
+    "object_role": "projected_form",
+    "canonical_status": "INTEGRATED",
+    "caveats": [
+      "Completeness requires a single preferred direction n"
+    ],
+    "displayed_in_sections": [
+      "SEC_07_PROJECTION"
+    ],
+    "reader_pathways": [
+      "derivation_checking",
+      "machine_reproduction"
+    ]
+  },
+  {
+    "mapping_id": "map_009",
+    "equation_label": "eq:integrated_A",
+    "derivation_step_id": "step_integ_A",
+    "source_task": "Integrate sector A radially",
+    "source_artifact": "source_artifacts/integrated_result.txt",
+    "source_sha": "f323ed102537110118f3c2c9ee0d7a4ad4bc403c4a2e8353ab3efdf4ed218897",
+    "transformation_record": "Radial integration of projected sector A coefficients over k in (0, Lambda], with boundary evaluation: lim_{k->0} k f(k) = 0, lim_{k->0} k g(k) = 0; finite contributions at k = Lambda.",
+    "verification_verdict": "NUMERICALLY_SUPPORTED",
+    "claim_type": "integrated_identity",
+    "assumption_scope": [
+      "Infrared regularity of f and g",
+      "Integration commutes with projection"
+    ],
+    "human_decision": "PASS",
+    "object_role": "integrated_component",
+    "canonical_status": "VERIFIED",
+    "caveats": [
+      "Exact form depends on functional choices for f(k), g(k)"
+    ],
+    "displayed_in_sections": [
+      "SEC_08_INTEGRATION_SECTOR_A"
+    ],
+    "reader_pathways": [
+      "derivation_checking",
+      "machine_reproduction"
+    ]
+  },
+  {
+    "mapping_id": "map_010",
+    "equation_label": "eq:integrated_B",
+    "derivation_step_id": "step_integ_B",
+    "source_task": "Integrate sector B radially",
+    "source_artifact": "source_artifacts/integrated_result.txt",
+    "source_sha": "f323ed102537110118f3c2c9ee0d7a4ad4bc403c4a2e8353ab3efdf4ed218897",
+    "transformation_record": "Radial integration of projected sector B coefficients, using transverse projector angular average giving factors of (d-1)/d.",
+    "verification_verdict": "NUMERICALLY_SUPPORTED",
+    "claim_type": "integrated_identity",
+    "assumption_scope": [
+      "Infrared regularity of h(k)",
+      "Transverse projector angular average is exact in d dimensions"
+    ],
+    "human_decision": "PASS",
+    "object_role": "integrated_component",
+    "canonical_status": "VERIFIED",
+    "caveats": [
+      "Angular factor (d-1)/d is exact for the transverse projector"
+    ],
+    "displayed_in_sections": [
+      "SEC_09_INTEGRATION_SECTOR_B"
+    ],
+    "reader_pathways": [
+      "derivation_checking",
+      "machine_reproduction"
+    ]
+  },
+  {
+    "mapping_id": "map_011",
+    "equation_label": "eq:final",
+    "derivation_step_id": "step_combine",
+    "source_task": "Combine integrated sectors into final result",
+    "source_artifact": "source_artifacts/integrated_result.txt",
+    "source_sha": "f323ed102537110118f3c2c9ee0d7a4ad4bc403c4a2e8353ab3efdf4ed218897",
+    "transformation_record": "R_ij = R_ij^(A) + R_ij^(B) = (C_0^(A) + C_0^(B)) delta_ij + (C_2^(A) + C_2^(B)) I_ij = C_0 delta_ij + C_2 I_ij. Error terms collected as O(epsilon^2, 1/Lambda).",
+    "verification_verdict": "NUMERICALLY_SUPPORTED",
+    "claim_type": "exact_reconstruction",
+    "assumption_scope": [
+      "Sector additivity holds after integration",
+      "Error bound is conservative"
+    ],
+    "human_decision": "PASS",
+    "object_role": "canonical_result",
+    "canonical_status": "VERIFIED",
+    "caveats": [
+      "O(epsilon^2, 1/Lambda) is a bound, not an exact equality"
+    ],
+    "displayed_in_sections": [
+      "SEC_10_INTEGRATED_RESULT",
+      "SEC_12_PHYSICAL_INTERPRETATION"
+    ],
+    "reader_pathways": [
+      "physics_first",
+      "derivation_checking",
+      "machine_reproduction"
+    ]
+  },
+  {
+    "mapping_id": "map_012",
+    "equation_label": "eq:limit_eps0",
+    "derivation_step_id": "step_limit",
+    "source_task": "Analyze epsilon -> 0 limiting case",
+    "source_artifact": "source_artifacts/limiting_case.txt",
+    "source_sha": "2d194276241199dd7f1cf28ef94181ff0cc24f06fdc7a967749b5413e2189472",
+    "transformation_record": "Set d = 2 (epsilon = 0). I_ij = (delta_ij - 2 n_i n_j / n^2) / 1. Using the d = 2 identity delta_ij = 2 n_i n_j / n^2, obtain I_ij = 0. Thus R_ij = C_0^(0) delta_ij.",
+    "verification_verdict": "VERIFIED",
+    "claim_type": "verified_candidate",
+    "assumption_scope": [
+      "Limit commutes with integration",
+      "C_0^(0) is finite",
+      "d = 2 tensor algebra holds"
+    ],
+    "human_decision": "PASS",
+    "object_role": "limiting_case",
+    "canonical_status": "CANONICAL",
+    "caveats": [],
+    "displayed_in_sections": [
+      "SEC_13_LIMITING_CASE"
+    ],
+    "reader_pathways": [
+      "physics_first",
+      "derivation_checking",
+      "machine_reproduction"
+    ]
+  },
+  {
+    "mapping_id": "map_013",
+    "equation_label": "eq:long_expr",
+    "derivation_step_id": "step_numeric",
+    "source_task": "Provide full 96-term expanded expression for numerical verification",
+    "source_artifact": "source_artifacts/long_expression_artifact.txt",
+    "source_sha": "eaf0200206a64698de6b82ea0a5888caf56b05c04fe0bccc6971cd365be1a18c",
+    "transformation_record": "Full expansion of the starting integral after reorganization, sector decomposition, and projection, yielding 96 terms (T_1 through T_96) each a tensor-valued integral. Presented as electronic-only artifact.",
+    "verification_verdict": "VERIFIED",
+    "claim_type": "literal_equality",
+    "assumption_scope": [
+      "Complete expansion \u2014 no terms omitted",
+      "Sample parameter values are representative"
+    ],
+    "human_decision": "PASS",
+    "object_role": "electronic_artifact",
+    "canonical_status": "VERIFIED",
+    "caveats": [
+      "96-term count verified; electronic-only presentation"
+    ],
+    "displayed_in_sections": [
+      "SEC_11_NUMERIC_VERIFICATION"
+    ],
+    "reader_pathways": [
+      "machine_reproduction"
+    ]
+  }
+]

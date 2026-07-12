@@ -1,0 +1,18 @@
+{
+  "branch": "benchmark/sigma-xxx-finite-gamma-replay",
+  "generated_at_utc": "2026-07-12T09:18:54Z",
+  "head": "5dc0817921a4d6931f24d19f926810d1f2632631",
+  "status": {
+    "command": [
+      "git",
+      "status",
+      "--short",
+      "--branch",
+      "--untracked-files=all"
+    ],
+    "returncode": 0,
+    "status": "PASS",
+    "stderr": "",
+    "stdout": "## benchmark/sigma-xxx-finite-gamma-replay...origin/benchmark/sigma-xxx-finite-gamma-replay\n?? scripts/materialize_sigma_xxx_decision_provenance.py"
+  }
+}

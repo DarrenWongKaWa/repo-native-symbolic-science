@@ -1,0 +1,136 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "OrchestrationState",
+  "description": "Persistent orchestration state for the multi-agent scientific workflow controller. Schema version 1.0.0.",
+  "type": "object",
+  "required": [
+    "orchestration_id",
+    "current_state",
+    "previous_state",
+    "transition_id",
+    "transition_reason",
+    "eligible_task_ids",
+    "active_task_ids",
+    "blockers",
+    "updated_at",
+    "event_log_cursor"
+  ],
+  "properties": {
+    "orchestration_id": {
+      "type": "string",
+      "description": "Unique identifier for this orchestration instance."
+    },
+    "request_id": {
+      "type": "string",
+      "description": "Reference to the orchestration request that initiated this orchestration."
+    },
+    "current_state": {
+      "type": "string",
+      "enum": [
+        "RECEIVED",
+        "POLICY_LOADING",
+        "INTENT_ROUTING",
+        "SEMANTIC_AUDIT",
+        "BLOCKED_HUMAN_INFORMATION",
+        "PLANNING",
+        "PLAN_READY",
+        "EXECUTION_ELIGIBLE",
+        "EXECUTING",
+        "EXECUTION_COMPLETE",
+        "VERIFICATION_ELIGIBLE",
+        "VERIFYING",
+        "VERIFIED",
+        "VERIFIED_WITH_CAVEAT",
+        "REJECTED",
+        "REPAIR_REQUIRED",
+        "HUMAN_GATE_REQUIRED",
+        "INTEGRATION_ELIGIBLE",
+        "INTEGRATING",
+        "REPORTING",
+        "COMPLETED",
+        "FAILED",
+        "PAUSED"
+      ],
+      "description": "Current state of the orchestration."
+    },
+    "previous_state": {
+      "type": "string",
+      "description": "Previous state before the most recent transition."
+    },
+    "transition_id": {
+      "type": "string",
+      "description": "Identifier for the most recent state transition."
+    },
+    "transition_reason": {
+      "type": "string",
+      "description": "Human-readable reason for the most recent transition."
+    },
+    "eligible_task_ids": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Task IDs that are eligible for execution given current state."
+    },
+    "active_task_ids": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Task IDs currently executing."
+    },
+    "completed_task_ids": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Task IDs that have completed."
+    },
+    "blockers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["blocker_id", "blocker_type", "description"],
+        "properties": {
+          "blocker_id": { "type": "string" },
+          "blocker_type": { "type": "string" },
+          "description": { "type": "string" },
+          "blocked_task_ids": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "human_gate_id": { "type": "string" }
+        }
+      }
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of the last update."
+    },
+    "event_log_cursor": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Sequence number of the last persisted event."
+    },
+    "task_registry_path": {
+      "type": "string",
+      "description": "Path to the task registry file."
+    },
+    "handoff_registry_path": {
+      "type": "string",
+      "description": "Path to the handoff registry file."
+    },
+    "artifact_contracts_path": {
+      "type": "string",
+      "description": "Path to the artifact contracts directory."
+    },
+    "sha_manifests_path": {
+      "type": "string",
+      "description": "Path to the SHA manifests directory."
+    },
+    "human_decision_registry_path": {
+      "type": "string",
+      "description": "Path to the human decision registry."
+    },
+    "dependency_dag_path": {
+      "type": "string",
+      "description": "Path to the dependency DAG file."
+    }
+  },
+  "additionalProperties": true
+}

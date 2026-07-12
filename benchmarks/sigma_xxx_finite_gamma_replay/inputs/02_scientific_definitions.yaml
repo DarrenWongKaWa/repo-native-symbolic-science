@@ -1,0 +1,65 @@
+scope: projected one-dimensional sigma_xxx, not full tensorial sigma_abc
+raw_object:
+  source_path: low_frequency/Sigma_abc_dc_1D.txt
+  sha256: f613a4ce5bdb0972c32b7f799fbb408be237c94648fb9945e1b055914cfacace
+  classification:
+  - DC_LIMIT_ALREADY_TAKEN
+  - GAMMA_FINITE_AND_EXACT
+  - PRE_RAW_GAMMA_EXPANSION_FORBIDDEN
+  observable_aliases:
+  - sigma_xxx
+  - sigma_dc_kkk
+symbols_observed_in_sources:
+  thermal_and_broadening:
+  - beta
+  - Gamma
+  - mu
+  - Pi
+  - I
+  band_energy_objects:
+  - epsilon[n]
+  - epsilon[n]-epsilon[m]
+  matrix_element_objects:
+  - ha[n,m]
+  - haa[n,m]
+  - haaa[n,m]
+  - Raa[n,m]
+  - wa[n,n]
+  special_functions:
+  - PolyGamma[0]
+  - PolyGamma[1]
+  - PolyGamma[2]
+  - PolyGamma[3]
+  - PolyGamma[4]
+  projected_direction:
+  - a=b=c=k
+  - h_nm=h^k_nm
+  - h^(2)_nm=h^kk_nm
+  - h^(3)_nm=h^kkk_nm
+source_files:
+- path: low_frequency/Sigma_abc_dc_1D.txt
+  sha256: f613a4ce5bdb0972c32b7f799fbb408be237c94648fb9945e1b055914cfacace
+  bytes: 121067
+  classes:
+  - DUPLICATE
+- path: low_frequency/band_sum_abstractor.wl
+  sha256: dad9e4599976af5f869643a7fdd016258f7a790d6da02f666646b7f112691ebf
+  bytes: 15162
+  classes:
+  - DERIVATION_STEP_SOURCE
+  - SCIENTIFIC_DEFINITION_SOURCE
+- path: modify4_anan/output/anan_basis_dictionary.wl
+  sha256: 4523d2e5fb2892f27dd149d7cfab688e4195e263a787e428b8366fb8372998ec
+  bytes: 1147
+  classes:
+  - IDENTITY_SOURCE
+  - INTERMEDIATE_SYMBOLIC_ORACLE
+- path: modify4_anan/PLAN.md
+  sha256: e2efb2f8818581d89b793c65b09f6a95d19c95f41000746bce6d57b2f8678eba
+  bytes: 18995
+  classes:
+  - PROVENANCE_ONLY
+notes:
+- The raw object is already DC-limited and finite-Gamma exact.
+- No Gamma-order expansion is authorized before consuming the raw object.
+- The low_frequency workflow order is filename-natural numeric order, not mtime order.

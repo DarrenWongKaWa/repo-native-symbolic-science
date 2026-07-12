@@ -1,0 +1,110 @@
+{
+  "bounded_caveat": "The package does not provide every algebraic step as executable before/after expressions; exact checks are limited to supplied validation evidence.",
+  "checks": [
+    {
+      "all_declared_differences_zero": true,
+      "claim_classification": "EXACT_RECONSTRUCTION_VERIFIED",
+      "difference_terms": {
+        "CenterDifference": 0,
+        "LoopDifference": 0,
+        "PairVelocityReductionDifference": 0
+      },
+      "file_verification": {
+        "actual_bytes": 219,
+        "actual_sha256": "bccfcdad0549fa215abbc988b40feedd82d2fa1e8f4131c1cc2d46c10a1bf38d",
+        "bytes_match": true,
+        "declared_bytes": 219,
+        "declared_sha256": "bccfcdad0549fa215abbc988b40feedd82d2fa1e8f4131c1cc2d46c10a1bf38d",
+        "declared_source_path": "modify4_anan/projected_xxx_reduced_pair_shift_final/output/final_formula_reconstruction_validation.wl",
+        "exists": true,
+        "sha256_match": true,
+        "snapshot_path": "incoming_materials/source_snapshots/modify4_anan/projected_xxx_reduced_pair_shift_final/output/final_formula_reconstruction_validation.wl"
+      },
+      "gate": "PASS",
+      "source": {
+        "bytes": 219,
+        "classes": [
+          "FINAL_SYMBOLIC_ORACLE",
+          "VALIDATION_EVIDENCE",
+          "INTERMEDIATE_SYMBOLIC_ORACLE"
+        ],
+        "path": "modify4_anan/projected_xxx_reduced_pair_shift_final/output/final_formula_reconstruction_validation.wl",
+        "sha256": "bccfcdad0549fa215abbc988b40feedd82d2fa1e8f4131c1cc2d46c10a1bf38d"
+      },
+      "wolfram_parse": {
+        "available": true,
+        "backend": "wolframscript",
+        "parsed": {
+          "CenterDifference": 0,
+          "FinalSurvivingKernelCount": 4,
+          "FusedFormulaKernelCount": 7,
+          "LoopDifference": 0,
+          "OverallGate": "PASS",
+          "PairReductionGate": "PASS",
+          "PairVelocityReductionDifference": 0
+        },
+        "returncode": 0,
+        "runtime_seconds": 1.458,
+        "status": "PARSED",
+        "stderr": ""
+      }
+    },
+    {
+      "all_declared_differences_zero": true,
+      "claim_classification": "EXACT_RECONSTRUCTION_VERIFIED",
+      "difference_terms": {
+        "DeltaKR": 0,
+        "ReductionDifference": 0
+      },
+      "file_verification": {
+        "actual_bytes": 375,
+        "actual_sha256": "30802cdba81e8e3a74d2732bda38911552fd5a82d54915812ced18b078410b91",
+        "bytes_match": true,
+        "declared_bytes": 375,
+        "declared_sha256": "30802cdba81e8e3a74d2732bda38911552fd5a82d54915812ced18b078410b91",
+        "declared_source_path": "modify4_anan/projected_xxx_reduced_pair_shift_final/output/final_pair_reduction_validation.wl",
+        "exists": true,
+        "sha256_match": true,
+        "snapshot_path": "incoming_materials/source_snapshots/modify4_anan/projected_xxx_reduced_pair_shift_final/output/final_pair_reduction_validation.wl"
+      },
+      "gate": "PASS",
+      "source": {
+        "bytes": 375,
+        "classes": [
+          "FINAL_SYMBOLIC_ORACLE",
+          "VALIDATION_EVIDENCE",
+          "INTERMEDIATE_SYMBOLIC_ORACLE"
+        ],
+        "path": "modify4_anan/projected_xxx_reduced_pair_shift_final/output/final_pair_reduction_validation.wl",
+        "sha256": "30802cdba81e8e3a74d2732bda38911552fd5a82d54915812ced18b078410b91"
+      },
+      "wolfram_parse": {
+        "available": true,
+        "backend": "wolframscript",
+        "parsed": {
+          "AnanEq6RegressionStatus": "INHERITED_PASS_KR_UNCHANGED",
+          "DeltaKR": 0,
+          "FullPairKernelInput": "B^R K_R + B^{v-}K_vminus + B^{v+}K_vplus + B^{vepsilon}K_vepsilon",
+          "Gate": "PASS",
+          "PairVelocityExactDerivativeQ": true,
+          "ReducedPairKernel": "B^R K_R",
+          "ReductionDifference": 0,
+          "TotalPrimitive": "F_pair_total",
+          "TotalPrimitiveComponents": 17
+        },
+        "returncode": 0,
+        "runtime_seconds": 1.372,
+        "status": "PARSED",
+        "stderr": ""
+      }
+    }
+  ],
+  "closure": "LOCAL_EXACT_ALGEBRA_CLOSED_WITH_BOUNDED_CAVEAT",
+  "coefficient_preservation": "verified where represented by supplied reconstruction validation files",
+  "denominator_structure": "covered by frozen symbolic oracle/source snapshots",
+  "dummy_index_capture_absence": "not represented as standalone executable before/after expressions; bounded caveat recorded",
+  "free_index_preservation": "structurally preserved by package-declared projected channel sigma_dc_kkk == sigma_xxx",
+  "method": "evaluation of package-supplied exact reconstruction validation associations plus SHA verification",
+  "special_function_arguments": "covered by raw parsed token inventory and symbolic oracle snapshots",
+  "term_multiplicities": "covered by sector row ledger and reconstruction validation associations"
+}

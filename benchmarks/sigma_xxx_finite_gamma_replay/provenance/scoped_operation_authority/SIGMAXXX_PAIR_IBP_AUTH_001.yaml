@@ -1,0 +1,38 @@
+authorization_id: SIGMAXXX_PAIR_IBP_AUTH_001
+operation: integration_by_parts
+decision:
+  authority: HUMAN_SCIENTIST
+  status: AUTHORIZED
+scope:
+  benchmark: sigma_xxx_finite_gamma_replay
+  parent_sector: pair_sector
+  permitted_stages:
+  - targeted_v_epsilon_ibp
+  - residual_driven_rational_primitive_solve
+  - global_coupled_pair_ibp
+  permitted_output:
+  - F_pair_total
+preconditions:
+- finite_gamma_raw_object_frozen
+- pair_sector_frozen
+- brillouin_zone_domain_defined
+- periodic_boundary_convention_defined
+- differentiability_conditions_declared
+expected_relation:
+  type: BZ_TOTAL_DERIVATIVE_EQUIVALENCE
+verification:
+  exact_verification_required: true
+  numerical_only_insufficient: true
+  independent_verification_status: PENDING
+explicit_exclusions:
+- center_sector_ibp_exactness
+- loop_sector_ibp_exactness
+- global_full_integrand_ibp_exactness
+- general_sigma_abc
+applicability_status: AUTHORIZED_PENDING_APPLICABILITY_VERIFICATION
+operation_statuses:
+  AUTHORIZATION_MATERIALIZED: true
+  APPLICABILITY_VERIFIED: false
+  OPERATION_EXECUTED: false
+  RESULT_RELATION_VERIFIED: false
+  INDEPENDENTLY_VERIFIED: false

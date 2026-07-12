@@ -1,0 +1,150 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/scientific-symbolic-repo/schemas/human_readability_audit.schema.json",
+  "title": "Human Readability Audit",
+  "description": "Audit of the human readability of a theoretical supplement. Evaluates 13 check types and produces structured verdicts.",
+  "version": "0.1.0",
+  "type": "object",
+  "required": [
+    "audit_id",
+    "supplement_request_id",
+    "checks",
+    "overall_verdict"
+  ],
+  "properties": {
+    "audit_id": {
+      "type": "string",
+      "description": "Unique identifier for this readability audit."
+    },
+    "supplement_request_id": {
+      "type": "string",
+      "description": "Reference to the supplement being audited."
+    },
+    "auditor_role": {
+      "type": "string",
+      "enum": ["human_scientist", "physics_reviewer", "algebra_reviewer", "software_reviewer", "automated_audit"],
+      "description": "Role performing this audit."
+    },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["check_type", "verdict", "evidence"],
+        "properties": {
+          "check_type": {
+            "type": "string",
+            "enum": [
+              "equation_numbering_consistency",
+              "cross_reference_validity",
+              "notation_defined_before_use",
+              "index_convention_clarity",
+              "term_grouping_readability",
+              "abbreviation_expansion_present",
+              "figure_table_label_consistency",
+              "derivation_step_narrative_flow",
+              "physical_interpretation_accessibility",
+              "limiting_case_explicitness",
+              "mathematical_omission_transparency",
+              "reproduction_instruction_completeness",
+              "reader_pathway_signposting"
+            ],
+            "description": "Type of readability check. One of 13 allowed types."
+          },
+          "verdict": {
+            "type": "string",
+            "enum": ["PASS", "PASS_WITH_MINOR", "FAIL_WITH_REQUIRED_FIX", "NOT_APPLICABLE"],
+            "description": "Verdict for this check."
+          },
+          "evidence": {
+            "type": "string",
+            "description": "Evidence supporting the verdict."
+          },
+          "location": {
+            "type": "string",
+            "description": "Section or line reference where the issue occurs."
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["CRITICAL", "MAJOR", "MINOR", "COSMETIC"],
+            "description": "Severity of issues found."
+          },
+          "recommendation": {
+            "type": "string",
+            "description": "Recommended action to address issues."
+          },
+          "affected_equations": {
+            "type": "array",
+            "items": {"type": "string"}
+          },
+          "affected_sections": {
+            "type": "array",
+            "items": {"type": "string"}
+          }
+        }
+      },
+      "minItems": 13,
+      "maxItems": 13,
+      "description": "All 13 readability checks must be performed."
+    },
+    "overall_verdict": {
+      "type": "object",
+      "required": ["readability_score", "publication_readiness"],
+      "properties": {
+        "readability_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10,
+          "description": "Overall readability score from 0-10."
+        },
+        "publication_readiness": {
+          "type": "string",
+          "enum": ["READY", "READY_WITH_MINOR_REVISIONS", "REVISION_REQUIRED", "NOT_READY"],
+          "description": "Assessment of publication readiness."
+        },
+        "critical_issues_count": {"type": "integer"},
+        "major_issues_count": {"type": "integer"},
+        "minor_issues_count": {"type": "integer"},
+        "blocking_issues": {"type": "array", "items": {"type": "string"}},
+        "recommended_before_publication": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "reader_pathway_assessment": {
+      "type": "object",
+      "properties": {
+        "physics_first": {
+          "type": "object",
+          "properties": {
+            "accessibility_score": {"type": "number"},
+            "recommended_reading_time_minutes": {"type": "integer"},
+            "prerequisite_clarity": {"type": "string"}
+          }
+        },
+        "derivation_checking": {
+          "type": "object",
+          "properties": {
+            "accessibility_score": {"type": "number"},
+            "recommended_reading_time_minutes": {"type": "integer"},
+            "step_completeness": {"type": "string"}
+          }
+        },
+        "machine_reproduction": {
+          "type": "object",
+          "properties": {
+            "accessibility_score": {"type": "number"},
+            "recommended_reading_time_minutes": {"type": "integer"},
+            "reproducibility_assessment": {"type": "string"}
+          }
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "audit_timestamp": {"type": "string", "format": "date-time"},
+        "audit_sha256": {"type": "string"},
+        "previous_audit_id": {"type": "string"}
+      }
+    }
+  },
+  "additionalProperties": false
+}

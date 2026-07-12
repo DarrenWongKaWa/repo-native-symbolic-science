@@ -1,0 +1,10 @@
+{
+  "applicability_status": "AUTHORIZED_PENDING_APPLICABILITY_VERIFICATION",
+  "authorization_id": "SIGMAXXX_PAIR_IBP_AUTH_001",
+  "center_sector_ibp_excluded": true,
+  "global_full_integrand_ibp_excluded": true,
+  "independent_verification": "PENDING",
+  "loop_sector_ibp_excluded": true,
+  "pair_sector_only": true,
+  "status": "PASS"
+}

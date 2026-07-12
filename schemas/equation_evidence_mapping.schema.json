@@ -1,0 +1,163 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/scientific-symbolic-repo/schemas/equation_evidence_mapping.schema.json",
+  "title": "Equation Evidence Mapping",
+  "description": "Maps each equation in the supplement to its derivation step, verification evidence, claim type, and canonical status. Provides the audit trail from final result back through the derivation graph.",
+  "version": "0.1.0",
+  "type": "object",
+  "required": [
+    "mapping_id",
+    "equation_label",
+    "derivation_step_id",
+    "source_task",
+    "source_artifact",
+    "source_sha",
+    "verification_verdict",
+    "claim_type",
+    "assumption_scope",
+    "human_decision",
+    "object_role",
+    "canonical_status",
+    "caveats"
+  ],
+  "properties": {
+    "mapping_id": {
+      "type": "string",
+      "description": "Unique identifier for this evidence mapping."
+    },
+    "equation_label": {
+      "type": "string",
+      "description": "Equation label from the INTERFACE CONTRACT (e.g., eq:def_R, eq:final)."
+    },
+    "derivation_step_id": {
+      "type": "string",
+      "enum": [
+        "step_def_R", "step_def_AB", "step_raw_eq", "step_product_rule",
+        "step_reorganize", "step_decompose", "step_project",
+        "step_integ_A", "step_integ_B", "step_combine",
+        "step_limit", "step_numeric", "step_interpret"
+      ],
+      "description": "Derivation step that produced this equation."
+    },
+    "source_task": {
+      "type": "string",
+      "description": "Task identifier that produced the verification evidence."
+    },
+    "source_artifact": {
+      "type": "string",
+      "description": "Path or reference to the artifact containing this equation."
+    },
+    "source_sha": {
+      "type": "string",
+      "description": "SHA-256 hash of the source artifact for reproducibility."
+    },
+    "verification_verdict": {
+      "type": "string",
+      "enum": [
+        "PASS_EXACT_SYMBOLIC",
+        "PASS_EXACT_UNDER_ASSUMPTIONS",
+        "PASS_NUMERICAL",
+        "PASS_RECONSTRUCTION",
+        "INCONCLUSIVE",
+        "FAIL_COUNTEREXAMPLE",
+        "FAIL_SYMBOLIC",
+        "PENDING",
+        "NOT_VERIFIED"
+      ],
+      "description": "Verification verdict for this equation."
+    },
+    "claim_type": {
+      "type": "string",
+      "enum": [
+        "definition",
+        "literal_equality",
+        "finite_role_preserving_rename",
+        "identity_under_assumptions",
+        "pointwise_identity",
+        "projected_identity",
+        "integrated_identity",
+        "structural_replay",
+        "exact_reconstruction",
+        "numerical_regression",
+        "counterexample",
+        "not_established",
+        "verified_candidate",
+        "canonical_result",
+        "historical_result",
+        "rejected_result"
+      ],
+      "description": "Type of claim made for this equation (uses the 16-value relation_type enum)."
+    },
+    "assumption_scope": {
+      "type": "object",
+      "required": ["assumptions_required"],
+      "properties": {
+        "assumptions_required": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Assumptions required for this equation to be valid."
+        },
+        "assumptions_satisfied": {
+          "type": "boolean",
+          "description": "Whether all required assumptions are satisfied."
+        },
+        "domain_restrictions": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      }
+    },
+    "human_decision": {
+      "type": "object",
+      "required": ["decision", "reviewer"],
+      "properties": {
+        "decision": {
+          "type": "string",
+          "enum": ["ACCEPTED", "REJECTED", "NEEDS_REVISION", "PENDING"]
+        },
+        "reviewer": {"type": "string"},
+        "timestamp": {"type": "string", "format": "date-time"},
+        "rationale": {"type": "string"},
+        "decision_id": {"type": "string"}
+      }
+    },
+    "object_role": {
+      "type": "string",
+      "enum": ["RESULT", "INTERMEDIATE", "DEFINITION", "EXPLANATORY_NOTATION", "CONJECTURE"],
+      "description": "Role of this equation in the derivation."
+    },
+    "canonical_status": {
+      "type": "string",
+      "enum": ["CANONICAL", "INTEGRATED", "VERIFIED", "CANDIDATE", "NOT_ESTABLISHED"],
+      "description": "Canonical status from the INTERFACE CONTRACT."
+    },
+    "caveats": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Caveats and qualifications for this evidence mapping."
+    },
+    "parent_mapping_ids": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Evidence mappings that this mapping depends on."
+    },
+    "numerical_evidence": {
+      "type": "object",
+      "properties": {
+        "sample_count": {"type": "integer"},
+        "agreement_level": {"type": "string", "enum": ["none", "weak", "moderate", "strong", "conclusive"]},
+        "residual_statistics": {"type": "object"},
+        "numerical_agreement_is_not_symbolic_equality": {"type": "boolean"}
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "created_at": {"type": "string", "format": "date-time"},
+        "updated_at": {"type": "string", "format": "date-time"},
+        "mapping_sha256": {"type": "string"}
+      }
+    }
+  },
+  "additionalProperties": false
+}

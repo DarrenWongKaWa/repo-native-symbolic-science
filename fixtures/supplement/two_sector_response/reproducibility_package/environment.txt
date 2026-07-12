@@ -1,0 +1,23 @@
+# Environment specification for synthetic_two_sector_response_kernel
+# Generated: 2026-07-11
+
+python: 3.11+
+python_packages:
+  - hashlib (stdlib)
+  - json (stdlib)
+  - re (stdlib)
+
+operating_system: macOS 14+ / Linux (kernel 5.15+)
+shell: bash 5.2+ or zsh 5.9+
+
+# No external dependencies required.
+# All validation uses Python standard library only.
+# The 96-term expression is a static artifact; no symbolic algebra system is needed for verification.
+
+notes: >
+  This fixture is synthetic (PUBLIC_SYNTHETIC_ONLY classification).
+  All symbolic expressions are fictional but structurally realistic.
+  The derivation graph, steps, and evidence mappings are self-consistent
+  and serve as a template for real theoretical supplement generation.
+  SHAs are computed on the as-distributed artifact files; any modification
+  will change the SHAs and break the integrity gates.

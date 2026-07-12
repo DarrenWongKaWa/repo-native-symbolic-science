@@ -1,0 +1,243 @@
+[
+  {
+    "caveat": "Raw checksum missing.",
+    "claim": "The raw object is post-DC and finite-Gamma exact.",
+    "claim_type": "scientific boundary",
+    "conversation_evidence": "DC limit first; Gamma remains finite and exact.",
+    "current_status": "ACTIVE",
+    "derivation_steps": [
+      "H001"
+    ],
+    "human_authority": "direct human correction",
+    "source_file": "Sigma_abc_dc_1D.txt",
+    "verification_type": "HUMAN_CONFIRMED"
+  },
+  {
+    "caveat": "",
+    "claim": "The raw object did not arise from prior Gamma expansion.",
+    "claim_type": "scientific boundary",
+    "conversation_evidence": "Explicit prohibition; source report says no Gamma-Laurent expansion.",
+    "current_status": "ACTIVE; contradictory branch rejected",
+    "derivation_steps": [
+      "H001",
+      "S001"
+    ],
+    "human_authority": "direct human correction overrides earlier wording",
+    "source_file": "fullmodify4_summary_report.pdf",
+    "verification_type": "HUMAN_CONFIRMED"
+  },
+  {
+    "caveat": "",
+    "claim": "The sector decomposition reconstructs the parent.",
+    "claim_type": "symbolic identity",
+    "conversation_evidence": "I_raw-(I_center+I_pair+I_loop)=0 and 8+50+60=118.",
+    "current_status": "PASS",
+    "derivation_steps": [
+      "H005",
+      "H006"
+    ],
+    "human_authority": "verified executor/verifier result",
+    "source_file": "sigma_xxx_theoretical_derivation_supplement.pdf",
+    "verification_type": "SYMBOLICALLY_VERIFIED"
+  },
+  {
+    "caveat": "Target is the verified Modify4 final form, not an unverified target-only formula.",
+    "claim": "The final candidate closed form equals the supplied final target modulo the explicit pair total derivative.",
+    "claim_type": "symbolic reconstruction",
+    "conversation_evidence": "Four surviving kernels plus partial_k F_pair_total.",
+    "current_status": "PASS",
+    "derivation_steps": [
+      "H015",
+      "H016"
+    ],
+    "human_authority": "verified pipeline",
+    "source_file": "final_pair_reduction_validation.wl",
+    "verification_type": "SYMBOLICALLY_VERIFIED"
+  },
+  {
+    "caveat": "Pair sector only.",
+    "claim": "The three pair-velocity kernels form a total derivative.",
+    "claim_type": "symbolic identity",
+    "conversation_evidence": "B_vminus K_vminus+B_vplus K_vplus+B_vepsilon K_vepsilon=partial_k F_pair_total.",
+    "current_status": "PASS",
+    "derivation_steps": [
+      "H012",
+      "H013",
+      "H014",
+      "H015"
+    ],
+    "human_authority": "verified pipeline",
+    "source_file": "input_snapshots/F_pair_total.wl",
+    "verification_type": "SYMBOLICALLY_VERIFIED"
+  },
+  {
+    "caveat": "",
+    "claim": "The final projected expression contains four surviving kernel families.",
+    "claim_type": "closed-form structure",
+    "conversation_evidence": "K_c, K_R, K_ReL, K_ImL.",
+    "current_status": "ACTIVE",
+    "derivation_steps": [
+      "H016"
+    ],
+    "human_authority": "human-supplied previously verified supplement",
+    "source_file": "sigma_xxx_theoretical_derivation_supplement.pdf",
+    "verification_type": "HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED"
+  },
+  {
+    "caveat": "Vanishes only after BZ integration in Rice\u2013Mele TRS specialization.",
+    "claim": "The center sector remains nonzero in the general projected multiband formula.",
+    "claim_type": "nonvanishing structure",
+    "conversation_evidence": "I_center=sum_a v_a^3 K_c(a); not claimed to vanish generally.",
+    "current_status": "ACTIVE",
+    "derivation_steps": [
+      "H009",
+      "H016"
+    ],
+    "human_authority": "final theoretical supplement",
+    "source_file": "K_center.wl",
+    "verification_type": "SYMBOLICALLY_VERIFIED"
+  },
+  {
+    "caveat": "Vanishes in two-band Rice\u2013Mele because distinct triple is absent.",
+    "claim": "The loop sector remains nonzero in the general projected multiband formula.",
+    "claim_type": "nonvanishing structure",
+    "conversation_evidence": "K_ReL and K_ImL survive final formula.",
+    "current_status": "ACTIVE",
+    "derivation_steps": [
+      "H010",
+      "H016"
+    ],
+    "human_authority": "final theoretical supplement",
+    "source_file": "K_loop_ReL.wl; K_loop_ImL.wl",
+    "verification_type": "SYMBOLICALLY_VERIFIED"
+  },
+  {
+    "caveat": "Not general multiband.",
+    "claim": "The Rice\u2013Mele loop sector vanishes.",
+    "claim_type": "model-specific vanishing",
+    "conversation_evidence": "No mutually distinct triple for N=2.",
+    "current_status": "PASS",
+    "derivation_steps": [
+      "H018"
+    ],
+    "human_authority": "verified specialization",
+    "source_file": "modify4_to_modify5_consistency_validation.wl",
+    "verification_type": "SYMBOLICALLY_VERIFIED"
+  },
+  {
+    "caveat": "Integrand not pointwise zero.",
+    "claim": "The Rice\u2013Mele center contribution vanishes after BZ integration.",
+    "claim_type": "model-specific integrated cancellation",
+    "conversation_evidence": "Center integrand is BZ odd under spinless TRS.",
+    "current_status": "PASS",
+    "derivation_steps": [
+      "H018"
+    ],
+    "human_authority": "verified specialization",
+    "source_file": "sigma_xxx_theoretical_derivation_supplement.pdf",
+    "verification_type": "SYMBOLICALLY_VERIFIED"
+  },
+  {
+    "caveat": "Numerical regression does not replace symbolic specialization logic.",
+    "claim": "The Rice\u2013Mele specialization is correct.",
+    "claim_type": "model regression",
+    "conversation_evidence": "OverallGate PASS and max discrepancy 7.733361639332e-9<1e-8.",
+    "current_status": "PASS_WITH_NUMERICAL_TOLERANCE",
+    "derivation_steps": [
+      "H018",
+      "H020"
+    ],
+    "human_authority": "verified specialization plus numerical regression",
+    "source_file": "modify4_to_modify5_consistency_validation.wl",
+    "verification_type": "SYMBOLICALLY_VERIFIED_AND_NUMERICALLY_SUPPORTED"
+  },
+  {
+    "caveat": "Post-raw small-Gamma fit.",
+    "claim": "Low-temperature insulating behavior is O(Gamma^2).",
+    "claim_type": "asymptotic scaling",
+    "conversation_evidence": "mu=0, beta=1000/t0; leading linear term suppressed.",
+    "current_status": "SUPPORTED",
+    "derivation_steps": [
+      "H021"
+    ],
+    "human_authority": "human-supplied validation summary",
+    "source_file": "Rice\u2013Mele scaling outputs",
+    "verification_type": "NUMERICALLY_SUPPORTED"
+  },
+  {
+    "caveat": "Exact fit window missing.",
+    "claim": "High-temperature insulating behavior is O(Gamma).",
+    "claim_type": "asymptotic scaling",
+    "conversation_evidence": "In-gap high-temperature regime reported as linear.",
+    "current_status": "SUPPORTED",
+    "derivation_steps": [
+      "H021"
+    ],
+    "human_authority": "human-supplied validation summary",
+    "source_file": "Rice\u2013Mele scaling outputs",
+    "verification_type": "NUMERICALLY_SUPPORTED"
+  },
+  {
+    "caveat": "",
+    "claim": "Metallic behavior is predominantly O(Gamma).",
+    "claim_type": "asymptotic scaling",
+    "conversation_evidence": "mu=0.15 t0 reported as predominantly linear.",
+    "current_status": "SUPPORTED",
+    "derivation_steps": [
+      "H021"
+    ],
+    "human_authority": "human-supplied validation summary",
+    "source_file": "Rice\u2013Mele scaling outputs",
+    "verification_type": "NUMERICALLY_SUPPORTED"
+  },
+  {
+    "caveat": "Not full Eq.(5) equality.",
+    "claim": "The pair-shift plus branch matches Anan Eq.(6).",
+    "claim_type": "coefficient comparison",
+    "conversation_evidence": "Convention map Delta_Anan=-d.",
+    "current_status": "PASS",
+    "derivation_steps": [
+      "H017"
+    ],
+    "human_authority": "verified theoretical supplement",
+    "source_file": "sigma_xxx_theoretical_derivation_supplement.pdf",
+    "verification_type": "SYMBOLICALLY_VERIFIED"
+  },
+  {
+    "caveat": "",
+    "claim": "The loop object equals Anan Eq.(7).",
+    "claim_type": "reference comparison",
+    "conversation_evidence": "Same A_ab A_bc A_ca geometry; coefficient denominator does not match.",
+    "current_status": "STRUCTURAL_ONLY_NOT_LITERAL_EQUALITY",
+    "derivation_steps": [
+      "H017"
+    ],
+    "human_authority": "final supplement limits claim",
+    "source_file": "sigma_xxx_theoretical_derivation_supplement.pdf",
+    "verification_type": "STRUCTURALLY_VERIFIED"
+  },
+  {
+    "caveat": "Projected sigma_xxx only.",
+    "claim": "General sigma_abc is established.",
+    "claim_type": "scope claim",
+    "conversation_evidence": "Projected matrices collapsed independent Cartesian labels.",
+    "current_status": "FALSE",
+    "derivation_steps": [
+      "S004"
+    ],
+    "human_authority": "explicit human rejection",
+    "source_file": "fullmodify4_summary_report.pdf",
+    "verification_type": "CONTRADICTED"
+  },
+  {
+    "caveat": "Replay may verify named historical objects only.",
+    "claim": "Canonical promotion is authorized.",
+    "claim_type": "workflow authority",
+    "conversation_evidence": "Do not claim autonomous discovery or promote new canonical formulas.",
+    "current_status": "FORBIDDEN",
+    "derivation_steps": [],
+    "human_authority": "current extraction instruction",
+    "source_file": null,
+    "verification_type": "HUMAN_CONFIRMED"
+  }
+]

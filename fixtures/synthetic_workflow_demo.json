@@ -1,0 +1,51 @@
+{
+  "workflow_id": "synthetic-demo-001",
+  "workflow_name": "Synthetic Planner-Executor-Verifier Demo",
+  "description": "Demonstrates a complete 3-stage workflow with role isolation and fail-closed behavior on the ORCH controller.",
+  "stages": [
+    {
+      "stage_id": "plan-1",
+      "role": "global_planner",
+      "task_contract": {
+        "task_id": "synth-plan-001",
+        "role": "global_planner",
+        "objective": "Plan a synthetic symbolic simplification workflow with index decomposition",
+        "authorized_inputs": [],
+        "required_outputs": ["plan_output.json"],
+        "allowed_actions": ["read_inputs", "create_plan", "decompose_task", "map_dependencies"],
+        "forbidden_actions": ["execute_implementation", "verify_results", "promote_canonical", "self_verify"],
+        "claim_boundary": {"max_claim_level": "planning"}
+      }
+    },
+    {
+      "stage_id": "exec-1",
+      "role": "executor",
+      "depends_on": ["plan-1"],
+      "task_contract": {
+        "task_id": "synth-exec-001",
+        "role": "executor",
+        "objective": "Execute index decomposition on a synthetic symbolic expression",
+        "authorized_inputs": [{"path": "plan_output.json", "sha256": "PLACEHOLDER"}],
+        "required_outputs": ["execution_output.json", "output_sha_manifest.json"],
+        "allowed_actions": ["read_frozen_inputs", "execute_transformations", "write_outputs", "generate_sha_manifest"],
+        "forbidden_actions": ["verify_own_output", "repair_own_output", "promote_canonical", "self_verify"],
+        "claim_boundary": {"max_claim_level": "execution"}
+      }
+    },
+    {
+      "stage_id": "verify-1",
+      "role": "independent_verifier",
+      "depends_on": ["exec-1"],
+      "task_contract": {
+        "task_id": "synth-verify-001",
+        "role": "independent_verifier",
+        "objective": "Independently verify the executor output",
+        "authorized_inputs": [{"path": "execution_output.json", "sha256": "PLACEHOLDER"}],
+        "required_outputs": ["verifier_result_envelope.json"],
+        "allowed_actions": ["read_frozen_executor_artifacts", "validate_sha_manifests", "recompute_results", "issue_verdict"],
+        "forbidden_actions": ["edit_executor_outputs", "repair_executor_outputs", "read_executor_scratch", "self_verify"],
+        "claim_boundary": {"max_claim_level": "verification"}
+      }
+    }
+  ]
+}

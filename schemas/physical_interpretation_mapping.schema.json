@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/scientific-symbolic-repo/schemas/physical_interpretation_mapping.schema.json",
+  "title": "Physical Interpretation Mapping",
+  "description": "Maps mathematical expressions to their physical interpretations. Supports 5 interpretation types and documents limiting cases.",
+  "version": "0.1.0",
+  "type": "object",
+  "required": [
+    "interpretation_id",
+    "equation_label",
+    "interpretation_type",
+    "physical_meaning"
+  ],
+  "properties": {
+    "interpretation_id": {
+      "type": "string",
+      "description": "Unique identifier for this interpretation."
+    },
+    "equation_label": {
+      "type": "string",
+      "description": "Equation label from the INTERFACE CONTRACT."
+    },
+    "interpretation_type": {
+      "type": "string",
+      "enum": [
+        "term_by_term_physical_origin",
+        "tensorial_structure_meaning",
+        "parametric_dependence_explanation",
+        "limiting_case_behavior",
+        "connection_to_observable"
+      ],
+      "description": "Type of physical interpretation. One of 5 allowed types."
+    },
+    "physical_meaning": {
+      "type": "string",
+      "description": "Narrative explanation of the physical meaning."
+    },
+    "term_interpretations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["term_index", "mathematical_form", "physical_origin", "physical_significance"],
+        "properties": {
+          "term_index": {"type": "integer"},
+          "mathematical_form": {"type": "string"},
+          "physical_origin": {"type": "string"},
+          "physical_significance": {"type": "string"},
+          "expected_magnitude": {"type": "string"},
+          "symmetry_properties": {"type": "string"},
+          "connection_to_other_terms": {"type": "string"}
+        }
+      },
+      "description": "Required for term_by_term_physical_origin: interpretation of individual terms."
+    },
+    "tensorial_interpretation": {
+      "type": "object",
+      "properties": {
+        "index_structure": {"type": "string"},
+        "tensor_rank": {"type": "integer"},
+        "transformation_properties": {"type": "string"},
+        "symmetry_type": {"type": "string"},
+        "conservation_law_connection": {"type": "string"}
+      },
+      "description": "Required for tensorial_structure_meaning: interpretation of index structure."
+    },
+    "parametric_interpretation": {
+      "type": "object",
+      "properties": {
+        "parameter": {"type": "string"},
+        "role_in_expression": {"type": "string"},
+        "monotonicity": {"type": "string"},
+        "scaling_behavior": {"type": "string"}
+      },
+      "description": "Required for parametric_dependence_explanation."
+    },
+    "limiting_cases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["limit_description", "limit_expression", "physical_meaning_in_limit"],
+        "properties": {
+          "limit_description": {"type": "string"},
+          "limit_expression": {"type": "string"},
+          "limit_parameters": {"type": "object"},
+          "physical_meaning_in_limit": {"type": "string"},
+          "known_benchmark": {"type": "string"},
+          "benchmark_reference": {"type": "string"},
+          "agreement_with_benchmark": {"type": "string", "enum": ["EXACT", "APPROXIMATE", "QUALITATIVE", "DISAGREES", "NOT_CHECKED"]}
+        }
+      }
+    },
+    "observable_connection": {
+      "type": "object",
+      "properties": {
+        "observable_name": {"type": "string"},
+        "measurement_protocol": {"type": "string"},
+        "relationship_to_expression": {"type": "string"},
+        "typical_magnitude": {"type": "string"},
+        "experimental_signature": {"type": "string"}
+      },
+      "description": "Required for connection_to_observable."
+    },
+    "assumptions": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Assumptions underlying this physical interpretation."
+    },
+    "caveats": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "created_at": {"type": "string", "format": "date-time"},
+        "physical_domain": {"type": "string"},
+        "interpretation_sha256": {"type": "string"}
+      }
+    }
+  },
+  "additionalProperties": false
+}

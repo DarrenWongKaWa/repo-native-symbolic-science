@@ -1,0 +1,20 @@
+{
+  "combined_public_benchmark_readiness": {
+    "executor_result": "NONINTERACTIVE_REPLAY_COMPLETED_WITH_BOUNDED_CAVEATS",
+    "independent_verification": "PENDING",
+    "local_exact_algebra": "PASS_WITH_CAVEAT",
+    "status": "READY_AS_PUBLIC_REPLAY_BENCHMARK_WITH_BOUNDED_CAVEATS"
+  },
+  "conversation_bundle_standalone_readiness": {
+    "blocking_items": [
+      "Mount immutable authoritative raw source and checksum.",
+      "Mount complete 118-row sector tables.",
+      "Mount seven pre-IBP and four final kernel tables.",
+      "Mount F_pair_total.wl and deterministic symbolic verifier scripts.",
+      "Mount Rice\u2013Mele eigenstate/gauge and numerical data/scripts.",
+      "Provide an execution environment manifest."
+    ],
+    "meaning": "the conversation bundle alone is not a self-contained algebraic replay package",
+    "safe_for_noninteractive_codex_replay": false
+  }
+}

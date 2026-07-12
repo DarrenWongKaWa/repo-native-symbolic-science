@@ -1,0 +1,17 @@
+R_ij = C₀ δ_ij + C₂ I_ij + O(ε², 1/Λ)
+
+where:
+  C₀ = ∫₀^Λ dk/k [f(k) + h(k)] + O(ε)
+  C₂ = ∫₀^Λ dk/k [g(k) - h(k)] + O(ε)
+  I_ij = (δ_ij - d n_i n_j / n²) / (d - 1)
+
+This is the final integrated form of the two-sector response kernel.
+The tensor structure has been reduced to two independent coefficients (C₀, C₂)
+multiplying two basis tensors (δ_ij, I_ij).
+The error term O(ε², 1/Λ) accounts for both the ε-expansion truncation
+and finite-cutoff corrections.
+
+Physical interpretation:
+  - C₀: isotropic (trace) response coefficient
+  - C₂: anisotropic (traceless) response coefficient
+  - The decomposition is exact up to the stated error terms.

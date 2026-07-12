@@ -1,0 +1,9 @@
+{
+  "branch": "benchmark/sigma-xxx-finite-gamma-replay",
+  "conversation_bundle_primary_oracle": false,
+  "global_ibp_authorized": false,
+  "independent_verification": "PENDING",
+  "local_exact_algebra": "PASS_WITH_CAVEAT",
+  "updated_at_utc": "2026-07-12T09:24:12Z",
+  "verdict": "SIGMA_XXX_DECISION_PROVENANCE_COMMITTED_AND_PUSHED"
+}

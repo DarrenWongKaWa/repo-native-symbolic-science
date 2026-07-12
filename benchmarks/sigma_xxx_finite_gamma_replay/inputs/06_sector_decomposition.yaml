@@ -1,0 +1,44 @@
+scope: projected sigma_xxx sector decomposition supplied by modify4_anan
+row_ledger_from_human_pipeline:
+  center_C0: 8
+  pair_C1: 50
+  loop_C2: 60
+  total: 118
+sectors:
+- name: center C0(n)
+  role: center-band/no additional internal band sector
+  source:
+    path: modify4_anan/output/center_sector_decomposition.wl
+    sha256: 8d5a2b0fe2ca2568882f59295d20299dcfb91235890b4e7960588455a6281524
+    bytes: 156
+    classes:
+    - SECTOR_DEFINITION_SOURCE
+    - INTERMEDIATE_SYMBOLIC_ORACLE
+- name: pair C1(n,m)
+  role: two-band pair sector
+  source:
+    path: modify4_anan/output/pair_sector_anan_decomposition.wl
+    sha256: 9aa70a82b01601280eeb2e096c2ef1a549f247079ab7501750f1184b3fc5809f
+    bytes: 256
+    classes:
+    - SECTOR_DEFINITION_SOURCE
+    - INTERMEDIATE_SYMBOLIC_ORACLE
+- name: loop C2(n,m,l)
+  role: true three-band loop sector
+  source:
+    path: modify4_anan/output/loop_sector_anan_decomposition.wl
+    sha256: ef7759d5a602b7e66d999c856600345241307db393afb9ecae0f19ae144d1db7
+    bytes: 248
+    classes:
+    - SECTOR_DEFINITION_SOURCE
+    - INTERMEDIATE_SYMBOLIC_ORACLE
+checkpoint_status:
+  source:
+    path: modify4_anan/final_projected_multiband_report/CURRENT_STATUS.md
+    sha256: e420be919f17e3cf37d0a55588c8b1e49047971fcf137fab89b733cdd63308c8
+    bytes: 1321
+    classes:
+    - VALIDATION_EVIDENCE
+    - PROVENANCE_ONLY
+  allowed_claim: pair sector closed/post-IBP, loop sector orbit-canonicalized, center
+    sector retained/audited; not full tensorial sigma_abc

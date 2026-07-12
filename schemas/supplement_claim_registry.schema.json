@@ -1,0 +1,125 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/scientific-symbolic-repo/schemas/supplement_claim_registry.schema.json",
+  "title": "Supplement Claim Registry",
+  "description": "Registry of all scientific claims made in a supplement. Each claim has a type (12 allowed), scope, verification status, canonical status, and explicit boundary conditions.",
+  "version": "0.1.0",
+  "type": "object",
+  "required": [
+    "registry_id",
+    "supplement_request_id",
+    "claims"
+  ],
+  "properties": {
+    "registry_id": {
+      "type": "string",
+      "description": "Unique identifier for this claim registry."
+    },
+    "supplement_request_id": {
+      "type": "string",
+      "description": "Reference to the supplement request this registry belongs to."
+    },
+    "claims": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "claim_id", "claim_type", "description", "equation_labels",
+          "canonical_status", "verification_status", "claim_boundary"
+        ],
+        "properties": {
+          "claim_id": {
+            "type": "string",
+            "description": "Unique identifier for this claim."
+          },
+          "claim_type": {
+            "type": "string",
+            "enum": [
+              "definitional_identity",
+              "pointwise_tensorial_identity",
+              "integrated_identity",
+              "projected_identity",
+              "assumption_bound_identity",
+              "derived_asymptotic_form",
+              "numerical_observation",
+              "physical_interpretation",
+              "methodological_result",
+              "reconstruction_formula",
+              "historical_citation",
+              "not_established_pattern"
+            ],
+            "description": "Type of claim. One of 12 allowed claim types."
+          },
+          "description": {
+            "type": "string",
+            "description": "Human-readable description of the claim."
+          },
+          "equation_labels": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Equation labels from the INTERFACE CONTRACT that this claim pertains to."
+          },
+          "canonical_status": {
+            "type": "string",
+            "enum": ["CANONICAL", "INTEGRATED", "VERIFIED", "CANDIDATE", "NOT_ESTABLISHED"],
+            "description": "Canonical status of this claim."
+          },
+          "verification_status": {
+            "type": "string",
+            "enum": ["VERIFIED", "NUMERICALLY_SUPPORTED", "UNVERIFIED", "NOT_APPLICABLE"],
+            "description": "Verification status of this claim."
+          },
+          "claim_boundary": {
+            "type": "object",
+            "required": ["scope", "assumptions", "limitations"],
+            "properties": {
+              "scope": {"type": "string"},
+              "assumptions": {"type": "array", "items": {"type": "string"}},
+              "limitations": {"type": "array", "items": {"type": "string"}},
+              "counterexamples_known": {"type": "boolean"},
+              "counterexample_description": {"type": "string"}
+            }
+          },
+          "evidence_mapping_refs": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "References to evidence mapping entries supporting this claim."
+          },
+          "parent_claim_ids": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Claims this claim depends on."
+          },
+          "human_gate_status": {
+            "type": "string",
+            "enum": ["NOT_REQUIRED", "PENDING", "PASSED", "FAILED"]
+          },
+          "caveats": {
+            "type": "array",
+            "items": {"type": "string"}
+          }
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "properties": {
+        "total_claims": {"type": "integer"},
+        "canonical_count": {"type": "integer"},
+        "verified_count": {"type": "integer"},
+        "candidate_count": {"type": "integer"},
+        "not_established_count": {"type": "integer"},
+        "claims_by_type": {"type": "object"}
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "created_at": {"type": "string", "format": "date-time"},
+        "updated_at": {"type": "string", "format": "date-time"},
+        "registry_sha256": {"type": "string"}
+      }
+    }
+  },
+  "additionalProperties": false
+}

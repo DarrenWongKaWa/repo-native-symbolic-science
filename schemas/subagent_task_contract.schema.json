@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SubagentTaskContract",
+  "description": "Frozen task contract for a subagent: immutable identity, authorized inputs, required outputs, and claim boundary. Schema version 1.0.0.",
+  "type": "object",
+  "required": [
+    "task_id",
+    "parent_orchestration_id",
+    "role",
+    "objective",
+    "authorized_inputs",
+    "input_sha_manifest",
+    "required_outputs",
+    "output_directory",
+    "dependency_gate_ids",
+    "allowed_actions",
+    "forbidden_actions",
+    "validation_commands",
+    "claim_boundary",
+    "completion_states"
+  ],
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "description": "Immutable unique task identifier."
+    },
+    "parent_orchestration_id": {
+      "type": "string",
+      "description": "Reference to the parent orchestration."
+    },
+    "role": {
+      "type": "string",
+      "description": "Assigned role for this task."
+    },
+    "objective": {
+      "type": "string",
+      "description": "Human-readable description of the task objective."
+    },
+    "authorized_inputs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "sha256"],
+        "properties": {
+          "path": { "type": "string" },
+          "sha256": { "type": "string" },
+          "description": { "type": "string" }
+        }
+      },
+      "description": "Frozen input paths with their SHA-256 hashes."
+    },
+    "input_sha_manifest": {
+      "type": "object",
+      "required": ["generated_at", "files"],
+      "properties": {
+        "generated_at": { "type": "string", "format": "date-time" },
+        "files": {
+          "type": "object",
+          "additionalProperties": { "type": "string" },
+          "description": "Map of file path to SHA-256 hash."
+        }
+      },
+      "description": "Complete SHA-256 manifest for all authorized inputs."
+    },
+    "required_outputs": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Paths that must be materialized for this task to be considered complete.",
+      "minItems": 1
+    },
+    "output_directory": {
+      "type": "string",
+      "description": "Directory where outputs must be written. Must be disjoint from other concurrent writers."
+    },
+    "dependency_gate_ids": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "IDs of dependency gates that must pass before this task is eligible."
+    },
+    "allowed_actions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Actions this task is authorized to perform."
+    },
+    "forbidden_actions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Actions this task is explicitly forbidden from performing."
+    },
+    "validation_commands": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Commands to run for validating task outputs."
+    },
+    "claim_boundary": {
+      "type": "object",
+      "required": ["max_claim_level", "authorized_claims", "prohibited_claims"],
+      "properties": {
+        "max_claim_level": { "type": "string" },
+        "authorized_claims": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "prohibited_claims": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "completion_states": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Task states that qualify as completion.",
+      "minItems": 1
+    },
+    "timeout_seconds": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "max_retries": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "frozen_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when inputs were frozen and task became immutable."
+    }
+  },
+  "additionalProperties": false
+}

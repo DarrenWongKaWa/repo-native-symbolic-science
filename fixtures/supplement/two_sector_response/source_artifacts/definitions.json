@@ -1,0 +1,72 @@
+{
+  "symbols": {
+    "R_ij(k)": {
+      "description": "Two-point response kernel tensor in momentum space, rank-2 symmetric",
+      "domain": "d-dimensional Euclidean momentum space",
+      "properties": ["symmetric", "transverse-traceless decomposition supported"]
+    },
+    "A_ij(k)": {
+      "description": "Sector A (scalar + longitudinal) kernel component",
+      "expression": "f(k) delta_ij + g(k) k_i k_j / k^2",
+      "symbols_used": ["f(k)", "g(k)", "delta_ij", "k_i", "k_j", "k^2"]
+    },
+    "B_ij(k)": {
+      "description": "Sector B (transverse) kernel component",
+      "expression": "h(k) (delta_ij - k_i k_j / k^2)",
+      "symbols_used": ["h(k)", "delta_ij", "k_i", "k_j", "k^2"]
+    },
+    "delta_ij": {
+      "description": "Kronecker delta in d dimensions",
+      "properties": ["delta_ii = d", "symmetric"]
+    },
+    "epsilon": {
+      "description": "Dimensionless expansion parameter, epsilon = d - 2, small positive",
+      "properties": ["0 < epsilon << 1"]
+    },
+    "Lambda": {
+      "description": "Ultraviolet momentum cutoff scale",
+      "properties": ["Lambda >> 1"]
+    },
+    "f(k)": {
+      "description": "Scalar coefficient function for the isotropic part of sector A",
+      "properties": ["real", "differentiable on (0, Lambda]"]
+    },
+    "g(k)": {
+      "description": "Scalar coefficient function for the longitudinal part of sector A",
+      "properties": ["real", "differentiable on (0, Lambda]"]
+    },
+    "h(k)": {
+      "description": "Scalar coefficient function for the transverse part of sector B",
+      "properties": ["real", "differentiable on (0, Lambda]"]
+    },
+    "C_0": {
+      "description": "Leading coefficient of the isotropic integrated response",
+      "form": "C_0 = integral_0^Lambda dk/k f(k) * (1 + O(epsilon))",
+      "properties": ["real", "cutoff-dependent"]
+    },
+    "C_2": {
+      "description": "Coefficient of the first anisotropic correction",
+      "form": "C_2 = integral_0^Lambda dk/k g(k) * (1 + O(epsilon))",
+      "properties": ["real", "cutoff-dependent"]
+    },
+    "I_ij": {
+      "description": "Normalized anisotropic projection tensor",
+      "expression": "I_ij = (delta_ij - d * n_i n_j / n^2) / (d - 1)",
+      "properties": ["symmetric", "traceless", "unit-normalized: I_ij I_ij = 1"]
+    },
+    "F(k)": {
+      "description": "Generic differentiable function on (0, Lambda] used in product-rule identity",
+      "properties": ["real", "differentiable"]
+    },
+    "G_ij(k)": {
+      "description": "Generic differentiable rank-2 tensor function on (0, Lambda] used in product-rule identity",
+      "properties": ["real", "symmetric", "differentiable"]
+    }
+  },
+  "conventions": {
+    "summation_convention": "Einstein summation over repeated indices",
+    "dimension": "d = 2 + epsilon",
+    "measure": "dk/k",
+    "index_range": "i, j in {1, ..., d}"
+  }
+}

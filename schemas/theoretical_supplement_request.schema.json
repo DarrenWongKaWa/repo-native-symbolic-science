@@ -1,0 +1,199 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/scientific-symbolic-repo/schemas/theoretical_supplement_request.schema.json",
+  "title": "Theoretical Supplement Request",
+  "description": "Top-level request specifying the scientific scope, artifact manifest, section profile, claim boundary, and reader pathway targets for a supplementary material build.",
+  "version": "0.1.0",
+  "type": "object",
+  "required": [
+    "request_id",
+    "scientific_scope",
+    "artifact_manifest",
+    "section_profile",
+    "claim_boundary",
+    "reader_pathway_targets"
+  ],
+  "properties": {
+    "request_id": {
+      "type": "string",
+      "description": "Unique identifier for this supplement request."
+    },
+    "scientific_scope": {
+      "type": "object",
+      "required": ["physical_system", "theoretical_framework", "target_quantity", "independent_variables", "model_parameters"],
+      "properties": {
+        "physical_system": {
+          "type": "string",
+          "description": "Description of the physical system under study."
+        },
+        "theoretical_framework": {
+          "type": "string",
+          "description": "Theoretical framework used (e.g., linear response, Kubo formula, Boltzmann transport)."
+        },
+        "target_quantity": {
+          "type": "string",
+          "description": "The primary physical quantity being derived or computed."
+        },
+        "independent_variables": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "List of independent variables in the derivation."
+        },
+        "model_parameters": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "List of model parameters appearing in the derivation."
+        },
+        "dimensionality": {
+          "type": "string",
+          "description": "Spatial dimensionality of the system."
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Key physical assumptions made in the derivation."
+        }
+      }
+    },
+    "artifact_manifest": {
+      "type": "object",
+      "required": ["derivation_steps", "equations", "evidence_mappings"],
+      "properties": {
+        "derivation_steps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["step_id", "step_label", "input_artifacts"],
+            "properties": {
+              "step_id": {"type": "string", "description": "Step identifier from the INTERFACE CONTRACT step IDs."},
+              "step_label": {"type": "string", "description": "Human-readable label for this step."},
+              "input_artifacts": {"type": "array", "items": {"type": "string"}},
+              "output_artifacts": {"type": "array", "items": {"type": "string"}}
+            }
+          }
+        },
+        "equations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["equation_label", "latex_representation"],
+            "properties": {
+              "equation_label": {"type": "string", "description": "Label from the INTERFACE CONTRACT equation labels."},
+              "latex_representation": {"type": "string", "description": "LaTeX representation of the equation."},
+              "source_step_id": {"type": "string", "description": "Step that produced this equation."}
+            }
+          }
+        },
+        "evidence_mappings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["equation_label", "claim_type", "verification_verdict"],
+            "properties": {
+              "equation_label": {"type": "string"},
+              "claim_type": {"type": "string"},
+              "verification_verdict": {"type": "string"}
+            }
+          }
+        }
+      }
+    },
+    "section_profile": {
+      "type": "object",
+      "required": ["sections"],
+      "properties": {
+        "sections": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["section_code", "title", "content_summary"],
+            "properties": {
+              "section_code": {
+                "type": "string",
+                "enum": [
+                  "SEC_01_SCOPE", "SEC_02_CONVENTIONS", "SEC_03_STARTING_RESPONSE",
+                  "SEC_04_DECOMPOSITION", "SEC_05_SECTORS", "SEC_06_IDENTITIES",
+                  "SEC_07_IBP", "SEC_08_FINAL_RESULT", "SEC_09_INTERPRETATION",
+                  "SEC_10_LIMITS", "SEC_11_VALIDATION", "SEC_12_EVIDENCE_MAP",
+                  "SEC_13_ELECTRONIC_APPENDIX", "SEC_14_REPRODUCTION"
+                ]
+              },
+              "title": {"type": "string"},
+              "content_summary": {"type": "string"},
+              "required_equations": {"type": "array", "items": {"type": "string"}},
+              "section_role": {
+                "type": "string",
+                "enum": ["scoping", "definitional", "derivation", "result", "validation", "metadata"]
+              }
+            }
+          },
+          "minItems": 14,
+          "maxItems": 14
+        }
+      }
+    },
+    "claim_boundary": {
+      "type": "object",
+      "required": ["claims_included", "claims_excluded"],
+      "properties": {
+        "claims_included": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Claims explicitly included in this supplement."
+        },
+        "claims_excluded": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Claims explicitly excluded from this supplement."
+        },
+        "boundary_justification": {"type": "string"}
+      }
+    },
+    "reader_pathway_targets": {
+      "type": "object",
+      "required": ["personas"],
+      "properties": {
+        "personas": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["persona_id", "route_sections"],
+            "properties": {
+              "persona_id": {
+                "type": "string",
+                "enum": ["physics_first", "derivation_checking", "machine_reproduction"]
+              },
+              "route_sections": {
+                "type": "array",
+                "items": {"type": "string"}
+              },
+              "entry_point": {"type": "string"},
+              "exit_point": {"type": "string"},
+              "expected_time_minutes": {"type": "integer"}
+            }
+          },
+          "minItems": 3,
+          "maxItems": 3
+        }
+      }
+    },
+    "constraints": {
+      "type": "object",
+      "properties": {
+        "maximum_equation_count": {"type": "integer"},
+        "maximum_page_estimate": {"type": "integer"},
+        "required_output_formats": {
+          "type": "array",
+          "items": {"type": "string", "enum": ["LaTeX", "PDF", "HTML", "Markdown"]}
+        }
+      }
+    },
+    "blocker_5_status": {
+      "type": "string",
+      "enum": ["ACTIVE", "LIFTED"],
+      "description": "Status of Blocker 5. Must be ACTIVE to prevent premature closure of scientific sectors.",
+      "default": "ACTIVE"
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/scientific-symbolic-repo/schemas/reader_pathway.schema.json",
+  "title": "Reader Pathway",
+  "description": "Defines reading pathways through the supplement for three reader personas: physics_first, derivation_checking, and machine_reproduction. Each pathway specifies which sections to read, in what order, and with what guidance.",
+  "version": "0.1.0",
+  "type": "object",
+  "required": [
+    "pathway_id",
+    "supplement_request_id",
+    "pathways"
+  ],
+  "properties": {
+    "pathway_id": {
+      "type": "string",
+      "description": "Unique identifier for this pathway definition."
+    },
+    "supplement_request_id": {
+      "type": "string",
+      "description": "Reference to the supplement request."
+    },
+    "pathways": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "persona", "route", "entry_section", "exit_section",
+          "estimated_time_minutes", "prerequisites"
+        ],
+        "properties": {
+          "persona": {
+            "type": "string",
+            "enum": ["physics_first", "derivation_checking", "machine_reproduction"],
+            "description": "Reader persona this pathway is designed for."
+          },
+          "persona_description": {
+            "type": "string",
+            "description": "Description of the persona's background and goals."
+          },
+          "route": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["section_code", "reading_instruction"],
+              "properties": {
+                "section_code": {
+                  "type": "string",
+                  "enum": [
+                    "SEC_01_SCOPE", "SEC_02_CONVENTIONS", "SEC_03_STARTING_RESPONSE",
+                    "SEC_04_DECOMPOSITION", "SEC_05_SECTORS", "SEC_06_IDENTITIES",
+                    "SEC_07_IBP", "SEC_08_FINAL_RESULT", "SEC_09_INTERPRETATION",
+                    "SEC_10_LIMITS", "SEC_11_VALIDATION", "SEC_12_EVIDENCE_MAP",
+                    "SEC_13_ELECTRONIC_APPENDIX", "SEC_14_REPRODUCTION"
+                  ]
+                },
+                "reading_instruction": {
+                  "type": "string",
+                  "enum": ["READ_FULL", "READ_EQUATIONS_ONLY", "READ_SUMMARY", "SKIM", "SKIP", "REFERENCE_ONLY"]
+                },
+                "focus_topics": {
+                  "type": "array",
+                  "items": {"type": "string"},
+                  "description": "Specific topics to focus on in this section."
+                },
+                "expected_time_minutes": {
+                  "type": "integer"
+                }
+              }
+            }
+          },
+          "entry_section": {
+            "type": "string",
+            "description": "Section code where this pathway begins."
+          },
+          "exit_section": {
+            "type": "string",
+            "description": "Section code where this pathway ends."
+          },
+          "estimated_time_minutes": {
+            "type": "integer",
+            "description": "Estimated total reading time for this pathway."
+          },
+          "prerequisites": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Prerequisite knowledge or sections required."
+          },
+          "key_equations": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Most important equations for this persona."
+          },
+          "skip_justification": {
+            "type": "string",
+            "description": "Why certain sections are skipped for this persona."
+          },
+          "learning_objectives": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "What this persona should learn from reading."
+          }
+        }
+      },
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "cross_pathway_references": {
+      "type": "object",
+      "description": "References that help readers transition between pathways.",
+      "properties": {
+        "when_derivation_reader_needs_physics": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "when_physics_reader_needs_derivation": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "when_machine_reader_needs_physics": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "created_at": {"type": "string", "format": "date-time"},
+        "pathway_sha256": {"type": "string"}
+      }
+    }
+  },
+  "additionalProperties": false
+}
