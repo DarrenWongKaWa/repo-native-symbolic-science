@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "HumanGateEscalation",
+  "description": "Materialized human-decision gate: pauses execution until a recorded repo-native decision is frozen. Schema version 1.0.0.",
+  "type": "object",
+  "required": [
+    "gate_id",
+    "orchestration_id",
+    "triggering_task_id",
+    "decision_type",
+    "question",
+    "known_context_paths",
+    "known_context_shas",
+    "allowed_responses",
+    "blocked_task_ids",
+    "decision_artifact_path",
+    "status",
+    "created_at",
+    "resolved_at"
+  ],
+  "properties": {
+    "gate_id": {
+      "type": "string",
+      "description": "Unique identifier for this human gate."
+    },
+    "orchestration_id": {
+      "type": "string",
+      "description": "Reference to the parent orchestration."
+    },
+    "triggering_task_id": {
+      "type": "string",
+      "description": "Task ID that triggered this escalation."
+    },
+    "decision_type": {
+      "type": "string",
+      "enum": [
+        "missing_definition",
+        "index_role",
+        "assumption",
+        "symmetry",
+        "boundary_condition",
+        "integration_by_parts",
+        "boundary_term_removal",
+        "limit_ordering",
+        "transformation_level_promotion",
+        "canonical_promotion",
+        "publication_claim",
+        "software_or_environment_mutation"
+      ],
+      "description": "Classification of the decision required."
+    },
+    "question": {
+      "type": "string",
+      "description": "Human-readable question for the scientist."
+    },
+    "known_context_paths": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Paths to frozen artifacts providing context for the decision.",
+      "minItems": 1
+    },
+    "known_context_shas": {
+      "type": "object",
+      "additionalProperties": { "type": "string" },
+      "description": "SHA-256 hashes of the context artifacts."
+    },
+    "allowed_responses": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Acceptable response values.",
+      "minItems": 1
+    },
+    "default_response": {
+      "type": "string",
+      "description": "Default response if the human does not respond."
+    },
+    "blocked_task_ids": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Task IDs blocked until this gate is resolved."
+    },
+    "decision_artifact_path": {
+      "type": "string",
+      "description": "Path where the recorded decision will be materialized."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["PENDING", "PRESENTED", "ACKNOWLEDGED", "DECIDED", "FROZEN", "EXPIRED", "WITHDRAWN"],
+      "description": "Current status of the human gate."
+    },
+    "decision": {
+      "type": "string",
+      "description": "The recorded human decision, once made."
+    },
+    "decided_by": {
+      "type": "string",
+      "description": "Identifier of the human who made the decision."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "presented_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "resolved_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the decision was frozen."
+    },
+    "evidence": {
+      "type": "object",
+      "properties": {
+        "decision_rationale": { "type": "string" },
+        "decision_sha": { "type": "string" },
+        "decision_file_size": { "type": "integer" }
+      }
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,72 @@
+{
+  "roles": {
+    "supplement_writer": {
+      "max_claim": "supplement",
+      "allowed_actions": [
+        "read_verified_results",
+        "write_supplement"
+      ],
+      "forbidden_actions": [
+        "self_review_supplement",
+        "promote_canonical"
+      ],
+      "can_verify_self": false,
+      "can_repair": false,
+      "requires_independent_verifier": true
+    },
+    "supplement_reviewer": {
+      "max_claim": "verification",
+      "allowed_actions": [
+        "read_supplement",
+        "review_supplement"
+      ],
+      "forbidden_actions": [
+        "edit_supplement"
+      ],
+      "can_verify_self": false,
+      "can_repair": false,
+      "requires_independent_verifier": false
+    }
+  },
+  "adapters": {
+    "supplement_writer": {
+      "module_path": "validators.supplement_validator",
+      "class_name": "SupplementValidator",
+      "validator_scripts": [
+        "scripts/validate_orch_state_transition.py"
+      ],
+      "required_inputs": [
+        "fixtures/supplement/two_sector_response/derivation_graph.json",
+        "fixtures/supplement/two_sector_response/derivation_steps.jsonl"
+      ],
+      "allowed_actions": [
+        "read_verified_results",
+        "write_supplement"
+      ],
+      "forbidden_actions": [
+        "self_review_supplement",
+        "promote_canonical"
+      ],
+      "claim_authority": "supplement"
+    },
+    "supplement_reviewer": {
+      "module_path": "validators.supplement_validator",
+      "class_name": "SupplementValidator",
+      "validator_scripts": [
+        "validators/supplement_validator.py"
+      ],
+      "required_inputs": [
+        "fixtures/supplement/two_sector_response/derivation_graph.json",
+        "fixtures/supplement/two_sector_response/derivation_steps.jsonl"
+      ],
+      "allowed_actions": [
+        "read_supplement",
+        "review_supplement"
+      ],
+      "forbidden_actions": [
+        "edit_supplement"
+      ],
+      "claim_authority": "verification"
+    }
+  }
+}

@@ -1,0 +1,151 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SubagentResultEnvelope",
+  "description": "Result envelope produced by a subagent upon task completion. Distinguishes materialized artifacts from natural-language summary. Schema version 1.0.0.",
+  "type": "object",
+  "required": [
+    "task_id",
+    "subagent_id",
+    "role",
+    "completion_status",
+    "produced_artifacts",
+    "output_sha_manifest",
+    "validation_results",
+    "claims",
+    "caveats",
+    "blockers",
+    "resource_usage",
+    "started_at",
+    "completed_at"
+  ],
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "description": "Reference to the task contract."
+    },
+    "subagent_id": {
+      "type": "string",
+      "description": "Identifier of the subagent that produced this result."
+    },
+    "role": {
+      "type": "string",
+      "description": "Role of the subagent."
+    },
+    "completion_status": {
+      "type": "string",
+      "enum": ["COMPLETED", "PARTIAL", "FAILED", "TIMED_OUT", "REJECTED"],
+      "description": "The completion outcome. Silence, timeout, or process exit alone never implies COMPLETED."
+    },
+    "produced_artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "sha256", "size_bytes"],
+        "properties": {
+          "path": { "type": "string" },
+          "sha256": { "type": "string" },
+          "size_bytes": { "type": "integer" },
+          "mime_type": { "type": "string" }
+        }
+      },
+      "description": "All artifacts produced, with SHA-256 hashes."
+    },
+    "output_sha_manifest": {
+      "type": "object",
+      "required": ["generated_at", "files"],
+      "properties": {
+        "generated_at": { "type": "string", "format": "date-time" },
+        "files": {
+          "type": "object",
+          "additionalProperties": { "type": "string" },
+          "description": "Map of file path to SHA-256 hash for all outputs."
+        }
+      }
+    },
+    "validation_results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["validator", "passed", "evidence"],
+        "properties": {
+          "validator": { "type": "string" },
+          "passed": { "type": "boolean" },
+          "evidence": { "type": "string" },
+          "details": { "type": "object" }
+        }
+      },
+      "description": "Self-reported validation results."
+    },
+    "claims": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Claims made by this subagent. Must stay within assigned authority."
+    },
+    "caveats": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Known caveats, limitations, or assumptions."
+    },
+    "blockers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["blocker_id", "description"],
+        "properties": {
+          "blocker_id": { "type": "string" },
+          "description": { "type": "string" },
+          "requires_human_decision": { "type": "boolean" }
+        }
+      },
+      "description": "Blockers encountered during execution."
+    },
+    "resource_usage": {
+      "type": "object",
+      "required": ["wall_time_seconds"],
+      "properties": {
+        "wall_time_seconds": { "type": "number" },
+        "cpu_seconds": { "type": "number" },
+        "peak_memory_mb": { "type": "number" }
+      }
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "downstream_eligibility": {
+      "type": "object",
+      "properties": {
+        "eligible": { "type": "boolean" },
+        "eligible_task_ids": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "blocked_task_ids": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "conditions": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "contract_validated": {
+      "type": "boolean",
+      "description": "Whether the controller validated the task contract upon receipt."
+    },
+    "artifacts_materialized": {
+      "type": "boolean",
+      "description": "Whether all required artifacts exist on disk."
+    },
+    "verdict_issued": {
+      "type": "boolean",
+      "description": "Whether an independent verifier has issued a verdict on these results."
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,60 @@
+{
+  "supplement_request_id": "SUPP-002R2-TWO-SECTOR-RESPONSE-001",
+  "request_type": "theoretical_supplement",
+  "target_journal": "Physical Review Letters",
+  "manuscript_id": "MS-2026-07-0001",
+  "supplement_title": "Two-Sector Response Kernel: Complete Derivation, Decomposition, and Limiting Cases",
+  "authors": ["Synthetic Author A", "Synthetic Author B"],
+  "abstract": "This supplement provides the complete derivation of the two-sector response kernel R_ij = C_0 delta_ij + C_2 I_ij from the defining radial momentum integral. We decompose the kernel into scalar+longitudinal (Sector A) and transverse (Sector B) components, apply a product-rule reorganization, project onto basis tensors, integrate analytically, and verify numerically. The epsilon -> 0 limiting case is analyzed, showing the expected isotropic reduction in d = 2. All 96 intermediate terms are provided as an electronic artifact for machine reproducibility.",
+  "sections": [
+    "SEC_01_OVERVIEW",
+    "SEC_02_DEFINITIONS",
+    "SEC_03_STARTING_EXPRESSION",
+    "SEC_04_SCIENTIFIC_IDENTITY",
+    "SEC_05_REORGANIZATION",
+    "SEC_06_SECTOR_DECOMPOSITION",
+    "SEC_07_PROJECTION",
+    "SEC_08_INTEGRATION_SECTOR_A",
+    "SEC_09_INTEGRATION_SECTOR_B",
+    "SEC_10_INTEGRATED_RESULT",
+    "SEC_11_NUMERIC_VERIFICATION",
+    "SEC_12_PHYSICAL_INTERPRETATION",
+    "SEC_13_LIMITING_CASE",
+    "SEC_14_SUPPLEMENT_REQUEST"
+  ],
+  "key_equations": [
+    "eq:def_R",
+    "eq:def_AB",
+    "eq:start",
+    "eq:identity",
+    "eq:reorganized",
+    "eq:sector_A",
+    "eq:sector_B",
+    "eq:projected",
+    "eq:integrated_A",
+    "eq:integrated_B",
+    "eq:final",
+    "eq:limit_eps0",
+    "eq:long_expr"
+  ],
+  "artifact_manifest": {
+    "source_artifacts": [
+      {"file": "definitions.json", "sha": "7e701a591f9e1e863dde09e4c57c0411e5e94571bc0b823892de13d1e55017ce"},
+      {"file": "starting_expression.txt", "sha": "d6a77de36ac11ac045f4026efe4c11419959405f595a2265f7d2d0f45f488749"},
+      {"file": "sector_decomposition.json", "sha": "687c8bf1e41cf92fcc667eff95af7a5b9cfe0a59bdc520dc6ca72f4a3fb70348"},
+      {"file": "scientific_identity.json", "sha": "b1bfc084993ce873d882caef2083499aa4d44b9ca43c158aed0b3f64c536e5b2"},
+      {"file": "integrated_result.txt", "sha": "f323ed102537110118f3c2c9ee0d7a4ad4bc403c4a2e8353ab3efdf4ed218897"},
+      {"file": "limiting_case.txt", "sha": "2d194276241199dd7f1cf28ef94181ff0cc24f06fdc7a967749b5413e2189472"},
+      {"file": "long_expression_artifact.txt", "sha": "eaf0200206a64698de6b82ea0a5888caf56b05c04fe0bccc6971cd365be1a18c"}
+    ]
+  },
+  "reproducibility": {
+    "build_system": "bash",
+    "build_commands": "./reproducibility_package/build_commands.sh",
+    "environment": "./reproducibility_package/environment.txt",
+    "expected_output": "All verification gates passed: exactness, regression, row counts, benchmark."
+  },
+  "fixture_classification": "PUBLIC_SYNTHETIC_ONLY",
+  "version": "0.1.0",
+  "date_generated": "2026-07-11"
+}

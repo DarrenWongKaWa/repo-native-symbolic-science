@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SubagentHandoff",
+  "description": "Frozen artifact-based handoff between a parent agent and a child subagent. A chat message alone is never sufficient. Schema version 1.0.0.",
+  "type": "object",
+  "required": [
+    "handoff_id",
+    "parent_agent",
+    "child_agent",
+    "task_id",
+    "role",
+    "authorized_input_paths",
+    "authorized_input_shas",
+    "forbidden_inputs",
+    "required_outputs",
+    "output_directory",
+    "claim_boundary",
+    "deadline_or_timeout",
+    "completion_status"
+  ],
+  "properties": {
+    "handoff_id": {
+      "type": "string",
+      "description": "Unique identifier for this handoff."
+    },
+    "parent_agent": {
+      "type": "string",
+      "description": "Identifier of the parent agent making the handoff."
+    },
+    "child_agent": {
+      "type": "string",
+      "description": "Identifier of the child agent receiving the handoff."
+    },
+    "child_role": {
+      "type": "string",
+      "description": "Role of the child agent."
+    },
+    "task_id": {
+      "type": "string",
+      "description": "Reference to the task contract."
+    },
+    "role": {
+      "type": "string",
+      "description": "Role assigned for this handoff."
+    },
+    "authorized_input_paths": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Absolute or relative paths the child agent is authorized to read.",
+      "minItems": 1
+    },
+    "authorized_input_shas": {
+      "type": "object",
+      "additionalProperties": { "type": "string" },
+      "description": "Map of authorized input path to frozen SHA-256 hash."
+    },
+    "forbidden_inputs": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Paths the child agent must not access, including hidden reasoning and mutable scratch state."
+    },
+    "required_outputs": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Output artifact paths the child agent must produce.",
+      "minItems": 1
+    },
+    "output_directory": {
+      "type": "string",
+      "description": "Directory where outputs must be written."
+    },
+    "claim_boundary": {
+      "type": "object",
+      "required": ["max_claim_level", "authorized_claims", "prohibited_claims"],
+      "properties": {
+        "max_claim_level": { "type": "string" },
+        "authorized_claims": { "type": "array", "items": { "type": "string" } },
+        "prohibited_claims": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "deadline_or_timeout": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Maximum time in seconds before the handoff times out."
+    },
+    "completion_status": {
+      "type": "string",
+      "enum": ["PENDING", "ACCEPTED", "RUNNING", "COMPLETED", "FAILED", "TIMED_OUT", "REJECTED"],
+      "description": "Current status of this handoff."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "result_envelope_path": {
+      "type": "string",
+      "description": "Path to the subagent result envelope produced by this handoff."
+    }
+  },
+  "additionalProperties": false
+}

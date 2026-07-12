@@ -1,0 +1,129 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/scientific-symbolic-repo/schemas/supplement_section_contract.schema.json",
+  "title": "Supplement Section Contract",
+  "description": "Contract specifying the content, role, and dependencies of each of the 14 standard sections in a theoretical supplement.",
+  "version": "0.1.0",
+  "type": "object",
+  "required": [
+    "contract_id",
+    "supplement_request_id",
+    "section_contracts"
+  ],
+  "properties": {
+    "contract_id": {
+      "type": "string",
+      "description": "Unique identifier for this section contract."
+    },
+    "supplement_request_id": {
+      "type": "string",
+      "description": "Reference to the supplement request."
+    },
+    "section_contracts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "section_code", "title", "section_role", "content_description",
+          "required_equations", "required_artifacts", "reader_pathway_relevance"
+        ],
+        "properties": {
+          "section_code": {
+            "type": "string",
+            "enum": [
+              "SEC_01_SCOPE", "SEC_02_CONVENTIONS", "SEC_03_STARTING_RESPONSE",
+              "SEC_04_DECOMPOSITION", "SEC_05_SECTORS", "SEC_06_IDENTITIES",
+              "SEC_07_IBP", "SEC_08_FINAL_RESULT", "SEC_09_INTERPRETATION",
+              "SEC_10_LIMITS", "SEC_11_VALIDATION", "SEC_12_EVIDENCE_MAP",
+              "SEC_13_ELECTRONIC_APPENDIX", "SEC_14_REPRODUCTION"
+            ]
+          },
+          "title": {
+            "type": "string",
+            "description": "Section title."
+          },
+          "section_role": {
+            "type": "string",
+            "enum": [
+              "scoping",
+              "definitional",
+              "derivation",
+              "result",
+              "validation",
+              "metadata"
+            ],
+            "description": "Role of this section in the supplement."
+          },
+          "content_description": {
+            "type": "string",
+            "description": "Description of the content to be included."
+          },
+          "required_equations": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Equation labels that must appear in this section."
+          },
+          "required_artifacts": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Artifact references required to populate this section."
+          },
+          "reader_pathway_relevance": {
+            "type": "object",
+            "properties": {
+              "physics_first": {
+                "type": "string",
+                "enum": ["ESSENTIAL", "RECOMMENDED", "OPTIONAL", "SKIP"]
+              },
+              "derivation_checking": {
+                "type": "string",
+                "enum": ["ESSENTIAL", "RECOMMENDED", "OPTIONAL", "SKIP"]
+              },
+              "machine_reproduction": {
+                "type": "string",
+                "enum": ["ESSENTIAL", "RECOMMENDED", "OPTIONAL", "SKIP"]
+              }
+            }
+          },
+          "prerequisites": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Sections that should be read before this one."
+          },
+          "latex_includes": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "LaTeX files or fragments to include."
+          },
+          "figure_references": {
+            "type": "array",
+            "items": {"type": "string"}
+          },
+          "table_references": {
+            "type": "array",
+            "items": {"type": "string"}
+          }
+        }
+      },
+      "minItems": 14,
+      "maxItems": 14
+    },
+    "global_constraints": {
+      "type": "object",
+      "properties": {
+        "maximum_equation_count": {"type": "integer"},
+        "label_naming_convention": {"type": "string"},
+        "cross_reference_format": {"type": "string"},
+        "required_appendix_content": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "created_at": {"type": "string", "format": "date-time"},
+        "contract_sha256": {"type": "string"}
+      }
+    }
+  },
+  "additionalProperties": false
+}

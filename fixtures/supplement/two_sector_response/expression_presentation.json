@@ -1,0 +1,17 @@
+{
+  "expression_presentation_decisions": [
+    {"equation_label": "eq:def_R", "presentation": "INLINE_FULL"},
+    {"equation_label": "eq:def_AB", "presentation": "INLINE_FULL"},
+    {"equation_label": "eq:start", "presentation": "INLINE_FULL"},
+    {"equation_label": "eq:identity", "presentation": "INLINE_FULL"},
+    {"equation_label": "eq:reorganized", "presentation": "INLINE_FULL"},
+    {"equation_label": "eq:sector_A", "presentation": "INLINE_FULL"},
+    {"equation_label": "eq:sector_B", "presentation": "INLINE_FULL"},
+    {"equation_label": "eq:projected", "presentation": "INLINE_FULL"},
+    {"equation_label": "eq:integrated_A", "presentation": "INLINE_FULL"},
+    {"equation_label": "eq:integrated_B", "presentation": "INLINE_FULL"},
+    {"equation_label": "eq:final", "presentation": "INLINE_FULL"},
+    {"equation_label": "eq:limit_eps0", "presentation": "INLINE_FULL"},
+    {"equation_label": "eq:long_expr", "presentation": "ELECTRONIC_ARTIFACT_ONLY"}
+  ]
+}

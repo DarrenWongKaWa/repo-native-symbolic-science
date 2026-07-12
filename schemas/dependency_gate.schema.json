@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DependencyGate",
+  "description": "Deterministic dependency gate: evaluates whether a downstream task is eligible given upstream completions. Schema version 1.0.0.",
+  "type": "object",
+  "required": [
+    "gate_id",
+    "consumer_task_id",
+    "required_task_ids",
+    "required_verdicts",
+    "required_artifacts",
+    "required_sha_manifests",
+    "human_decision_ids",
+    "eligibility_status",
+    "evaluation_evidence",
+    "evaluated_at"
+  ],
+  "properties": {
+    "gate_id": {
+      "type": "string",
+      "description": "Unique identifier for this dependency gate."
+    },
+    "consumer_task_id": {
+      "type": "string",
+      "description": "The downstream task whose eligibility is gated."
+    },
+    "orchestration_id": {
+      "type": "string",
+      "description": "Reference to the parent orchestration."
+    },
+    "required_task_ids": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Upstream task IDs that must all be terminal and contract-valid.",
+      "minItems": 1
+    },
+    "required_verdicts": {
+      "type": "object",
+      "additionalProperties": { "type": "string" },
+      "description": "Map of task_id to required verdict (e.g., VERIFIED, COMPLETED)."
+    },
+    "required_artifacts": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Artifact paths that must exist, be frozen, and be SHA-valid.",
+      "minItems": 1
+    },
+    "required_sha_manifests": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "SHA manifest paths that must be present and valid."
+    },
+    "human_decision_ids": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Human decision IDs that must be materialized before this gate opens."
+    },
+    "eligibility_status": {
+      "type": "string",
+      "enum": ["ELIGIBLE", "BLOCKED", "PARTIAL", "PENDING_EVALUATION"],
+      "description": "Deterministic eligibility result."
+    },
+    "evaluation_evidence": {
+      "type": "object",
+      "required": ["all_upstream_terminal", "all_artifacts_frozen", "all_shas_valid", "all_human_decisions_materialized"],
+      "properties": {
+        "all_upstream_terminal": { "type": "boolean" },
+        "all_artifacts_frozen": { "type": "boolean" },
+        "all_shas_valid": { "type": "boolean" },
+        "all_human_decisions_materialized": { "type": "boolean" },
+        "failing_conditions": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "upstream_task_states": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        }
+      }
+    },
+    "evaluated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "additionalProperties": false
+}

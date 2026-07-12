@@ -1,0 +1,23 @@
+{
+  "identity": {
+    "name": "product_rule_for_momentum_integrals",
+    "statement": "∂_k [F(k) G_ij(k)] = F'(k) G_ij(k) + F(k) ∂_k G_ij(k)",
+    "derivative_variable": "k",
+    "held_fixed": ["epsilon", "Lambda", "d"],
+    "assumptions": {
+      "F_is_differentiable": "F(k) is differentiable on (0, Lambda]",
+      "G_is_differentiable": "G_ij(k) is differentiable on (0, Lambda] for all i, j",
+      "indices_are_covariant": "i, j are tensor indices in flat Euclidean space, so partial derivatives commute with index operations"
+    },
+    "application_context": {
+      "used_in_step": "step_product_rule",
+      "purpose": "reorganizes the integrand to separate total derivatives from remainder terms",
+      "boundary_terms": "total derivative terms evaluated at k = 0 and k = Lambda may contribute or vanish depending on boundary conditions"
+    },
+    "verification": {
+      "type": "standard_calculus_identity",
+      "holds_columnwise": true,
+      "holds_in_any_dimension": true
+    }
+  }
+}

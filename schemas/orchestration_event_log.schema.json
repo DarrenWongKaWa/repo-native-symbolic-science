@@ -1,0 +1,136 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "OrchestrationEventLog",
+  "description": "Append-only event log for a multi-agent orchestration. Sequence numbers are monotonic. No credentials or hidden reasoning are logged. Schema version 1.0.0.",
+  "type": "object",
+  "required": [
+    "event_id",
+    "orchestration_id",
+    "sequence",
+    "timestamp",
+    "actor_id",
+    "actor_role",
+    "event_type",
+    "previous_state",
+    "next_state",
+    "task_id",
+    "artifact_refs",
+    "evidence",
+    "outcome"
+  ],
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "description": "Unique identifier for this event."
+    },
+    "orchestration_id": {
+      "type": "string",
+      "description": "Reference to the orchestration instance."
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Monotonically increasing sequence number."
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "actor_id": {
+      "type": "string",
+      "description": "Identifier of the agent that generated this event."
+    },
+    "actor_role": {
+      "type": "string",
+      "description": "Role of the actor (controller, planner, executor, verifier, etc.)."
+    },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "ORCHESTRATION_RECEIVED",
+        "POLICY_LOADED",
+        "INTENT_ROUTED",
+        "SEMANTIC_AUDIT_COMPLETE",
+        "SEMANTIC_AUDIT_BLOCKED",
+        "PLAN_CREATED",
+        "PLAN_READY",
+        "TASK_DISPATCHED",
+        "TASK_ACCEPTED",
+        "TASK_RUNNING",
+        "TASK_COMPLETED",
+        "TASK_FAILED",
+        "TASK_TIMED_OUT",
+        "ARTIFACT_FROZEN",
+        "DEPENDENCY_GATE_EVALUATED",
+        "VERIFICATION_STARTED",
+        "VERIFICATION_COMPLETE",
+        "VERDICT_ISSUED",
+        "REPAIR_INITIATED",
+        "HUMAN_GATE_CREATED",
+        "HUMAN_GATE_PRESENTED",
+        "HUMAN_GATE_RESOLVED",
+        "INTEGRATION_STARTED",
+        "INTEGRATION_COMPLETE",
+        "REPORTING_STARTED",
+        "REPORTING_COMPLETE",
+        "ORCHESTRATION_COMPLETED",
+        "ORCHESTRATION_FAILED",
+        "ORCHESTRATION_PAUSED",
+        "ORCHESTRATION_RESUMED",
+        "RECOVERY_INITIATED",
+        "RECOVERY_COMPLETED",
+        "STATE_TRANSITION",
+        "ERROR",
+        "WARNING"
+      ]
+    },
+    "previous_state": {
+      "type": "string",
+      "description": "Orchestration state before this event."
+    },
+    "next_state": {
+      "type": "string",
+      "description": "Orchestration state after this event."
+    },
+    "task_id": {
+      "type": "string",
+      "description": "Associated task ID, if applicable."
+    },
+    "subagent_id": {
+      "type": "string",
+      "description": "Associated subagent ID, if applicable."
+    },
+    "artifact_refs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path"],
+        "properties": {
+          "path": { "type": "string" },
+          "sha256": { "type": "string" },
+          "action": { "type": "string" }
+        }
+      },
+      "description": "Artifacts read, written, or referenced in this event."
+    },
+    "evidence": {
+      "type": "object",
+      "properties": {
+        "gate_evaluation": { "type": "object" },
+        "validation_output": { "type": "string" },
+        "contract_check": { "type": "object" }
+      },
+      "description": "Evidence backing state transitions."
+    },
+    "outcome": {
+      "type": "string",
+      "enum": ["SUCCESS", "FAILURE", "BLOCKED", "PARTIAL", "PENDING"],
+      "description": "Outcome of this event."
+    },
+    "message": {
+      "type": "string",
+      "description": "Human-readable message. Must not contain credentials, hidden reasoning, or private scientific content."
+    }
+  },
+  "additionalProperties": false
+}

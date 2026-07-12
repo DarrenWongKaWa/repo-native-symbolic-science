@@ -1,0 +1,26 @@
+{
+  "decomposition": {
+    "source": "R_ij = ∫₀^Λ dk/k [A_ij(k) + B_ij(k)] + O(ε²)",
+    "sector_A": {
+      "label": "Sector A: scalar + longitudinal",
+      "expression": "R_ij^(A) = ∫₀^Λ dk/k A_ij(k)",
+      "kernel": "A_ij(k) = f(k) δ_ij + g(k) k_i k_j / k²",
+      "tensor_structure": "contains both trace (delta) and longitudinal (k_i k_j) components",
+      "physical_interpretation": "encodes isotropic and anisotropic scaling contributions",
+      "reconstruction_formula": "R_ij^(A) = C_0 δ_ij + C_2 I_ij + ..."
+    },
+    "sector_B": {
+      "label": "Sector B: transverse",
+      "expression": "R_ij^(B) = ∫₀^Λ dk/k B_ij(k)",
+      "kernel": "B_ij(k) = h(k) (δ_ij - k_i k_j / k²)",
+      "tensor_structure": "purely transverse (k_i B_ij = 0)",
+      "physical_interpretation": "encodes incompressible transverse response modes",
+      "reconstruction_formula": "R_ij^(B) = (d-1)/d * C_0 δ_ij - C_2 I_ij + ..."
+    },
+    "exact_reconstruction": {
+      "formula": "R_ij = R_ij^(A) + R_ij^(B)",
+      "holds_to_order": "exact at all orders in the kernel decomposition",
+      "note": "The decomposition is exact by construction: A_ij + B_ij reconstructs the full kernel before integration"
+    }
+  }
+}

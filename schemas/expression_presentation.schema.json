@@ -1,0 +1,140 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/scientific-symbolic-repo/schemas/expression_presentation.schema.json",
+  "title": "Expression Presentation",
+  "description": "Specifies presentation modes for long mathematical expressions in supplementary materials. Supports 9 presentation modes with conditional field requirements.",
+  "version": "0.1.0",
+  "type": "object",
+  "required": [
+    "presentation_id",
+    "equation_label",
+    "presentation_mode",
+    "latex_source",
+    "term_count",
+    "human_readability_score"
+  ],
+  "properties": {
+    "presentation_id": {
+      "type": "string",
+      "description": "Unique identifier for this presentation specification."
+    },
+    "equation_label": {
+      "type": "string",
+      "description": "Equation label from the INTERFACE CONTRACT."
+    },
+    "presentation_mode": {
+      "type": "string",
+      "enum": [
+        "compact_inline",
+        "expanded_display",
+        "term_by_term_numbered",
+        "grouped_by_physical_origin",
+        "index_structure_tree",
+        "tensor_component_table",
+        "diagrammatic_accompaniment",
+        "abbreviated_with_omission_ledger",
+        "computational_literal_for_reproduction"
+      ],
+      "description": "Presentation mode for this expression. One of 9 allowed modes."
+    },
+    "latex_source": {
+      "type": "string",
+      "description": "Complete LaTeX source for the expression."
+    },
+    "term_count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Total number of terms in this expression."
+    },
+    "human_readability_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 10,
+      "description": "Score from 0-10 assessing human readability."
+    },
+    "conditional_fields": {
+      "type": "object",
+      "description": "Fields required conditional on the selected presentation_mode.",
+      "properties": {
+        "term_labels": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Required for term_by_term_numbered: labels for each term."
+        },
+        "physical_origin_groups": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["group_name", "term_indices"],
+            "properties": {
+              "group_name": {"type": "string"},
+              "physical_origin": {"type": "string"},
+              "term_indices": {"type": "array", "items": {"type": "integer"}}
+            }
+          },
+          "description": "Required for grouped_by_physical_origin: grouping of terms by physical origin."
+        },
+        "index_tree": {
+          "type": "object",
+          "description": "Required for index_structure_tree: hierarchical index structure."
+        },
+        "component_table": {
+          "type": "object",
+          "description": "Required for tensor_component_table: component-wise expansion."
+        },
+        "diagram_reference": {
+          "type": "string",
+          "description": "Required for diagrammatic_accompaniment: reference to accompanying diagram."
+        },
+        "omission_ledger_ref": {
+          "type": "string",
+          "description": "Required for abbreviated_with_omission_ledger: reference to omission ledger entry."
+        },
+        "computational_code": {
+          "type": "string",
+          "description": "Required for computational_literal_for_reproduction: copy-pasteable code."
+        }
+      }
+    },
+    "abbreviation_rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["abbreviation", "expansion"],
+        "properties": {
+          "abbreviation": {"type": "string"},
+          "expansion": {"type": "string"},
+          "definition_location": {"type": "string"}
+        }
+      },
+      "description": "Abbreviations used in the presentation of this expression."
+    },
+    "cross_references": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["target_equation_label", "relationship"],
+        "properties": {
+          "target_equation_label": {"type": "string"},
+          "relationship": {"type": "string"},
+          "transformation_step_id": {"type": "string"}
+        }
+      }
+    },
+    "accessibility_notes": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Notes on accessibility for readers with different backgrounds."
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "created_at": {"type": "string", "format": "date-time"},
+        "page_estimate": {"type": "integer"},
+        "requires_color": {"type": "boolean"},
+        "requires_landscape": {"type": "boolean"}
+      }
+    }
+  },
+  "additionalProperties": false
+}

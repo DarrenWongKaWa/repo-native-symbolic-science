@@ -1,0 +1,10 @@
+R_ij = ∫₀^Λ dk/k [A_ij(k) + B_ij(k)] + O(ε²)
+
+where:
+  A_ij(k) = f(k) δ_ij + g(k) k_i k_j / k²
+  B_ij(k) = h(k) (δ_ij - k_i k_j / k²)
+
+This is the starting expression for the two-sector response kernel.
+The integral runs over the radial momentum coordinate k from 0 to the UV cutoff Λ.
+The measure is dk/k consistent with logarithmic scaling in d = 2 + ε dimensions.
+The O(ε²) indicates that this expression is exact to linear order in ε.

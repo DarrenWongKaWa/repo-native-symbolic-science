@@ -1,0 +1,171 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://symbolic-simplification-loop/schemas/orch_validation_result.schema.json",
+  "title": "ControllerValidationResult",
+  "description": "Structured validation result from the orchestration controller. Schema version 1.0.0. Encodes the outcome of a dispatch, validation stage, or workflow run. Fail-closed by default: passed is false and final_exit_status is 1 until positive evidence is recorded.",
+  "type": "object",
+  "required": [
+    "task_id",
+    "workflow_state",
+    "requested_role",
+    "selected_adapter",
+    "selected_validators",
+    "required_inputs",
+    "resolved_inputs",
+    "checks_expected",
+    "checks_executed",
+    "checks_passed",
+    "checks_failed",
+    "artifacts_consumed",
+    "transition_attempted",
+    "transition_result",
+    "blocking_findings",
+    "errors",
+    "warnings",
+    "passed",
+    "final_exit_status"
+  ],
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "description": "Identifier of the task being validated."
+    },
+    "workflow_state": {
+      "type": "string",
+      "description": "Current workflow state at the time of validation."
+    },
+    "requested_role": {
+      "type": "string",
+      "description": "The role that was requested for dispatch."
+    },
+    "selected_adapter": {
+      "type": "string",
+      "description": "The adapter class name selected for the role."
+    },
+    "selected_validators": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Paths of validator scripts selected for this task."
+    },
+    "required_inputs": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "List of input artifact paths required by the adapter."
+    },
+    "resolved_inputs": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Subset of required_inputs that were resolved on disk."
+    },
+    "checks_expected": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Total number of checks expected to execute."
+    },
+    "checks_executed": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of checks that actually ran."
+    },
+    "checks_passed": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of checks that passed."
+    },
+    "checks_failed": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of checks that failed."
+    },
+    "artifacts_consumed": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "sha256"],
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Filesystem path of the artifact."
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "description": "SHA-256 hex digest of the artifact file contents."
+          }
+        },
+        "additionalProperties": false
+      },
+      "description": "Artifacts consumed during validation with their SHA-256 hashes."
+    },
+    "transition_attempted": {
+      "type": "object",
+      "required": ["from_state", "to_state"],
+      "properties": {
+        "from_state": {
+          "type": "string",
+          "description": "The originating workflow state."
+        },
+        "to_state": {
+          "type": "string",
+          "description": "The target workflow state."
+        }
+      },
+      "additionalProperties": false,
+      "description": "The state transition that was attempted."
+    },
+    "transition_result": {
+      "type": "object",
+      "required": ["allowed", "reason"],
+      "properties": {
+        "allowed": {
+          "type": "boolean",
+          "description": "Whether the transition is permitted."
+        },
+        "reason": {
+          "type": "string",
+          "description": "Human-readable rationale for the transition decision."
+        }
+      },
+      "additionalProperties": false,
+      "description": "Outcome of the state transition check."
+    },
+    "blocking_findings": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Findings that block a PASS verdict. Must be empty for passed to be true."
+    },
+    "errors": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Error messages. Errors are always blocking."
+    },
+    "warnings": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Warning messages. Warnings do not block a PASS verdict."
+    },
+    "passed": {
+      "type": "boolean",
+      "description": "Overall PASS/FAIL verdict. Can only be true when checks_executed > 0 AND checks_failed == 0 AND len(blocking_findings) == 0."
+    },
+    "final_exit_status": {
+      "type": "integer",
+      "description": "Exit status code: 0 for PASS, 1 for FAIL."
+    }
+  },
+  "additionalProperties": true,
+  "if": {
+    "properties": {
+      "passed": { "const": true }
+    },
+    "required": ["passed"]
+  },
+  "then": {
+    "properties": {
+      "checks_executed": { "exclusiveMinimum": 0 },
+      "checks_failed": { "const": 0 },
+      "blocking_findings": { "maxItems": 0 }
+    },
+    "description": "Rule: passed can only be true when checks_executed > 0 AND checks_failed == 0 AND len(blocking_findings) == 0."
+  }
+}

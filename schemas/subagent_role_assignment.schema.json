@@ -1,0 +1,140 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SubagentRoleAssignment",
+  "description": "Least-privilege role assignment for a subagent within an orchestrated workflow. Schema version 1.0.0.",
+  "type": "object",
+  "required": [
+    "subagent_id",
+    "task_id",
+    "assigned_role",
+    "readable_artifacts",
+    "writable_paths",
+    "permitted_tools",
+    "allowed_transformations",
+    "forbidden_transformations",
+    "claim_authority",
+    "human_gate_dependencies",
+    "timeout",
+    "resource_limits",
+    "completion_contract"
+  ],
+  "properties": {
+    "subagent_id": {
+      "type": "string",
+      "description": "Unique identifier for this subagent instance."
+    },
+    "task_id": {
+      "type": "string",
+      "description": "Reference to the task this subagent is executing."
+    },
+    "orchestration_id": {
+      "type": "string",
+      "description": "Reference to the parent orchestration."
+    },
+    "assigned_role": {
+      "type": "string",
+      "enum": [
+        "global_planner",
+        "lane_planner",
+        "executor",
+        "independent_verifier",
+        "repair_executor",
+        "human_gate_materializer",
+        "integration_executor",
+        "integration_verifier",
+        "report_generator",
+        "report_verifier",
+        "supplement_writer",
+        "supplement_reviewer"
+      ],
+      "description": "Role from the authorized role registry."
+    },
+    "readable_artifacts": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Explicit paths of artifacts this subagent may read."
+    },
+    "writable_paths": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Explicit paths this subagent may write to."
+    },
+    "forbidden_paths": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Paths explicitly forbidden for this subagent."
+    },
+    "permitted_tools": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Tools this subagent is permitted to use."
+    },
+    "allowed_transformations": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Allowed symbolic or structural transformations."
+    },
+    "forbidden_transformations": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Forbidden symbolic or structural transformations."
+    },
+    "claim_authority": {
+      "type": "object",
+      "required": ["max_claim_level", "authorized_claims"],
+      "properties": {
+        "max_claim_level": {
+          "type": "string",
+          "enum": ["execution", "verification", "human_gate", "integration", "canonical", "publication"]
+        },
+        "authorized_claims": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "prohibited_claims": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "description": "Claim authority cannot exceed the parent task."
+    },
+    "human_gate_dependencies": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Human gate IDs that must be resolved before this subagent may proceed."
+    },
+    "timeout": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Maximum execution time in seconds."
+    },
+    "resource_limits": {
+      "type": "object",
+      "required": ["max_memory_mb"],
+      "properties": {
+        "max_memory_mb": { "type": "integer" },
+        "max_cpu_seconds": { "type": "integer" }
+      }
+    },
+    "completion_contract": {
+      "type": "object",
+      "required": ["required_outputs", "result_envelope_schema"],
+      "properties": {
+        "required_outputs": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "result_envelope_schema": { "type": "string" },
+        "validation_commands": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "allowed_completion_states": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

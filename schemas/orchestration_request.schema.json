@@ -1,0 +1,188 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "OrchestrationRequest",
+  "description": "A structured orchestration request converted from natural-language scientific intent. Schema version 1.0.0.",
+  "type": "object",
+  "required": [
+    "request_id",
+    "human_scientific_goal",
+    "source_files",
+    "requested_output",
+    "scientific_adapter",
+    "known_definitions",
+    "known_assumptions",
+    "allowed_operations",
+    "forbidden_operations",
+    "human_gate_policy",
+    "verification_policy",
+    "reporting_policy",
+    "resource_constraints",
+    "preferred_backends"
+  ],
+  "properties": {
+    "request_id": {
+      "type": "string",
+      "description": "Unique immutable identifier for this orchestration request."
+    },
+    "human_scientific_goal": {
+      "type": "string",
+      "description": "Natural-language statement of the scientific objective."
+    },
+    "source_files": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Explicit repository paths of source files consumed. SHAs are frozen later.",
+      "minItems": 0
+    },
+    "requested_output": {
+      "type": "string",
+      "description": "Description of the requested output artifact."
+    },
+    "scientific_adapter": {
+      "type": "object",
+      "description": "Domain adapter: maps generic field labels to domain-specific concepts.",
+      "required": ["domain", "convention_map_path"],
+      "properties": {
+        "domain": { "type": "string" },
+        "convention_map_path": { "type": "string" },
+        "index_sets": { "type": "array", "items": { "type": "string" } },
+        "tensor_types": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": true
+    },
+    "known_definitions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "definition_path", "definition_sha"],
+        "properties": {
+          "name": { "type": "string" },
+          "definition_path": { "type": "string" },
+          "definition_sha": { "type": "string" }
+        }
+      },
+      "description": "Authoritative definitions known before execution."
+    },
+    "known_assumptions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["assumption_id", "statement", "source"],
+        "properties": {
+          "assumption_id": { "type": "string" },
+          "statement": { "type": "string" },
+          "source": { "type": "string" },
+          "evidence_path": { "type": "string" }
+        }
+      },
+      "description": "Explicit assumptions authorized for this request."
+    },
+    "allowed_operations": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "expansion",
+          "factorization",
+          "substitution",
+          "index_renaming",
+          "linear_combination",
+          "differentiation",
+          "integration_by_parts",
+          "boundary_term_removal",
+          "symmetry_reduction",
+          "limit_ordering",
+          "tensor_contraction",
+          "addition",
+          "multiplication",
+          "commutativity",
+          "associativity",
+          "distributivity"
+        ]
+      },
+      "description": "Allowed symbolic operations. Must be disjoint from forbidden_operations."
+    },
+    "forbidden_operations": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Explicitly forbidden operations. Must be disjoint from allowed_operations."
+    },
+    "human_gate_policy": {
+      "type": "object",
+      "required": ["require_materialized_decision", "decision_types_requiring_gate"],
+      "properties": {
+        "require_materialized_decision": { "type": "boolean" },
+        "decision_types_requiring_gate": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "missing_definition",
+              "index_role",
+              "assumption",
+              "symmetry",
+              "boundary_condition",
+              "integration_by_parts",
+              "boundary_term_removal",
+              "limit_ordering",
+              "transformation_level_promotion",
+              "canonical_promotion",
+              "publication_claim",
+              "software_or_environment_mutation"
+            ]
+          }
+        },
+        "auto_resume_after_decision": { "type": "boolean" }
+      }
+    },
+    "verification_policy": {
+      "type": "object",
+      "required": ["require_independent_verifier", "allowed_verdicts"],
+      "properties": {
+        "require_independent_verifier": { "type": "boolean" },
+        "allowed_verdicts": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["VERIFIED", "VERIFIED_WITH_CAVEAT", "REJECTED"]
+          }
+        },
+        "verifier_may_repair": { "type": "boolean", "default": false },
+        "max_repair_cycles": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "reporting_policy": {
+      "type": "object",
+      "required": ["generate_report", "require_report_verification"],
+      "properties": {
+        "generate_report": { "type": "boolean" },
+        "require_report_verification": { "type": "boolean" },
+        "report_formats": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "resource_constraints": {
+      "type": "object",
+      "required": ["max_subagents", "timeout_seconds"],
+      "properties": {
+        "max_subagents": { "type": "integer", "minimum": 1 },
+        "max_parallel_lanes": { "type": "integer", "minimum": 1 },
+        "timeout_seconds": { "type": "integer", "minimum": 1 },
+        "max_memory_bytes": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "preferred_backends": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Preferred computation backends in priority order."
+    },
+    "scientific_invention_forbidden": {
+      "type": "boolean",
+      "default": true,
+      "description": "If true, the orchestrator must not invent missing definitions or assumptions."
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,35 @@
+[
+  {
+    "pathway_id": "PW_01",
+    "persona": "physics_first",
+    "person_description": "Reader primarily interested in the physical meaning of the two-sector decomposition and the final integrated result, not in the detailed derivation steps.",
+    "entry_section_id": "SEC_01_OVERVIEW",
+    "route_sections": ["SEC_01_OVERVIEW", "SEC_02_DEFINITIONS", "SEC_06_SECTOR_DECOMPOSITION", "SEC_10_INTEGRATED_RESULT", "SEC_12_PHYSICAL_INTERPRETATION", "SEC_13_LIMITING_CASE"],
+    "navigation_aids": ["Equation cross-reference table in SEC_01", "In-text pointers to physical interpretation for each equation"],
+    "key_sections": ["SEC_10_INTEGRATED_RESULT", "SEC_12_PHYSICAL_INTERPRETATION"],
+    "skip_recommendations": ["SEC_04_SCIENTIFIC_IDENTITY (product rule detail)", "SEC_05_REORGANIZATION (algebraic manipulation)", "SEC_08_INTEGRATION_SECTOR_A (technical integration)", "SEC_09_INTEGRATION_SECTOR_B (technical integration)", "SEC_11_NUMERIC_VERIFICATION (machine verification)"],
+    "required_prior_knowledge": "Familiarity with momentum-space response functions and tensor decomposition in d dimensions."
+  },
+  {
+    "pathway_id": "PW_02",
+    "persona": "derivation_checking",
+    "person_description": "Reader who wants to verify every step of the derivation, including the product-rule identity, sector decomposition, integration, projection, and limiting cases.",
+    "entry_section_id": "SEC_02_DEFINITIONS",
+    "route_sections": ["SEC_02_DEFINITIONS", "SEC_03_STARTING_EXPRESSION", "SEC_04_SCIENTIFIC_IDENTITY", "SEC_05_REORGANIZATION", "SEC_06_SECTOR_DECOMPOSITION", "SEC_07_PROJECTION", "SEC_08_INTEGRATION_SECTOR_A", "SEC_09_INTEGRATION_SECTOR_B", "SEC_10_INTEGRATED_RESULT", "SEC_11_NUMERIC_VERIFICATION", "SEC_13_LIMITING_CASE", "SEC_12_PHYSICAL_INTERPRETATION"],
+    "navigation_aids": ["Step-by-step derivation_steps.jsonl cross-references", "Equation evidence mapping for each label", "Source artifact SHAs for reproducibility"],
+    "key_sections": ["SEC_04_SCIENTIFIC_IDENTITY", "SEC_06_SECTOR_DECOMPOSITION", "SEC_10_INTEGRATED_RESULT"],
+    "skip_recommendations": [],
+    "required_prior_knowledge": "Tensor calculus in momentum space, product rule for differentiation, d-dimensional integration with cutoff regularization."
+  },
+  {
+    "pathway_id": "PW_03",
+    "persona": "machine_reproduction",
+    "person_description": "Reader or automated system attempting to reproduce the derivation computationally, requiring exact symbolic inputs, transformation records, and verification gates.",
+    "entry_section_id": "SEC_02_DEFINITIONS",
+    "route_sections": ["SEC_02_DEFINITIONS", "SEC_03_STARTING_EXPRESSION", "SEC_04_SCIENTIFIC_IDENTITY", "SEC_05_REORGANIZATION", "SEC_06_SECTOR_DECOMPOSITION", "SEC_07_PROJECTION", "SEC_08_INTEGRATION_SECTOR_A", "SEC_09_INTEGRATION_SECTOR_B", "SEC_10_INTEGRATED_RESULT", "SEC_11_NUMERIC_VERIFICATION", "SEC_13_LIMITING_CASE"],
+    "navigation_aids": ["derivation_steps.jsonl with machine_verification_status fields", "source_manifest_sha for artifact integrity", "reproducibility_package/ with build_commands.sh"],
+    "key_sections": ["SEC_02_DEFINITIONS", "SEC_03_STARTING_EXPRESSION", "SEC_10_INTEGRATED_RESULT", "SEC_11_NUMERIC_VERIFICATION"],
+    "skip_recommendations": ["SEC_12_PHYSICAL_INTERPRETATION (not needed for machine reproduction)"],
+    "required_prior_knowledge": "Computer algebra system (CAS) operation, symbolic tensor manipulation, SHAs for artifact verification."
+  }
+]
