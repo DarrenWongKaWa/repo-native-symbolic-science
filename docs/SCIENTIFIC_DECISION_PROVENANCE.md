@@ -205,3 +205,11 @@ python3 tests/decision_provenance/test_scientific_decision_provenance.py
 | Checkpoint | `schemas/checkpoint.schema.json` |
 | Decision Provenance | `schemas/decision_provenance.schema.json` |
 | Linear System Evidence | `schemas/linear_system_evidence.schema.json` |
+
+## Real-World Validation
+
+The decision provenance layer is validated by the sigma_xxx repair-lineage
+flagship benchmark:
+
+- [Sigma XXX Repair Lineage Benchmark](../benchmarks/sigma_xxx_finite_gamma_replay/repair_lineage/README.md)
+- [Public Case Study](case_studies/sigma_xxx_repair_lineage.md)

@@ -1,0 +1,94 @@
+# Sigma XXX Repair Lineage Benchmark Manifest
+# Format: YAML following repository convention
+# Benchmark ID: SIGMAXXX_REPAIR_LINEAGE_FLAGSHIP_BENCHMARK
+
+benchmark_id: SIGMAXXX_REPAIR_LINEAGE_FLAGSHIP_BENCHMARK
+benchmark_version: "1.0.0"
+benchmark_name: "Sigma XXX Repair Lineage Flagship Benchmark"
+repository_root: "../../../.."
+framework_version: "0.1.0"
+
+source_authority:
+  primary: "SIGMAXXX_REPAIR_LINE_016_AUDITABLE_FREEZE"
+  extension: "SIGMAXXX_REPAIR_LINE_020_REFERENCE_ALIGNED_FREEZE"
+  extraction_policy: "public_benchmark_extraction_map.json (016) + public_benchmark_reference_alignment_extraction_map.json (020)"
+
+scientific_scope: "Bounded one-dimensional projected sigma_xxx example"
+scientific_exclusions:
+  - "General tensorial sigma_abc correctness"
+  - "Gamma → 0 limit"
+  - "BZ-boundary cancellation at band crossings"
+  - "Automated scientific truth discovery"
+
+profiles:
+  fast:
+    description: "Runs without Wolfram. Tests schemas, transitions, rollback, authority, projection gates, local/boundary separation, synthetic linear systems."
+    command: "python benchmarks/sigma_xxx_finite_gamma_replay/repair_lineage/scripts/run_benchmark.py --profile fast"
+    requires: []
+    wolfram_required: false
+  standard:
+    description: "Uses frozen canonical coefficient fixtures. Tests r-index, stale adjudication, numerical provenance, reference-auth recovery."
+    command: "python benchmarks/sigma_xxx_finite_gamma_replay/repair_lineage/scripts/run_benchmark.py --profile standard"
+    requires: ["sympy"]
+    wolfram_required: false
+  full:
+    description: "With Wolfram, replays permitted symbolic scientific fixtures. Uses relative paths, fails closed."
+    command: "python benchmarks/sigma_xxx_finite_gamma_replay/repair_lineage/scripts/run_benchmark.py --profile full"
+    requires: ["sympy", "wolfram_kernel"]
+    wolfram_required: true
+
+fixtures:
+  - fixture_id: "A"
+    name: "wrong_derivative_order_alignment"
+    description: "Wrong r-index vs source-backed r-index repair for derivative order"
+    directory: "fixtures/derivative_order_alignment"
+  - fixture_id: "B"
+    name: "exact_coupled_linear_solve"
+    description: "12x12 exact linear system with unique solution"
+    directory: "fixtures/exact_coupled_solve"
+  - fixture_id: "C"
+    name: "stale_false_positive"
+    description: "Aggregate zero reporting while coefficients contain nonzero terms"
+    directory: "historical/stale_false_positive"
+  - fixture_id: "D"
+    name: "stale_false_negative"
+    description: "Stale failed coupled solve; fresh replay gives consistent solution"
+    directory: "historical/stale_false_negative"
+  - fixture_id: "E"
+    name: "checkpoint_rollback"
+    description: "Abstract dependency graph with rollback to seven-kernel checkpoint"
+    directory: "fixtures/checkpoint_rollback"
+  - fixture_id: "F"
+    name: "repaired_promotion"
+    description: "Complete promotion chain: wrong → invalidated → CANDIDATE → ACTIVE_VERIFIED"
+    directory: "active"
+  - fixture_id: "G"
+    name: "non_injective_model_projection_trap"
+    description: "R_general ≠ 0 but P_model(R_general) = 0"
+    directory: "fixtures/projection_trap"
+  - fixture_id: "H"
+    name: "numerical_provenance_retention"
+    description: "Numerical baseline retained; invalidated-formula baseline requires recompute"
+    directory: "fixtures/numerical_provenance"
+  - fixture_id: "I"
+    name: "reference_source_authentication_recovery"
+    description: "Markdown blocked → PDF authentication resolves → ACTIVE_VERIFIED"
+    directory: "fixtures/reference_authentication_recovery"
+
+tests:
+  test_directory: "tests/"
+  test_file: "test_repair_lineage_benchmark.py"
+  test_count: 10
+  fail_closed: true
+
+integration:
+  schemas_used:
+    - "schemas/decision_provenance.schema.json"
+    - "schemas/linear_system_evidence.schema.json"
+    - "schemas/claim_lifecycle.schema.json"
+    - "schemas/checkpoint.schema.json"
+  scripts_used:
+    - "scripts/claim_decision_engine.py"
+    - "scripts/validate_decision_provenance.py"
+    - "scripts/validate_generic_raw_object.py"
+  decision_provenance_tests: "tests/decision_provenance/test_scientific_decision_provenance.py"

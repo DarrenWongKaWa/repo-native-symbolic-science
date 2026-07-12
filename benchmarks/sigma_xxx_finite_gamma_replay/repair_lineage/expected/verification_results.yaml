@@ -1,0 +1,100 @@
+# Expected Verification Results
+#
+# Describes the expected outcomes of each verification method
+# applied to benchmark fixtures.
+
+verification_results:
+  - verification_id: "VERIFY_WRONG_R_INDEX"
+    claim_id: "CLAIM_WRONG_R_INDEX"
+    verification_method: "exact_symbolic_replay"
+    expected_verdict: "FAIL"
+    evidence: "EXACT_RESIDUAL_NONZERO"
+    fixture: "A"
+    
+  - verification_id: "VERIFY_REPAIRED_R_INDEX"
+    claim_id: "CLAIM_REPAIRED_PAIR_IDENTITY"
+    verification_method: "exact_symbolic_replay"
+    expected_verdict: "PASS"
+    evidence: "TARGET_DERIVATIVE_IMAGE_ALIGNED"
+    fixture: "A, F"
+    
+  - verification_id: "VERIFY_EXACT_COUPLED_SOLVE"
+    claim_id: "CLAIM_EXACT_COUPLED_SOLVE"
+    verification_method: "linear_system_exact_solve"
+    expected_verdict: "PASS"
+    evidence:
+      rank: 12
+      augmented_rank: 12
+      nullity: 0
+      consistent: true
+      unique_solution: true
+      all_residuals_zero: true
+    fixture: "B"
+    
+  - verification_id: "VERIFY_SEVEN_KERNEL_RECONSTRUCTION"
+    claim_id: "CLAIM_REPAIRED_PAIR_IDENTITY"
+    verification_method: "parent_child_reconstruction"
+    expected_verdict: "PASS"
+    evidence: "seven_kernel_reconstruction_residual === 0"
+    fixture: "F"
+    
+  - verification_id: "VERIFY_STALE_FP_REJECTED"
+    claim_id: "CLAIM_STALE_FP"
+    verification_method: "scope_and_assumption_audit"
+    expected_verdict: "FAIL"
+    evidence: "STALE_OR_DEFECTIVE_SUMMARY_REJECTED"
+    reason: "fresh executable replay outranks historical PASS field"
+    fixture: "C"
+    
+  - verification_id: "VERIFY_STALE_FN_OVERRULED"
+    claim_id: "CLAIM_STALE_FN"
+    verification_method: "exact_symbolic_replay"
+    expected_verdict: "PASS"
+    evidence: "Fresh executable replay gives full-rank consistent solution (rank 12)"
+    note: "stale structured result (rank 11) overruled by fresh executable replay"
+    fixture: "D"
+    
+  - verification_id: "VERIFY_PROJECTION_TRAP"
+    claim_id: "CLAIM_PROJECTION_SIGMA"
+    verification_method: "projection_regression"
+    expected_verdict: "CAVEATED_PASS"
+    caveat: "Model projected agreement passes for MODEL_SPECIFIC_EQUIVALENCE but does NOT authorize GENERAL_SYMBOLIC_IDENTITY"
+    fixture: "G"
+    
+  - verification_id: "VERIFY_NUMERICAL_BASELINE_RETAINED"
+    claim_id: "CLAIM_NUMERICAL_RAW_GAMMA"
+    verification_method: "high_precision_numerical_sampling"
+    expected_verdict: "PASS"
+    evidence: "RETAINABLE_BASELINE (independent of invalidated branch)"
+    fixture: "H"
+    
+  - verification_id: "VERIFY_NUMERICAL_CLOSED_FORM_RECOMPUTE"
+    claim_id: "CLAIM_NUMERICAL_CLOSED_FORM_HISTORICAL"
+    verification_method: "high_precision_numerical_sampling"
+    expected_verdict: "RECOMPUTE_REQUIRED"
+    evidence: "tainted by invalidated analytical branch"
+    fixture: "H"
+    
+  - verification_id: "VERIFY_REFERENCE_AUTH_RECOVERY"
+    claim_id: "CLAIM_REF_COMPARISON"
+    verification_method: "exact_symbolic_replay"
+    expected_verdict: "PASS"
+    evidence: "Exact normalized regression after PDF-authenticated source resolution"
+    condition: "Only after recovery from BLOCKED state with 020 reference evidence"
+    fixture: "I"
+
+generator_verifier_separation:
+  - scenario: "same_engine_generation_and_verification"
+    expected_verdict: "WARNING (not error)"
+    message: "generator_and_verifier_are_same_engine"
+  - scenario: "executor_self_promotion_to_ACTIVE_VERIFIED"
+    expected_verdict: "BLOCKED"
+    message: "executor cannot self-promote to ACTIVE_VERIFIED; need independent_verifier"
+
+forbidden_standalone_evidence:
+  - evidence_type: "historical_pass_field"
+    reason: "cannot stand alone; must be accompanied by executable_replay or frozen_machine_readable_operand"
+  - evidence_type: "human_readable_report"
+    reason: "cannot stand alone; must be accompanied by executable_replay or frozen_machine_readable_operand"
+  - fields: ["PASS", "all_zero", "nonzero_count"]
+    reason: "cannot override executable coefficient evidence when positive terms exist"

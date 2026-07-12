@@ -1,0 +1,71 @@
+# Expected Authority Adjudications
+#
+# Describes the expected behavior of authority ordering
+# when comparing evidence artifacts of different types.
+
+authority_ordering:
+  tier_0: "FRESH_EXECUTABLE_REPLAY (executable_replay)"
+  tier_1: "FROZEN_MACHINE_READABLE_OPERAND (frozen_machine_readable_operand)"
+  tier_2: "STRUCTURED_RESULT_SUMMARY (structured_result_summary)"
+  tier_3: "HUMAN_READABLE_REPORT (human_readable_report)"
+  tier_4: "HISTORICAL_PASS_FIELD (historical_pass_field)"
+
+adjudications:
+  - comparison_id: "FRESH_VS_FROZEN"
+    artifact_a_type: "executable_replay"
+    artifact_b_type: "frozen_machine_readable_operand"
+    expected_result: "executable_replay MORE authoritative"
+    fixture: "C, D"
+    
+  - comparison_id: "FRESH_VS_HISTORICAL_PASS"
+    artifact_a_type: "executable_replay"
+    artifact_b_type: "historical_pass_field"
+    expected_result: "executable_replay MORE authoritative"
+    reason: "Fresh executable replay (tier 0) always outranks historical PASS field (tier 4)"
+    fixture: "C"
+    
+  - comparison_id: "FROZEN_VS_STRUCTURED_SUMMARY"
+    artifact_a_type: "frozen_machine_readable_operand"
+    artifact_b_type: "structured_result_summary"
+    expected_result: "frozen_machine_readable_operand MORE authoritative"
+    fixture: "D"
+    
+  - comparison_id: "PDF_VS_MARKDOWN"
+    authority_a: "PDF-authenticated frozen equation object"
+    authority_b: "Derived Markdown transcription"
+    expected_result: "PDF MORE authoritative"
+    reason: "PDF is original publication medium; transcription introduces error potential"
+    fixture: "I"
+    
+  - comparison_id: "FRESH_EXECUTABLE_VS_STALE_JSON"
+    authority_a: "executable_replay (tier 0, fresh)"
+    authority_b: "historical_pass_field (tier 4, stale)"
+    expected_result: "executable_replay ALWAYS wins"
+    reason: "Fresh executable replay must override stale JSON artifacts regardless of historical PASS claims"
+    fixture: "C"
+
+recovery_authority_requirements:
+  BLOCKED_to_CANDIDATE:
+    required:
+      - "new evidence_artifact_ids (non-empty array)"
+      - "explicit recovery reason"
+      - "prior authoritative status recorded"
+    forbidden:
+      - "timestamp alone (fails)"
+      - "empty evidence list (fails)"
+      
+  STALE_NONAUTHORITATIVE_to_CANDIDATE:
+    required:
+      - "new evidence_artifact_ids (non-empty array)"
+      - "explicit recovery reason"
+      - "prior authoritative status recorded"
+      - "if fresher_executable_available: must have authoritative evidence (executable_replay or frozen_machine_readable_operand)"
+    forbidden:
+      - "timestamp alone (fails)"
+      - "recovery without fresh executable evidence when fresher_executable_available is true"
+
+reference_source_authority:
+  most_authoritative: "PDF-authenticated frozen equation object (020 reference_objects/)"
+  intermediate: "Frozen scientific formula with notation crosswalk"
+  least_authoritative: "Derived Markdown transcription"
+  rule: "When ambiguity exists between transcription and authenticated source, the authenticated source resolves the ambiguity"

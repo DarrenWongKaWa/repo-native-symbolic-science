@@ -1,0 +1,92 @@
+{
+  "checkpoints": [
+    {
+      "checkpoint_id": "CP_RAW_FINITE_GAMMA",
+      "checkpoint_name": "Raw Finite-Gamma Integrand",
+      "timestamp": "2025-01-01T00:00:00Z",
+      "frozen_artifact_shas": {
+        "raw_integrand": "c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2"
+      },
+      "claim_snapshots": [
+        {"claim_id": "C001", "state": "ACTIVE_VERIFIED", "provenance_artifacts": ["AR_RAW_INTEGRAND"]}
+      ],
+      "parent_checkpoint_id": null,
+      "trusted": true,
+      "invalidated_descendants": []
+    },
+    {
+      "checkpoint_id": "CP_DECOMPOSITION",
+      "checkpoint_name": "Center-Pair-Loop Decomposition",
+      "timestamp": "2025-01-15T00:00:00Z",
+      "frozen_artifact_shas": {
+        "decomposition": "d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3"
+      },
+      "claim_snapshots": [
+        {"claim_id": "C002", "state": "ACTIVE_VERIFIED", "provenance_artifacts": ["AR_DECOMPOSITION"]}
+      ],
+      "parent_checkpoint_id": "CP_RAW_FINITE_GAMMA",
+      "trusted": true,
+      "invalidated_descendants": []
+    },
+    {
+      "checkpoint_id": "CP_SEVEN_KERNEL",
+      "checkpoint_name": "Seven-Kernel Formula (42 components, 7 kernel types)",
+      "timestamp": "2025-02-01T00:00:00Z",
+      "frozen_artifact_shas": {
+        "seven_kernel_formula": "e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4"
+      },
+      "claim_snapshots": [
+        {"claim_id": "C003", "state": "ACTIVE_VERIFIED", "provenance_artifacts": ["AR_SEVEN_KERNEL"]}
+      ],
+      "parent_checkpoint_id": "CP_DECOMPOSITION",
+      "trusted": true,
+      "invalidated_descendants": ["CP_PAIR_REDUCTION_HISTORICAL"]
+    },
+    {
+      "checkpoint_id": "CP_PAIR_REDUCTION_HISTORICAL",
+      "checkpoint_name": "Historical Pair IBP Reduction (INVALIDATED)",
+      "timestamp": "2025-03-01T00:00:00Z",
+      "frozen_artifact_shas": {
+        "old_pair_reduction": "f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5"
+      },
+      "claim_snapshots": [],
+      "parent_checkpoint_id": "CP_SEVEN_KERNEL",
+      "trusted": false,
+      "invalidated_descendants": ["CP_CLOSED_FORM_HISTORICAL"],
+      "invalidation_reason": "wrong_r_index_in_pair_IBP_primitive_alignment"
+    },
+    {
+      "checkpoint_id": "CP_CLOSED_FORM_HISTORICAL",
+      "checkpoint_name": "Historical Closed Form (SUPERSEDED)",
+      "timestamp": "2025-04-01T00:00:00Z",
+      "frozen_artifact_shas": {
+        "old_closed_form": "a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6"
+      },
+      "claim_snapshots": [],
+      "parent_checkpoint_id": "CP_PAIR_REDUCTION_HISTORICAL",
+      "trusted": false,
+      "invalidated_descendants": [],
+      "superseded_by": "CP_REPAIRED_CLOSED_FORM"
+    },
+    {
+      "checkpoint_id": "CP_NUMERICAL_BASELINE",
+      "checkpoint_name": "Independent Numerical Baseline (80/80 parameters)",
+      "timestamp": "2025-03-15T00:00:00Z",
+      "frozen_artifact_shas": {
+        "numerical_regression": "b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7"
+      },
+      "claim_snapshots": [
+        {"claim_id": "C009", "state": "ACTIVE_VERIFIED", "provenance_artifacts": ["AR_NUMERICAL_BASELINE"]}
+      ],
+      "parent_checkpoint_id": "CP_DECOMPOSITION",
+      "trusted": true,
+      "invalidated_descendants": []
+    }
+  ],
+  "rollback_recommendation": {
+    "target_checkpoint_id": "CP_SEVEN_KERNEL",
+    "invalidated_claim_ids": ["CP_PAIR_REDUCTION_HISTORICAL", "CP_CLOSED_FORM_HISTORICAL"],
+    "retained_independent_branches": ["CP_NUMERICAL_BASELINE"],
+    "reason": "Rollback to last trusted checkpoint after invalidation of pair reduction. Numerical baseline is independently sourced from decomposition checkpoint and retained."
+  }
+}

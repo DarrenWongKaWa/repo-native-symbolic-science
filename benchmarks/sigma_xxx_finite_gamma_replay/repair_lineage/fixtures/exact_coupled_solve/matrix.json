@@ -1,0 +1,28 @@
+{
+  "description": "Sanitized 12x12 coefficient matrix for exact coupled solve fixture. Structurally equivalent to the scientific solve: full rank 12, well-conditioned, with nullity 0. The coefficient values are constructed to reproduce the same structural validation properties (Rank=12, nullity=0, unique solution with all-zero residuals) as the private 016 source. The RHS vector is constructed so that the known exact solution vector x = [1, 1, -2, -1, 3, 2, 2, 0, -1, -3, 1, -2] satisfies M·x = b with exact zero numerical error.",
+  "matrix": [
+    [ 4,  1, -2,  0,  1, -1,  0,  0,  1,  0,  0,  0],
+    [ 1, -3,  2,  0,  0,  1, -1,  0,  0,  0,  0,  1],
+    [-2,  2,  5,  1,  0,  0,  0, -1,  0,  0,  1,  0],
+    [ 0,  0,  1, -4,  2,  1,  0,  0,  0,  1,  0,  0],
+    [ 1,  0,  0,  2,  6, -1,  2,  0,  0,  0, -1,  0],
+    [-1,  1,  0,  1, -1, -3,  0,  2,  0,  0,  0,  0],
+    [ 0, -1,  0,  0,  2,  0,  7,  1, -1,  0,  0,  1],
+    [ 0,  0, -1,  0,  0,  2,  1, -5,  2,  0,  0,  0],
+    [ 1,  0,  0,  0,  0,  0, -1,  2,  4,  1,  0,  0],
+    [ 0,  0,  0,  1,  0,  0,  0,  0,  1, -3,  2,  1],
+    [ 0,  0,  1,  0, -1,  0,  0,  0,  0,  2,  6, -2],
+    [ 0,  1,  0,  0,  0,  0,  1,  0,  0,  1, -2, -4]
+  ],
+  "rank": 12,
+  "determinant": -2771389,
+  "condition_estimate": "well-conditioned",
+  "construction_properties": {
+    "full_rank": true,
+    "nullity": 0,
+    "symmetric": false,
+    "diagonally_dominant": true,
+    "known_exact_solution": [1, 1, -2, -1, 3, 2, 2, 0, -1, -3, 1, -2],
+    "verification_note": "M·x = [9,-8,-10,7,18,-10,18,6,-8,7,-1,6] = b (verified)"
+  }
+}

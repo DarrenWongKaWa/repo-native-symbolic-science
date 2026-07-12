@@ -1,0 +1,72 @@
+{
+  "fixture_id": "E_checkpoint_rollback",
+  "fixture_name": "Checkpoint Rollback to Last Trusted Seven-Kernel",
+  "phase": 8,
+  "description": "Abstract scientific dependency graph demonstrating rollback after pair reduction invalidation. The seven-kernel checkpoint is the last trusted analytic state. The historical closed form is an invalidated descendant. The independent numerical baseline is retained.",
+  "dependency_graph": {
+    "raw_finite_gamma": {
+      "type": "raw_input",
+      "status": "active"
+    },
+    "decomposition": {
+      "type": "center_pair_loop_decomposition",
+      "parent": "raw_finite_gamma",
+      "status": "active"
+    },
+    "seven_kernel": {
+      "type": "checkpoint",
+      "checkpoint_id": "CP_SEVEN_KERNEL",
+      "parent": "decomposition",
+      "status": "trusted",
+      "trusted": true,
+      "frozen_artifact_shas": {
+        "seven_kernel_formula": "7 kernel types, 42 components"
+      }
+    },
+    "historical_pair_reduction": {
+      "type": "pair_ibp_reduction",
+      "parent": "seven_kernel",
+      "status": "INVALIDATED",
+      "invalidation_reason": "wrong r-index in pair IBP primitive alignment",
+      "checkpoint_id": "CP_PAIR_REDUCTION_HISTORICAL"
+    },
+    "historical_closed_form": {
+      "type": "closed_form",
+      "parent": "historical_pair_reduction",
+      "status": "SUPERSEDED",
+      "superseded_by": "repaired_closed_form",
+      "checkpoint_id": "CP_CLOSED_FORM_HISTORICAL"
+    },
+    "independent_numerical_baseline": {
+      "type": "numerical_baseline",
+      "parent": "decomposition",
+      "status": "RETAINED",
+      "retained": true,
+      "reason": "descends from pre-IBP seven-kernel, independent of invalidated pair reduction"
+    }
+  },
+  "rollback": {
+    "invalidated_checkpoint_id": "CP_PAIR_REDUCTION_HISTORICAL",
+    "last_trusted_analytic_checkpoint": {
+      "checkpoint_id": "CP_SEVEN_KERNEL",
+      "checkpoint_name": "Seven-Kernel Formula Checkpoint",
+      "trusted": true
+    },
+    "invalidated_descendants": ["CP_CLOSED_FORM_HISTORICAL"],
+    "retained_branches": ["independent_numerical_baseline"],
+    "expected_actions": [
+      "historical_pair_reduction marked INVALIDATED",
+      "historical_closed_form marked SUPERSEDED (invalidated descendant)",
+      "seven_kernel checkpoint remains trusted",
+      "independent numerical baseline retained (independent derivation)"
+    ]
+  },
+  "expected_verification": {
+    "rollback_recommendation": {
+      "target_checkpoint_id": "CP_SEVEN_KERNEL",
+      "invalidated_claim_ids": ["CP_PAIR_REDUCTION_HISTORICAL", "CP_CLOSED_FORM_HISTORICAL"]
+    },
+    "unrelated_not_affected": true
+  },
+  "redaction_status": "SYNTHETIC_FIXTURE_NO_REDACTION_NEEDED"
+}

@@ -1,0 +1,127 @@
+# Expected Claim Transitions
+# 
+# Each entry specifies a claim and the expected result of the state machine
+# when attempting the specified transition with the given evidence.
+
+expected_transitions:
+  - claim_id: "CLAIM_WRONG_R_INDEX"
+    initial_state: "CANDIDATE"
+    attempted_transition: "PENDING_INDEPENDENT_VERIFICATION"
+    expected_result: "BLOCKED"
+    reason: "Wrong r-index produces EXACT_RESIDUAL_NONZERO; cannot proceed to verification"
+    fixture: "A"
+    
+  - claim_id: "CLAIM_REPAIRED_PAIR_IDENTITY"
+    initial_state: "CANDIDATE"
+    attempted_transition: "SOURCE_BACKED"
+    expected_result: "ALLOWED"
+    reason: "Source-backed r-index repair (r_target - 1) is eligible for promotion"
+    fixture: "A, F"
+    
+  - claim_id: "CLAIM_REPAIRED_PAIR_IDENTITY"
+    initial_state: "SOURCE_BACKED"
+    attempted_transition: "PENDING_INDEPENDENT_VERIFICATION"
+    expected_result: "ALLOWED"
+    reason: "In-bounds transition with appropriate evidence"
+    fixture: "F"
+    
+  - claim_id: "CLAIM_REPAIRED_PAIR_IDENTITY"
+    initial_state: "PENDING_INDEPENDENT_VERIFICATION"
+    attempted_transition: "ACTIVE_VERIFIED"
+    expected_result: "ALLOWED"
+    reason: "Exact residual zero + seven-kernel reconstruction zero + boundary applicability"
+    fixture: "F"
+    condition: "must be authorized by independent_verifier, not executor"
+    
+  - claim_id: "CLAIM_STALE_FP"
+    initial_state: "CANDIDATE"
+    attempted_transition: "ACTIVE_VERIFIED"
+    expected_result: "BLOCKED"
+    reason: "Cannot promote with stale false-positive report; fresh executable evidence needed"
+    fixture: "C"
+    
+  - claim_id: "CLAIM_STALE_FN"
+    initial_state: "STALE_NONAUTHORITATIVE"
+    attempted_transition: "CANDIDATE"
+    expected_result: "ALLOWED"
+    condition: "requires evidence_artifact_ids with fresh executable replay AND explicit recovery reason"
+    fixture: "D"
+    note: "timestamp alone fails; must provide evidence"
+    
+  - claim_id: "CLAIM_STALE_FN"
+    initial_state: "STALE_NONAUTHORITATIVE"
+    attempted_transition: "CANDIDATE"
+    expected_result: "BLOCKED"
+    condition: "attempting recovery with NO evidence_artifact_ids"
+    fixture: "D"
+    note: "recovery requires explicit references"
+    
+  - claim_id: "CLAIM_PROJECTION_SIGMA"
+    initial_state: "CANDIDATE"
+    attempted_transition: "ACTIVE_VERIFIED"
+    expected_result: "BLOCKED"
+    reason: "Model projection without injectivity cannot promote to general ACTIVE_VERIFIED"
+    fixture: "G"
+    
+  - claim_id: "CLAIM_PROJECTION_SIGMA"
+    initial_state: "CANDIDATE"
+    scope_transition: "MODEL_SPECIFIC_ONLY"
+    expected_result: "ALLOWED"
+    reason: "Model projection may be MODEL_SPECIFIC_EQUIVALENCE scope"
+    fixture: "G"
+    
+  - claim_id: "CLAIM_GENERAL_SIGMA"
+    initial_state: "PENDING_INDEPENDENT_VERIFICATION"
+    attempted_transition: "MODEL_SPECIFIC_ONLY"
+    expected_result: "BLOCKED"
+    reason: "GENERAL_SYMBOLIC_IDENTITY claim cannot be demoted to MODEL_SPECIFIC_ONLY"
+    fixture: "G"
+
+  - claim_id: "CLAIM_EXACT_COUPLED_SOLVE"
+    expected_linear_system_evidence:
+      matrix_shape: [12, 12]
+      rank: 12
+      augmented_rank: 12
+      nullity: 0
+      left_nullspace_dimension: 0
+      consistent: true
+      unique_solution: true
+      all_residuals_zero: true
+    fixture: "B"
+
+  - claim_id: "CLAIM_REF_COMPARISON"
+    initial_state: "BLOCKED"
+    attempted_transition: "CANDIDATE"
+    expected_result: "ALLOWED"
+    condition: "requires new evidence_artifact_ids referencing 020 reference objects AND explicit recovery reason"
+    fixture: "I"
+    
+  - claim_id: "CLAIM_REF_COMPARISON"
+    initial_state: "BLOCKED"
+    attempted_transition: "CANDIDATE"
+    expected_result: "BLOCKED"
+    condition: "attempting recovery with timestamp only (no evidence)"
+    fixture: "I"
+
+invalid_transitions:
+  - from: "CANDIDATE"
+    to: "ACTIVE_VERIFIED"
+    reason: "skipped states; must go through SOURCE_BACKED and PENDING_INDEPENDENT_VERIFICATION"
+  - from: "ACTIVE_VERIFIED"
+    to: "CANDIDATE"
+    reason: "cannot downgrade from active verified"
+  - from: "SUPERSEDED"
+    to: "*"
+    reason: "irrecoverable terminal state"
+  - from: "INVALIDATED"
+    to: "*"
+    reason: "irrecoverable terminal state"
+  - from: "ACTIVE_VERIFIED"
+    to: "ACTIVE_VERIFIED"
+    reason: "no self-transition allowed"
+
+executor_self_promotion_blocked:
+  transition: "PENDING_INDEPENDENT_VERIFICATION → ACTIVE_VERIFIED"
+  when: "authorized_by_role = executor"
+  expected_result: "BLOCKED"
+  reason: "executor cannot self-promote to ACTIVE_VERIFIED"

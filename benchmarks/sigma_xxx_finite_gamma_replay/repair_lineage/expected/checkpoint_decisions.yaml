@@ -1,0 +1,91 @@
+# Expected Checkpoint Decisions
+# 
+# Describes the expected behavior of the checkpoint rollback system
+# when applied to the sigma_xxx repair lineage dependency graph.
+
+decisions:
+  - decision_id: "INVALIDATE_PAIR_REDUCTION"
+    checkpoint_id: "CP_PAIR_REDUCTION_HISTORICAL"
+    action: "INVALIDATED"
+    reason: "Wrong r-index in pair IBP primitive alignment"
+    expected_effects:
+      - "checkpoint marked untrusted"
+      - "descendants identified: CP_CLOSED_FORM_HISTORICAL"
+      - "parent CP_SEVEN_KERNEL updated: CP_PAIR_REDUCTION_HISTORICAL added to invalidated_descendants"
+      
+  - decision_id: "SUPERSEDE_CLOSED_FORM"
+    checkpoint_id: "CP_CLOSED_FORM_HISTORICAL"
+    action: "SUPERSEDED"
+    reason: "Invalidated descendant of wrong pair reduction"
+    expected_effects:
+      - "checkpoint marked untrusted"
+      - "superseded_by references CP_REPAIRED_CLOSED_FORM"
+      
+  - decision_id: "ROLLBACK_TO_SEVEN_KERNEL"
+    rollback_id: "ROLLBACK_CP_PAIR_REDUCTION_HISTORICAL"
+    target: "CP_SEVEN_KERNEL"
+    reason: "Seven-kernel is last trusted checkpoint before invalidation"
+    expected_effects:
+      - "last trusted checkpoint: CP_SEVEN_KERNEL"
+      - "invalidated_claim_ids includes CP_PAIR_REDUCTION_HISTORICAL and CP_CLOSED_FORM_HISTORICAL"
+      - "CP_NUMERICAL_BASELINE NOT affected (independent branch)"
+      - "rollback recommendation returned with correct target"
+      
+  - decision_id: "RETAIN_NUMERICAL_BASELINE"
+    checkpoint_id: "CP_NUMERICAL_BASELINE"
+    action: "RETAINED"
+    reason: "Independent derivation from decomposition checkpoint; unaffected by pair reduction invalidation"
+    expected_effects:
+      - "checkpoint remains trusted"
+      - "invalidation of CP_PAIR_REDUCTION_HISTORICAL does not affect CP_NUMERICAL_BASELINE"
+
+checkpoint_chain_integrity:
+  CP_RAW_FINITE_GAMMA:
+    trusted: true
+    parent: null
+    invalidated_descendants: []
+    
+  CP_DECOMPOSITION:
+    trusted: true
+    parent: "CP_RAW_FINITE_GAMMA"
+    invalidated_descendants: []
+    children: ["CP_SEVEN_KERNEL", "CP_NUMERICAL_BASELINE"]
+    
+  CP_SEVEN_KERNEL:
+    trusted: true
+    parent: "CP_DECOMPOSITION"
+    invalidated_descendants: ["CP_PAIR_REDUCTION_HISTORICAL"]
+    children: ["CP_PAIR_REDUCTION_HISTORICAL"]
+    
+  CP_PAIR_REDUCTION_HISTORICAL:
+    trusted: false
+    parent: "CP_SEVEN_KERNEL"
+    invalidated_descendants: ["CP_CLOSED_FORM_HISTORICAL"]
+    children: ["CP_CLOSED_FORM_HISTORICAL"]
+    status: "INVALIDATED"
+    
+  CP_CLOSED_FORM_HISTORICAL:
+    trusted: false
+    parent: "CP_PAIR_REDUCTION_HISTORICAL"
+    invalidated_descendants: []
+    status: "SUPERSEDED"
+    
+  CP_NUMERICAL_BASELINE:
+    trusted: true
+    parent: "CP_DECOMPOSITION"
+    invalidated_descendants: []
+    status: "RETAINED"
+
+rollback_engine_behavior:
+  last_trusted_checkpoint:
+    expected_result: "CP_SEVEN_KERNEL"
+    note: "CP_NUMERICAL_BASELINE is also trusted but has later timestamp; CP_SEVEN_KERNEL is the last trusted analytic checkpoint before pair reduction"
+
+  invalidated_descendants_of_SEVEN_KERNEL:
+    expected_result: ["CP_PAIR_REDUCTION_HISTORICAL"]
+    note: "Only direct descendants are invalidated; unrelated branches preserved"
+
+  rollback_build:
+    expected_target: "CP_SEVEN_KERNEL"
+    expected_invalidated: ["CP_PAIR_REDUCTION_HISTORICAL", "CP_CLOSED_FORM_HISTORICAL"]
+    expected_recovery: ["restore_artifacts_from_checkpoint:CP_SEVEN_KERNEL", "revalidate_claims_after:CP_SEVEN_KERNEL"]

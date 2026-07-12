@@ -1,0 +1,67 @@
+{
+  "fixture_id": "D_stale_false_negative",
+  "fixture_name": "Stale False Negative — Recoverable Dormant State",
+  "phase": 7,
+  "description": "A stale structured result reports a failed coupled solve (rank 11 < 12, inconsistent), but a fresh executable replay gives a full-rank consistent exact solution (rank 12 = augmented rank 12). The stale report must transition to STALE_NONAUTHORITATIVE, and the claim may only become CANDIDATE after explicit recovery evidence.",
+  "stale_report": {
+    "report_id": "REPORT_STALE_FN_001",
+    "artifact_type": "structured_result_summary",
+    "authority_tier": 2,
+    "fields": {
+      "rank": 11,
+      "augmented_rank": 12,
+      "consistent": false,
+      "nullity": 1,
+      "solution_status": "NO_SOLUTION_FOUND"
+    },
+    "strength": "STRUCTURED_RESULT_SUMMARY",
+    "staleness_reason": "fresher_executable_replay_available"
+  },
+  "fresh_executable_replay": {
+    "replay_id": "REPLAY_FRESH_FN_001",
+    "artifact_type": "executable_replay",
+    "authority_tier": 0,
+    "fields": {
+      "rank": 12,
+      "augmented_rank": 12,
+      "consistent": true,
+      "nullity": 0,
+      "unique_solution": true,
+      "equation_residuals": [
+        {"equation_index": 0, "residual": 0.0, "tol": 1e-14, "below_tolerance": true},
+        {"equation_index": 1, "residual": 0.0, "tol": 1e-14, "below_tolerance": true},
+        {"equation_index": 2, "residual": 0.0, "tol": 1e-14, "below_tolerance": true},
+        {"equation_index": 3, "residual": 0.0, "tol": 1e-14, "below_tolerance": true},
+        {"equation_index": 4, "residual": 0.0, "tol": 1e-14, "below_tolerance": true},
+        {"equation_index": 5, "residual": 0.0, "tol": 1e-14, "below_tolerance": true},
+        {"equation_index": 6, "residual": 0.0, "tol": 1e-14, "below_tolerance": true},
+        {"equation_index": 7, "residual": 0.0, "tol": 1e-14, "below_tolerance": true},
+        {"equation_index": 8, "residual": 0.0, "tol": 1e-14, "below_tolerance": true},
+        {"equation_index": 9, "residual": 0.0, "tol": 1e-14, "below_tolerance": true},
+        {"equation_index": 10, "residual": 0.0, "tol": 1e-14, "below_tolerance": true},
+        {"equation_index": 11, "residual": 0.0, "tol": 1e-14, "below_tolerance": true}
+      ]
+    },
+    "timestamp": "2026-07-13T00:00:00Z"
+  },
+  "expected_state_transitions": {
+    "stale_report_state": "STALE_NONAUTHORITATIVE",
+    "recovery_requirements": {
+      "new_evidence_artifact_ids": ["REPLAY_FRESH_FN_001"],
+      "reason": "Fresh executable replay demonstrates full-rank consistent exact solution",
+      "authority_level": "FRESH_EXECUTABLE_REPLAY"
+    },
+    "recovered_state": "CANDIDATE",
+    "verification_transition": {
+      "from": "CANDIDATE",
+      "to": "ACTIVE_VERIFIED",
+      "requirement": "independent exact verification with equation-by-equation zero residuals"
+    }
+  },
+  "what_fails": {
+    "timestamp_alone": "timestamp alone cannot override stale artifact; must provide new executable evidence with artifact IDs and explicit reason",
+    "no_evidence_recovery": "recovery from STALE_NONAUTHORITATIVE without evidence_artifact_ids fails",
+    "no_reason_recovery": "recovery from STALE_NONAUTHORITATIVE without explicit reason fails"
+  },
+  "redaction_status": "SYNTHETIC_FIXTURE_NO_REDACTION_NEEDED"
+}

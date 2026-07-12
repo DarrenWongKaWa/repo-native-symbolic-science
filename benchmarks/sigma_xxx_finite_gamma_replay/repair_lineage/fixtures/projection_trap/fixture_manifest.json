@@ -1,0 +1,50 @@
+{
+  "fixture_id": "G_non_injective_model_projection_trap",
+  "fixture_name": "Non-Injective Model Projection Trap",
+  "phase": 10,
+  "description": "A bounded symbolic example where the general residual R_general is not identically zero, but the model projection P_model(R_general) evaluates to zero. This demonstrates that MODEL_SPECIFIC_EQUIVALENCE may be authorized while GENERAL_SYMBOLIC_IDENTITY must be denied.",
+  "symbolic_example": {
+    "general_expression": "R_general(x, y, z) = x*y - z*y",
+    "model_projection": "P_model: {z → x} i.e., set z = x",
+    "projected_expression": "R_projected(x, y) = x*y - x*y = 0",
+    "general_is_zero": false,
+    "projected_is_zero": true
+  },
+  "domain_note": {
+    "motivation": "Rice–Mele model sets specific algebraic relationships between tensor components that are not preserved in the general three-band case. The projection z→x is a domain label for one such relationship.",
+    "clarification": "This fixture uses a minimal symbolic example independent of any copyrighted material. The Rice-Mele domain label serves only as transparent motivation."
+  },
+  "expected_adjudication": {
+    "scope_classification": {
+      "authorized": "MODEL_SPECIFIC_EQUIVALENCE",
+      "denied": "GENERAL_SYMBOLIC_IDENTITY"
+    },
+    "projection_comparison": {
+      "projection_id": "PROJ_RICE_MELE_001",
+      "source_claim_id": "CLAIM_GENERAL_SIGMA",
+      "target_claim_id": "CLAIM_RICE_MELE_SIGMA",
+      "projection_method": "two_band_rice_mele_parameterization",
+      "injectivity_established": false,
+      "authorized_scope": "MODEL_SPECIFIC_EQUIVALENCE",
+      "cannot_promote_to_general": true,
+      "local_exact_identity_gate": {
+        "passed": true,
+        "method": "direct_substitution",
+        "evidence_artifact_id": "AR_PROJ_LOCAL_CHECK"
+      },
+      "boundary_applicability_gate": {
+        "passed": true,
+        "method": "parameter_domain_check",
+        "evidence_artifact_id": "AR_PROJ_BOUNDARY_CHECK"
+      },
+      "reason": "Projection from general three-band to two-band Rice-Mele is non-injective. Agreement under projection does not imply agreement in the general domain."
+    }
+  },
+  "test_rules": {
+    "model_specific_allowed": "The claim may be promoted to MODEL_SPECIFIC_ONLY with projection context",
+    "general_identity_denied": "The claim must not be promoted to ACTIVE_VERIFIED with GENERAL_SYMBOLIC_IDENTITY scope",
+    "injectivity_required": "To promote a projection result to general identity, injectivity must be explicitly established",
+    "separate_claim_needed": "A GENERAL_SYMBOLIC_IDENTITY claim cannot be demoted to MODEL_SPECIFIC_ONLY; create a new projected claim instead"
+  },
+  "redaction_status": "SYNTHETIC_EXAMPLE_NO_REDACTION_NEEDED"
+}

@@ -1,0 +1,76 @@
+{
+  "fixture_id": "I_reference_source_authentication_recovery",
+  "fixture_name": "Reference-Source Authentication Recovery",
+  "phase": 12,
+  "description": "Methodological sequence: derived Markdown transcription of reference equations → exact comparison blocked by ambiguous typography; authoritative source metadata (PDF-authenticated frozen equation objects from 020) → ambiguity resolved; comparison recovers from STALE_NONAUTHORITATIVE/BLOCKED to CANDIDATE to ACTIVE_VERIFIED.",
+  "methodological_sequence": {
+    "step_1_derived_transcription": {
+      "source": "Derived Markdown transcription of reference paper equations",
+      "status": "BLOCKED_BY_TRANSCRIPTION_AMBIGUITY",
+      "claim_id": "CLAIM_REF_COMPARISON_MD",
+      "claim_state": "BLOCKED",
+      "block_reason": "Five categories of typographic ambiguity prevent exact comparison"
+    },
+    "step_2_source_authentication": {
+      "source": "020 reference_objects/ (PDF-authenticated frozen equation objects: ReferenceEq5.wl, ThermalDefinitions.wl, D2Reference.wl, D3Reference.wl, OrderedSumConventions.wl)",
+      "status": "AMBIGUITIES_RESOLVED",
+      "authority_level": "FROZEN_MACHINE_READABLE_OPERAND"
+    },
+    "step_3_recovery": {
+      "claim_id": "CLAIM_REF_COMPARISON_MD",
+      "from_state": "BLOCKED",
+      "to_state": "CANDIDATE",
+      "recovery_event_id": "RECOVERY_REF_COMPARISON",
+      "evidence_artifact_ids": ["AR_020_REFERENCE_OBJECTS", "AR_AMBIGUITY_RESOLUTION"],
+      "reason": "PDF-authenticated frozen equation objects resolve all five ambiguity categories; exact comparison now possible"
+    },
+    "step_4_exact_regression": {
+      "claim_id": "CLAIM_REF_COMPARISON_MD",
+      "from_state": "CANDIDATE",
+      "to_state": "ACTIVE_VERIFIED",
+      "evidence": "Exact normalized regression verifies formula-to-reference agreement after notation conversion",
+      "evidence_artifact_ids": ["AR_EXACT_REGRESSION_RESULTS", "AR_NORMALIZATION_CROSSWALK"]
+    }
+  },
+  "five_ambiguity_categories": {
+    "category_1": {
+      "name": "thermal_function_subscript",
+      "description": "The subscript specifying which thermal function (e.g., ℱ_E vs ℱ_T) could not be reliably distinguished in the derived Markdown transcription",
+      "resolution": "PDF-authenticated ThermalDefinitions.wl provides exact frozen definitions"
+    },
+    "category_2": {
+      "name": "real_part_scope",
+      "description": "The scope of the real-part operator Re[...] was ambiguous — whether it applies to a single term or the entire expression",
+      "resolution": "ReferenceEq5.wl freezes the exact operator scope from the PDF"
+    },
+    "category_3": {
+      "name": "spatial_versus_band_derivative_index",
+      "description": "Whether a derivative index refers to a spatial coordinate (k) or a band index (n) could not be resolved from transcription alone",
+      "resolution": "D2Reference.wl, D3Reference.wl freeze exact indexed expressions"
+    },
+    "category_4": {
+      "name": "degraded_appendix_transcription",
+      "description": "The appendix of the paper contained degraded typography whose transcription was unreliable",
+      "resolution": "PDF direct authentication bypasses degraded transcription step"
+    },
+    "category_5": {
+      "name": "three_band_gap_index_placement",
+      "description": "The placement of gap indices in three-band summations was ambiguous in the transcribed form",
+      "resolution": "OrderedSumConventions.wl freezes the exact summation convention"
+    }
+  },
+  "authority_order": {
+    "most_authoritative": "PDF-authenticated frozen equation object (020)",
+    "less_authoritative": "Derived Markdown transcription",
+    "reason": "PDF is the original publication medium; transcription introduces potential errors"
+  },
+  "required_artifacts_for_recovery": {
+    "new_evidence_artifact_ids": ["AR_020_REFERENCE_OBJECTS", "AR_AMBIGUITY_RESOLUTION"],
+    "reason": "PDF-authenticated source metadata resolves all five ambiguity categories",
+    "authority_level": "FROZEN_MACHINE_READABLE_OPERAND",
+    "append_only_decision_event": true,
+    "timestamp_alone_fails": true
+  },
+  "note": "The original copyrighted paper PDF is NOT included. Only the 020 reference_objects (export-safe frozen equation objects) and the ambiguity resolution methodology are exported.",
+  "redaction_status": "METHODOLOGY_PRESERVED__PDF_NOT_INCLUDED"
+}

@@ -1,0 +1,59 @@
+{
+  "fixture_id": "F_repaired_promotion",
+  "fixture_name": "Repaired Promotion — Complete Claim Lifecycle",
+  "phase": 9,
+  "description": "The complete active repaired transition: wrong historical pair identity → invalidated; source-backed r-index repair → CANDIDATE; independent exact replay → PENDING_INDEPENDENT_VERIFICATION; exact local identity + exact seven-kernel reconstruction + boundary applicability → ACTIVE_VERIFIED.",
+  "promotion_chain": {
+    "step_1": {
+      "claim_id": "CLAIM_PAIR_IDENTITY_HISTORICAL",
+      "from_state": "ACTIVE_VERIFIED",
+      "to_state": "INVALIDATED",
+      "decision_type": "invalidation",
+      "reason": "Wrong r-index in pair IBP primitive alignment",
+      "evidence": "fresh executable replay shows exact nonzero residual"
+    },
+    "step_2": {
+      "claim_id": "CLAIM_REPAIRED_PAIR_IDENTITY",
+      "from_state": null,
+      "to_state": "CANDIDATE",
+      "decision_type": "promotion",
+      "reason": "Source-backed r-index repair: r_primitive = r_target - 1",
+      "evidence": "016 active_objects/F_pair_total_repaired.wl"
+    },
+    "step_3": {
+      "claim_id": "CLAIM_REPAIRED_PAIR_IDENTITY",
+      "from_state": "CANDIDATE",
+      "to_state": "SOURCE_BACKED",
+      "decision_type": "promotion",
+      "reason": "Repaired formula linked to source from 016 freeze package",
+      "authorized_by_role": "executor",
+      "evidence_artifact_ids": ["AR_F_PAIR_REPAIRED"]
+    },
+    "step_4": {
+      "claim_id": "CLAIM_REPAIRED_PAIR_IDENTITY",
+      "from_state": "SOURCE_BACKED",
+      "to_state": "PENDING_INDEPENDENT_VERIFICATION",
+      "decision_type": "promotion",
+      "reason": "Independent exact replay of repaired pair IBP identity",
+      "authorized_by_role": "independent_verifier",
+      "evidence_artifact_ids": ["AR_REPLAY_INDEPENDENT"]
+    },
+    "step_5": {
+      "claim_id": "CLAIM_REPAIRED_PAIR_IDENTITY",
+      "from_state": "PENDING_INDEPENDENT_VERIFICATION",
+      "to_state": "ACTIVE_VERIFIED",
+      "decision_type": "promotion",
+      "reason": "Exact local identity (pair IBP residual = 0) + exact seven-kernel reconstruction (DeltaK = 0) + boundary applicability passed",
+      "authorized_by_role": "independent_verifier",
+      "evidence_artifact_ids": ["AR_PAIR_RESIDUAL_ZERO", "AR_SEVEN_KERNEL_RECONSTRUCTION", "AR_BOUNDARY_CHECK"]
+    }
+  },
+  "preserved_scientific_details": {
+    "explicit_entries": 18,
+    "irreducible_structures": 17,
+    "linear_system": "12x12 unique solve",
+    "exact_residual": "zero (all 12 equations)",
+    "seven_kernel_reconstruction": "zero"
+  },
+  "redaction_status": "SYNTHETIC_CLAIM_OBJECT_WITH_EXPORT_SAFE_DETAILS"
+}

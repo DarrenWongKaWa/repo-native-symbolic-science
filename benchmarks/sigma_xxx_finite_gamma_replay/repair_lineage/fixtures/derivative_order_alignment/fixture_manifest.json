@@ -1,0 +1,41 @@
+{
+  "fixture_id": "A_wrong_derivative_order_alignment",
+  "fixture_name": "Wrong Derivative-Order Alignment (r-index)",
+  "phase": 4,
+  "description": "Demonstrates the r-index repair for pair IBP derivative-order alignment. The wrong candidate sets r_primitive = r_target; the source-backed candidate sets r_primitive = r_target - 1.",
+  "scientific_context": "In integration-by-parts reduction of the pair term, the derivative operator ∂_k P G^η_r maps between r-indexed and (r+1)-indexed primitives. The correct alignment is r_primitive = r_target - 1, meaning the primitive at order r-1 produces G^η_r under the derivative ∂_k. The wrong historical candidate used r_primitive = r_target.",
+  "domain_adaptation": {
+    "original_domain": "sigma_xxx pair IBP: ∂_k P G^η_r = α_η v_a P G^η_{r+1}",
+    "adapted_domain": "Compact domain-adapted fixture preserving the structural r-index alignment logic without requiring the full sigma_xxx expression",
+    "adaptation_rule": "The fixture uses a simplified symbolic structure that captures the essential derivative-index alignment property"
+  },
+  "wrong_candidate": {
+    "r_primitive": "r_target",
+    "expected_residual": "EXACT_RESIDUAL_NONZERO",
+    "expected_promotion": "denied"
+  },
+  "source_backed_candidate": {
+    "r_primitive": "r_target - 1",
+    "expected_result": "TARGET_DERIVATIVE_IMAGE_ALIGNED",
+    "allowed_future_action": "eligible for later verification"
+  },
+  "minimal_fixture": {
+    "expression_scope": "One-dimensional r-index alignment",
+    "symbolic_structure": {
+      "primitive_function": "P_r^n(x)",
+      "derivative_operator": "∂_k P_r^n(x) = c(k,n,r) * P_r^{(n-1)}(x)",
+      "target_function": "G_r^n(x)",
+      "mapping": "P_{r-1}^{(n+1)}(x) ↔ G_r^n(x)"
+    },
+    "wrong_alignment": {
+      "mapping": "P_r^{(n+1)}(x) ↔ G_r^n(x)",
+      "ss_signal": "exact nonzero residual in derived identity"
+    },
+    "repaired_alignment": {
+      "mapping": "P_{r-1}^{(n+1)}(x) ↔ G_r^n(x)",
+      "ss_signal": "target derivative image aligned with primitive"
+    }
+  },
+  "extraction_source": "016 active_objects/F_pair_total_repaired.wl (r-index repair)",
+  "redaction_status": "DOMAIN_ADAPTED_NO_REDACTION_NEEDED"
+}

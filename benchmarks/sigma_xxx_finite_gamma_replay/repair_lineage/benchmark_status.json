@@ -1,0 +1,38 @@
+{
+  "benchmark_id": "SIGMAXXX_REPAIR_LINEAGE_FLAGSHIP_BENCHMARK",
+  "status": "MATERIALIZED_PENDING_INDEPENDENT_REVIEW",
+  "timestamp": "2026-07-13T00:00:00Z",
+  "version": "1.0.0",
+  "profiles": {
+    "fast": {
+      "status": "READY",
+      "command": "python benchmarks/sigma_xxx_finite_gamma_replay/repair_lineage/scripts/run_benchmark.py --profile fast"
+    },
+    "standard": {
+      "status": "READY",
+      "command": "python benchmarks/sigma_xxx_finite_gamma_replay/repair_lineage/scripts/run_benchmark.py --profile standard"
+    },
+    "full": {
+      "status": "READY_CONDITIONAL",
+      "command": "python benchmarks/sigma_xxx_finite_gamma_replay/repair_lineage/scripts/run_benchmark.py --profile full",
+      "condition": "Wolfram kernel must be available on PATH"
+    }
+  },
+  "fixtures": {
+    "A_wrong_derivative_order": "fixtures/derivative_order_alignment/",
+    "B_exact_coupled_solve": "fixtures/exact_coupled_solve/",
+    "C_stale_false_positive": "historical/stale_false_positive/",
+    "D_stale_false_negative": "historical/stale_false_negative/",
+    "E_checkpoint_rollback": "fixtures/checkpoint_rollback/",
+    "F_repaired_promotion": "active/",
+    "G_projection_trap": "fixtures/projection_trap/",
+    "H_numerical_provenance": "fixtures/numerical_provenance/",
+    "I_reference_auth_recovery": "fixtures/reference_authentication_recovery/"
+  },
+  "source_authority": {
+    "primary": "016",
+    "extension": "020"
+  },
+  "private_paths_audited": true,
+  "copyrighted_material_excluded": true
+}
