@@ -1,0 +1,55 @@
+{
+  "fixture_id": "H_numerical_provenance_retention",
+  "fixture_name": "Numerical Provenance Retention",
+  "phase": 11,
+  "description": "A provenance ledger demonstrating that numerical outputs descending from raw finite-Gamma (pre-IBP seven-kernel) are RETAINABLE_BASELINE, while numerical outputs derived from the invalidated historical reduced formula require RECOMPUTE_REQUIRED.",
+  "provenance_ledger": {
+    "baselines": [
+      {
+        "baseline_id": "BL_RAW_FINITE_GAMMA_NUMERICAL",
+        "source": "raw finite-Gamma integrand through seven-kernel checkpoint",
+        "derivation_path": "raw → decomposition → seven_kernel → numerical evaluation",
+        "independent_of_invalidated_branch": true,
+        "status": "RETAINABLE_BASELINE",
+        "reason": "Numerical computation descends from pre-IBP seven-kernel formula (trusted). The invalidation of the historical pair reduction does not affect this derivation path.",
+        "evidence_fingerprint": {
+          "parameter_count": 80,
+          "parameter_names": ["B", "G", "d", "x", "y"],
+          "parameter_ranges": {
+            "B": [0.1, 2.0],
+            "G": [0.01, 0.5],
+            "d": [0.1, 2.0],
+            "x": [-1.0, 1.0],
+            "y": [-1.0, 1.0]
+          },
+          "pass_count": 80,
+          "total_count": 80,
+          "result_fingerprint": "ALL_PASS_80_80"
+        }
+      },
+      {
+        "baseline_id": "BL_HISTORICAL_CLOSED_FORM_NUMERICAL",
+        "source": "historical closed form (invalidated descendant of wrong pair reduction)",
+        "derivation_path": "raw → decomposition → seven_kernel → historical_pair_reduction → historical_closed_form → numerical evaluation",
+        "independent_of_invalidated_branch": false,
+        "status": "RECOMPUTE_REQUIRED",
+        "reason": "Numerical computation descends from invalidated historical closed form (superseded). The invalidation of the pair reduction taints this derivation path. Recompute using repaired closed form.",
+        "superseded_by": "repaired_general_closed_form"
+      }
+    ]
+  },
+  "expected_verification": {
+    "retainable_check": {
+      "retained": true,
+      "baseline_id": "BL_RAW_FINITE_GAMMA_NUMERICAL",
+      "comparison_possible": true
+    },
+    "recompute_check": {
+      "recompute_required": true,
+      "baseline_id": "BL_HISTORICAL_CLOSED_FORM_NUMERICAL",
+      "reason": "tainted by invalidated analytical branch"
+    }
+  },
+  "note": "No large numerical datasets are included. Only parameter metadata (names, ranges, point count) and result fingerprints are preserved for the public benchmark.The full 80-parameter grid data is available in the 016 freeze for independent verification.",
+  "redaction_status": "FINGERPRINT_ONLY__FULL_DATA_IN_016_FREEZE"
+}
