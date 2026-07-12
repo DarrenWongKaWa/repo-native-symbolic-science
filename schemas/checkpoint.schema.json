@@ -1,0 +1,76 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "schemas/checkpoint.schema.json",
+  "title": "Trusted Checkpoint",
+  "description": "Immutable trusted checkpoint capturing the state of all artifacts at a moment in time. Supports parent chaining and downstream invalidation detection.",
+  "type": "object",
+  "required": [
+    "checkpoint_id",
+    "checkpoint_name",
+    "timestamp",
+    "frozen_artifact_shas",
+    "parent_checkpoint_id",
+    "trusted",
+    "invalidated_descendants"
+  ],
+  "properties": {
+    "checkpoint_id": {
+      "type": "string",
+      "description": "Unique identifier for this checkpoint."
+    },
+    "checkpoint_name": {
+      "type": "string",
+      "description": "Human-readable checkpoint name."
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "frozen_artifact_shas": {
+      "type": "object",
+      "description": "SHA-256 hashes of all frozen artifacts at this checkpoint.",
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{64}$"
+      }
+    },
+    "claim_snapshots": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["claim_id", "state", "provenance_artifacts"],
+        "properties": {
+          "claim_id": { "type": "string" },
+          "state": { "type": "string" },
+          "provenance_artifacts": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "parent_checkpoint_id": {
+      "type": ["string", "null"],
+      "description": "Parent checkpoint in the chain, or null for root."
+    },
+    "trusted": {
+      "type": "boolean",
+      "description": "Whether this checkpoint is trusted. Only trusted checkpoints may serve as rollback targets."
+    },
+    "invalidated_descendants": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "IDs of descendant checkpoints that have been invalidated since this checkpoint was frozen."
+    },
+    "rollback_recommendation": {
+      "type": "object",
+      "properties": {
+        "recommended": { "type": "boolean" },
+        "reason": { "type": "string" },
+        "target_checkpoint_id": { "type": "string" }
+      }
+    },
+    "lifecycle_audit_log_id": {
+      "type": "string",
+      "description": "Reference to the lifecycle audit log covering this checkpoint."
+    }
+  },
+  "additionalProperties": false
+}

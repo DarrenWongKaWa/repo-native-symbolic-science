@@ -1,0 +1,182 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "schemas/claim_lifecycle.schema.json",
+  "title": "Claim Lifecycle",
+  "description": "Extended claim lifecycle with states, transition rules, provenance chain, and stale-artifact detection. All transitions fail closed; invalid promotions are blocked.",
+  "type": "object",
+  "required": [
+    "claim_id",
+    "lifecycle_version",
+    "current_state",
+    "state_history",
+    "provenance_artifacts",
+    "parent_claim_ids",
+    "authority_level",
+    "scope_classification"
+  ],
+  "properties": {
+    "claim_id": {
+      "type": "string",
+      "description": "Unique identifier for this claim."
+    },
+    "lifecycle_version": {
+      "type": "string",
+      "description": "Version of the lifecycle schema used."
+    },
+    "current_state": {
+      "type": "string",
+      "enum": [
+        "CANDIDATE",
+        "SOURCE_BACKED",
+        "PENDING_INDEPENDENT_VERIFICATION",
+        "ACTIVE_VERIFIED",
+        "MODEL_SPECIFIC_ONLY",
+        "SUPERSEDED",
+        "INVALIDATED",
+        "STALE_NONAUTHORITATIVE",
+        "BLOCKED"
+      ],
+      "description": "Current lifecycle state. Transitions must follow the allowed transition table."
+    },
+    "state_history": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["from_state", "to_state", "timestamp", "decision_event_id", "authorized_by_role"],
+        "properties": {
+          "from_state": { "type": "string" },
+          "to_state": { "type": "string" },
+          "timestamp": { "type": "string", "format": "date-time" },
+          "decision_event_id": { "type": "string" },
+          "authorized_by_role": {
+            "type": "string",
+            "enum": ["executor", "independent_verifier", "integration_executor", "integration_verifier", "human_scientist"]
+          },
+          "evidence_artifact_ids": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "reason": { "type": "string" }
+        }
+      }
+    },
+    "provenance_artifacts": {
+      "type": "object",
+      "required": ["artifact_runs"],
+      "properties": {
+        "artifact_runs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["artifact_run_id", "artifact_type", "artifact_sha", "authority_tier", "timestamp"],
+            "properties": {
+              "artifact_run_id": { "type": "string" },
+              "artifact_type": {
+                "type": "string",
+                "enum": [
+                  "executable_replay",
+                  "frozen_machine_readable_operand",
+                  "structured_result_summary",
+                  "human_readable_report",
+                  "historical_pass_field"
+                ]
+              },
+              "artifact_sha": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "authority_tier": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 5
+              },
+              "timestamp": { "type": "string", "format": "date-time" },
+              "linked_execution_truth_id": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "parent_claim_ids": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Claims this claim directly depends on."
+    },
+    "authority_level": {
+      "type": "string",
+      "enum": [
+        "FRESH_EXECUTABLE_REPLAY",
+        "FROZEN_MACHINE_READABLE_OPERAND",
+        "STRUCTURED_RESULT_SUMMARY",
+        "HUMAN_READABLE_REPORT",
+        "HISTORICAL_PASS_FIELD"
+      ],
+      "description": "Highest authority level among linked provenance artifacts."
+    },
+    "scope_classification": {
+      "type": "string",
+      "enum": [
+        "GENERAL_SYMBOLIC_IDENTITY",
+        "MODEL_SPECIFIC_EQUIVALENCE",
+        "LOCAL_EXACT_IDENTITY",
+        "BOUNDARY_APPLICABILITY"
+      ],
+      "description": "Classification of the claim's scope."
+    },
+    "projection_context": {
+      "type": "object",
+      "description": "If the claim involves a projection, record scope limitations.",
+      "properties": {
+        "is_projection": { "type": "boolean" },
+        "projection_method": { "type": "string" },
+        "injectivity_established": { "type": "boolean" },
+        "cannot_promote_to": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["GENERAL_SYMBOLIC_IDENTITY", "ACTIVE_VERIFIED"]
+          }
+        }
+      }
+    },
+    "stale_detection": {
+      "type": "object",
+      "description": "Stale-artifact detection rules.",
+      "properties": {
+        "staleness_check": {
+          "type": "object",
+          "properties": {
+            "fresher_executable_available": { "type": "boolean" },
+            "parent_claim_invalidated": { "type": "boolean" },
+            "replay_diverged_from_frozen": { "type": "boolean" }
+          }
+        },
+        "stale_reason": { "type": "string" }
+      }
+    },
+    "linear_system_evidence": {
+      "type": "object",
+      "description": "Optional linear-system evidence attached to this claim.",
+      "properties": {
+        "evidence_id": { "type": "string" },
+        "matrix_shape": {
+          "type": "array",
+          "items": { "type": "integer", "minimum": 1 },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "rank": { "type": "integer", "minimum": 0 },
+        "augmented_rank": { "type": "integer", "minimum": 0 },
+        "nullity": { "type": "integer", "minimum": 0 },
+        "left_nullspace_dimension": { "type": "integer", "minimum": 0 },
+        "consistent": { "type": "boolean" },
+        "unique_solution": { "type": "boolean" },
+        "residuals": {
+          "type": "array",
+          "items": { "type": "number" }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

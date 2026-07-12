@@ -1,0 +1,136 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "schemas/linear_system_evidence.schema.json",
+  "title": "Linear System Evidence",
+  "description": "Exact linear-system evidence for verification of claims. Supports matrix shape, rank, augmented rank, nullity, left-nullspace dimension, basis ordering, solution, and equation-by-equation residuals. Framework-generic; no Wolfram-specific rules.",
+  "type": "object",
+  "required": [
+    "evidence_id",
+    "claim_id",
+    "system_description",
+    "matrix_shape",
+    "rank",
+    "augmented_rank",
+    "nullity",
+    "left_nullspace_dimension",
+    "consistent"
+  ],
+  "properties": {
+    "evidence_id": {
+      "type": "string",
+      "description": "Unique identifier for this evidence artifact."
+    },
+    "claim_id": {
+      "type": "string",
+      "description": "The claim this evidence supports."
+    },
+    "system_description": {
+      "type": "string",
+      "description": "Human-readable description of the linear system."
+    },
+    "matrix_shape": {
+      "type": "array",
+      "items": { "type": "integer", "minimum": 1 },
+      "minItems": 2,
+      "maxItems": 2,
+      "description": "[rows, columns] of the coefficient matrix."
+    },
+    "rank": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Rank of the coefficient matrix."
+    },
+    "augmented_rank": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Rank of the augmented matrix [A|b]."
+    },
+    "nullity": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Nullity (dimension of nullspace) = columns - rank."
+    },
+    "left_nullspace_dimension": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Dimension of left nullspace / cokernel = rows - rank."
+    },
+    "consistent": {
+      "type": "boolean",
+      "description": "True iff rank == augmented_rank, meaning the system has at least one solution."
+    },
+    "unique_solution": {
+      "type": "boolean",
+      "description": "True iff consistent AND nullity == 0."
+    },
+    "basis_ordering": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "variable_name": { "type": "string" },
+          "index": { "type": "integer", "minimum": 0 }
+        },
+        "required": ["variable_name", "index"]
+      },
+      "description": "Ordered basis of variables used in the system."
+    },
+    "solution": {
+      "type": "object",
+      "description": "Particular solution (when consistent) or least-squares / minimum-norm solution.",
+      "properties": {
+        "method": {
+          "type": "string",
+          "enum": ["exact_rref", "exact_lu", "pinv", "least_squares", "minimum_norm"]
+        },
+        "vector": {
+          "type": "array",
+          "items": { "type": "number" }
+        },
+        "nullspace_basis_vectors": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": { "type": "number" }
+          }
+        }
+      }
+    },
+    "equation_residuals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["equation_index", "residual"],
+        "properties": {
+          "equation_index": { "type": "integer", "minimum": 0 },
+          "residual": { "type": "number" },
+          "tol": { "type": "number" },
+          "below_tolerance": { "type": "boolean" }
+        }
+      },
+      "description": "Equation-by-equation residuals of the solution."
+    },
+    "numerical_baseline": {
+      "type": "object",
+      "description": "Numerical baseline retained for comparison after downstream analytical invalidation.",
+      "properties": {
+        "baseline_id": { "type": "string" },
+        "rank_numerical": { "type": "integer" },
+        "solution_numerical": { "type": "array", "items": { "type": "number" } },
+        "residual_norm": { "type": "number" },
+        "retained": { "type": "boolean" }
+      }
+    },
+    "generator_engine": {
+      "type": "string",
+      "description": "Engine that generated this evidence."
+    },
+    "verifier_engine": {
+      "type": "string",
+      "description": "Independent engine that verified this evidence (generator-verifier separation)."
+    },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "verification_result_id": { "type": "string" }
+  },
+  "additionalProperties": false
+}
