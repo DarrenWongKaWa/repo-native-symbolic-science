@@ -1,0 +1,27 @@
+benchmark_id: sigma_xxx_finite_gamma_replay
+benchmark_interpretation: HUMAN_SPECIFIED_PREVIOUSLY_VERIFIED_NONINTERACTIVE_REPLAY_BENCHMARK
+visibility: PUBLIC
+scientific_boundary: |-
+  DC limit first
+  Gamma finite and exact in the raw one-dimensional sigma_xxx object
+  then normalization, decomposition, simplification,
+  closed-form construction and model-specific validation
+raw_object:
+  observable: sigma_xxx
+  dimensional_scope: one_dimensional
+  dc_limit_first: true
+  gamma_finite_and_exact_in_raw_object: true
+  pre_raw_gamma_expansion: forbidden
+execution_mode: NON_INTERACTIVE_GUIDED_REPLAY
+executor_result: NONINTERACTIVE_REPLAY_COMPLETED_WITH_BOUNDED_CAVEATS
+independent_verification: PENDING
+autonomous_mathematical_discovery: false
+general_tensorial_sigma_abc_solution: NOT_ESTABLISHED
+canonical_scientific_promotion: NOT_ASSIGNED
+local_exact_algebra:
+  closure: LOCAL_EXACT_ALGEBRA_CLOSED
+  status: PASS_WITH_CAVEAT
+gamma_scaling_reference_values:
+  insulating_small_gamma_slope: 1.9845925371006055
+  metallic_high_mu_slope: 0.9932470742383429
+  classification: executor-generated numerical support, not exact symbolic proof

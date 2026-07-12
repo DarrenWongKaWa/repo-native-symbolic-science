@@ -1,0 +1,12 @@
+{
+  "branch": "benchmark/sigma-xxx-finite-gamma-replay",
+  "note": "Live remote verification is performed after commit push.",
+  "status": "PENDING_PUSH",
+  "updated_at_utc": "2026-07-12T09:24:12Z",
+  "verification_command": [
+    "git",
+    "ls-remote",
+    "origin",
+    "refs/heads/benchmark/sigma-xxx-finite-gamma-replay"
+  ]
+}

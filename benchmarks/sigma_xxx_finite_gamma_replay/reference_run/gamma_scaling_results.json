@@ -1,0 +1,50 @@
+{
+  "all_sample_slopes": {
+    "0.0": {
+      "gamma_window": [
+        0.001,
+        0.02
+      ],
+      "loglog_slope_abs_sigmaRe_vs_Gamma": 1.9845925371006055,
+      "point_count": 16
+    },
+    "0.2": {
+      "gamma_window": [
+        0.001,
+        0.02
+      ],
+      "loglog_slope_abs_sigmaRe_vs_Gamma": 0.9161241143761907,
+      "point_count": 16
+    },
+    "0.4": {
+      "gamma_window": [
+        0.001,
+        0.02
+      ],
+      "loglog_slope_abs_sigmaRe_vs_Gamma": 0.9932470742383429,
+      "point_count": 16
+    }
+  },
+  "closure": "GAMMA_SCALING_REGRESSION_CLOSED",
+  "low_temperature_insulating_regime": {
+    "expected": "O(Gamma^2)",
+    "measured_slope": 1.9845925371006055,
+    "pass_window": [
+      1.75,
+      2.25
+    ],
+    "sample_mu": 0.0,
+    "status": "PASS"
+  },
+  "metallic_or_high_temperature_regime": {
+    "expected": "O(Gamma)",
+    "measured_slope": 0.9932470742383429,
+    "pass_window": [
+      0.75,
+      1.25
+    ],
+    "sample_mu": 0.4,
+    "status": "PASS"
+  },
+  "source": "incoming_materials/source_snapshots/modify5/input/fig2a_heatmap_data.csv"
+}

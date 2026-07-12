@@ -1,0 +1,50 @@
+identity_application_status: human-supplied identity registry for future replay; no
+  autonomous discovery claimed
+identity_sources:
+- name: pair hkk geometry rules
+  path: modify4_anan/pair_hkk_geometry_closure/output/pair_hkk_geometry_rules.wl
+  sha256: 6462856c7f7a7b1b9b8c1398882bfdf2f23aec00fba36eea084ea3202dd068b3
+  bytes: 623
+  classes:
+  - IDENTITY_SOURCE
+  - INTERMEDIATE_SYMBOLIC_ORACLE
+- name: pair basis expansion rules
+  path: modify4_anan/pair_reconstruction_validation/output/pair_basis_expansion_rules.wl
+  sha256: 6cb43b596c47993e13a7f5ae9c727aa94d2d7e35db890f7ebabb0f0dfdd8738e
+  bytes: 613
+  classes:
+  - IDENTITY_SOURCE
+  - INTERMEDIATE_SYMBOLIC_ORACLE
+- name: PG to fplus rules
+  path: modify5/output/pg_to_fplus_rules.wl
+  sha256: b95332bbc14e0ae272d6d6d784d6aef0ec567ef4332fb84854ca0222f2e6ebcc
+  bytes: 496
+  classes:
+  - MODEL_SOURCE
+  - INTERMEDIATE_SYMBOLIC_ORACLE
+  - IDENTITY_SOURCE
+- name: X12 identity rules
+  path: modify5/v2_normal_form/output/X12_identity_rules.wl
+  sha256: 60c4f7f620d74d2970f32c51be7ba698ab545a18da40f2a6daf8fccb76ed8cec
+  bytes: 345
+  classes:
+  - MODEL_SOURCE
+  - INTERMEDIATE_SYMBOLIC_ORACLE
+  - IDENTITY_SOURCE
+- name: Rice-Mele identity rules
+  path: modify5/v2_normal_form/output/rice_mele_identity_rules.wl
+  sha256: f5ccafb95c081ed44f7fb6e86cc1ce13f9225430505ae8e2acd118088cda2ee7
+  bytes: 454
+  classes:
+  - MODEL_SOURCE
+  - INTERMEDIATE_SYMBOLIC_ORACLE
+  - IDENTITY_SOURCE
+declared_manual_targets:
+- Xprime = d_k(d^2 A) modulo the human-supplied IBP target
+- v epsilon_n_second = -1/4 d_k(v^2) modulo the human-supplied IBP target
+- h_nm h_mn = dE[m,n]^2 |A_nm|^2 under the documented Rice-Mele substitutions
+- R_nm = Im[hkk_nm/hk_nm] under the documented Rice-Mele substitutions
+forbidden_promotions:
+- unauthorized integration by parts
+- boundary-term removal without declaration
+- numerical-to-symbolic claim promotion

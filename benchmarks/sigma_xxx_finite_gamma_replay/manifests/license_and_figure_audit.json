@@ -1,0 +1,14 @@
+{
+  "classifications": [
+    {
+      "classification": "SAFE",
+      "scope": "curated text, YAML, JSON, JSONL, Python executor, and generated benchmark reports"
+    },
+    {
+      "classification": "EXCLUDED",
+      "scope": "source_snapshots, private reports, unlicensed copied figures, sensitive access material, private correspondence"
+    }
+  ],
+  "copied_journal_figures": [],
+  "status": "PASS"
+}

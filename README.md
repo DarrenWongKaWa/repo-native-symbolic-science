@@ -34,9 +34,25 @@ This project provides a repo-native framework for auditable human-agent symbolic
 
 ## End-to-End Case Boundary
 
-- An end-to-end scientific reference case exists (private, not included)
+- A public finite-Gamma `sigma_xxx` replay benchmark is included at `benchmarks/sigma_xxx_finite_gamma_replay/`
 - Public examples are synthetic and redistributable
-- Private sigma_xxx and sigma_abc research content is excluded
+- Private source snapshots, unrelated historical reports, and private sigma_abc research content are excluded
+
+## Public Sigma_xxx Replay Benchmark
+
+The finite-Gamma `sigma_xxx` benchmark is a `HUMAN_SPECIFIED_PREVIOUSLY_VERIFIED_NONINTERACTIVE_REPLAY_BENCHMARK`. It demonstrates framework ingestion of structured scientific semantics, derivation-DAG replay, sector reconstruction checks, symbolic-oracle comparison, numerical and Gamma-scaling regressions, scoped closure evaluation, and provenance-backed reporting.
+
+It does not demonstrate autonomous mathematical discovery, independent verification, a general tensorial `sigma_abc` solution, or canonical scientific promotion.
+
+Run the benchmark-local public validation:
+
+```bash
+python3 benchmarks/sigma_xxx_finite_gamma_replay/tests/validate_public_benchmark.py benchmarks/sigma_xxx_finite_gamma_replay
+```
+
+The scientific boundary is: DC limit first; Gamma finite and exact in the raw one-dimensional `sigma_xxx` object; then normalization, decomposition, simplification, closed-form construction, and model-specific validation. The raw object must not be described as resulting from a prior Gamma-order expansion.
+
+Secondary conversation-derived decision provenance and the benchmark-local scoped pair-sector IBP authority record are documented under `benchmarks/sigma_xxx_finite_gamma_replay/docs/`.
 
 ## Limitations
 

@@ -1,0 +1,68 @@
+[
+  {
+    "authority_class": "NUMERICALLY_SUPPORTED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "NUM001",
+    "source_locator": "sigma_xxx_simplification_supplement.pdf"
+  },
+  {
+    "authority_class": "NUMERICALLY_SUPPORTED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "NUM002",
+    "source_locator": "theoretical supplement, Supplementary Note 10"
+  },
+  {
+    "authority_class": "NUMERICALLY_SUPPORTED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "NUM003",
+    "source_locator": "fullmodify4_summary_report.pdf, Fig. 2(a)"
+  },
+  {
+    "authority_class": "NUMERICALLY_SUPPORTED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "NUM004",
+    "source_locator": "fullmodify4_summary_report.pdf, Sec. 9 and Appendix C"
+  },
+  {
+    "authority_class": "NUMERICALLY_SUPPORTED",
+    "classification": "SEMANTIC_MATCH",
+    "conversation_id": "NUM005",
+    "source_locator": "fullmodify4_summary_report.pdf, validation summary"
+  },
+  {
+    "authority_class": "NUMERICALLY_SUPPORTED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "NUM006",
+    "source_locator": "sigma_xxx_simplification_supplement.pdf and fullmodify4 validation summary"
+  },
+  {
+    "authority_class": "NUMERICALLY_SUPPORTED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "NUM007",
+    "source_locator": "human project summary and Rice\u2013Mele scaling validation"
+  },
+  {
+    "authority_class": "NUMERICALLY_SUPPORTED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "NUM008",
+    "source_locator": "human project summary and Rice\u2013Mele scaling validation"
+  },
+  {
+    "authority_class": "NUMERICALLY_SUPPORTED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "NUM009",
+    "source_locator": "human project summary and mini-review discussion"
+  },
+  {
+    "authority_class": "MISSING_FROM_CONVERSATION",
+    "classification": "NO_AUTHORITATIVE_SOURCE_FOUND",
+    "conversation_id": "NUM010",
+    "source_locator": "not recovered from available conversation text"
+  },
+  {
+    "authority_class": "SUPERSEDED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "NUM011",
+    "source_locator": "rice_mele_plot_report.pdf"
+  }
+]

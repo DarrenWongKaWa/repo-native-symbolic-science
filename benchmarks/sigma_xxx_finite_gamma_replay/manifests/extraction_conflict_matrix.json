@@ -1,0 +1,43 @@
+{
+  "conflicts": [
+    {
+      "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+      "authority_class": "CONTRADICTED",
+      "classification": "CONTRADICTED_BY_AUTHORITATIVE_SOURCE",
+      "conversation_step_id": "S001",
+      "name": "Pre-raw Gamma-expansion interpretation",
+      "stage": "RAW_OBJECT",
+      "status": "SUPERSEDED_OR_CONTRADICTED"
+    },
+    {
+      "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+      "authority_class": "SUPERSEDED",
+      "classification": "SUPERSEDED_IN_EXTRACTION",
+      "conversation_step_id": "S002",
+      "name": "Conservative no-nontrivial-IBP evaluator",
+      "stage": "IDENTITY_REWRITE",
+      "status": "SUPERSEDED_OR_CONTRADICTED"
+    },
+    {
+      "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+      "authority_class": "SUPERSEDED",
+      "classification": "SUPERSEDED_IN_EXTRACTION",
+      "conversation_step_id": "S003",
+      "name": "Early truncated Gamma-plus-Gamma-squared Rice\u2013Mele plotting branch",
+      "stage": "SCALING_VALIDATION",
+      "status": "SUPERSEDED_OR_CONTRADICTED"
+    },
+    {
+      "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+      "authority_class": "CONTRADICTED",
+      "classification": "CONTRADICTED_BY_AUTHORITATIVE_SOURCE",
+      "conversation_step_id": "S004",
+      "name": "Promote projected band abstraction to full tensorial sigma_abc",
+      "stage": "INDEX_SPLIT",
+      "status": "SUPERSEDED_OR_CONTRADICTED"
+    }
+  ],
+  "material_conflict": false,
+  "resolution_policy": "Authoritative benchmark inputs and source-backed records remain primary; conversation contradictions are recorded, not merged.",
+  "status": "PASS_WITH_RETAINED_SUPERSEDED_RECORDS"
+}

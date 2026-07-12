@@ -1,0 +1,50 @@
+execution_mode: NON_INTERACTIVE_GUIDED_REPLAY
+ask_human_during_run: false
+human_authority:
+  human_supplied: true
+  previously_verified: true
+  autonomous_discovery_claim: forbidden
+scientific_order:
+  dc_limit_first: true
+  gamma_finite_and_exact_for_raw_object: true
+  pre_raw_gamma_expansion: forbidden
+preauthorized_operations:
+- exact_algebraic_expansion
+- exact_collection
+- exact_factorization
+- declared_dummy_index_relabeling
+- band_index_separation
+- declared_special_function_organization
+- declared_sector_decomposition
+- declared_identity_application
+- exact_parent_reconstruction
+- symbolic_oracle_comparison
+- bounded_high_precision_regression
+- declared_gamma_scaling_regression
+forbidden_operations:
+- unauthorized_integration_by_parts
+- boundary_term_removal
+- undeclared_integrated_cancellation
+- limit_reordering
+- pre_raw_gamma_expansion
+- numerical_to_symbolic_claim_promotion
+- automatic_canonical_promotion
+claim_limits:
+  autonomous_discovery_claim: forbidden
+  general_sigma_abc_solved_claim: forbidden
+  automatic_canonical_promotion: forbidden
+  numerical_agreement_implies_symbolic_equality: false
+source_authorities:
+  raw_sigma_xxx_dc_finite_gamma:
+    role: CANONICAL_RAW_DC_FINITE_GAMMA_EXPRESSION
+    authority: HUMAN_SUPPLIED_PHYSICIST_DERIVATION
+  low_frequency_verified_chain:
+    role: UPSTREAM_HUMAN_VERIFIED_DERIVATION_CHAIN
+    authority: HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED
+  modify4_anan_closed_form_pipeline:
+    role: HUMAN_VERIFIED_SIGMA_XXX_CLOSED_FORM_PIPELINE
+    authority: HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED
+  modify5_rice_mele_regression:
+    role: ONE_DIMENSIONAL_RICE_MELE_MODEL_VALIDATION
+    authority: HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED
+replay_status: NOT_EXECUTED_IN_THIS_TASK

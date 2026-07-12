@@ -1,0 +1,331 @@
+case_id: sigma_xxx_noninteractive_replay
+materialization_task: SLOOP_SIGMAXXX_CASE_INPUT_001_MATERIALIZE_AUTHORIZED_HUMAN_SCIENTIFIC_PACKAGE
+generated_at_utc: '2026-07-12T07:48:14.849162+00:00'
+workspace_root: benchmarks/sigma_xxx_finite_gamma_replay
+allowlist:
+  path: authorized_source_allowlist.yaml
+  sha256: 937ecadc6ede074a9420f50ce294cff602048cb271f61b306f392012e6717ee1
+  parsed_from_markdown_fence: true
+scientific_boundary:
+  target_observable: sigma_xxx
+  dimensional_scope: one_dimensional
+  dc_limit_first: true
+  raw_object_classification:
+  - DC_LIMIT_ALREADY_TAKEN
+  - GAMMA_FINITE_AND_EXACT
+  - PRE_RAW_GAMMA_EXPANSION_FORBIDDEN
+  pre_raw_gamma_expansion: forbidden
+  autonomous_discovery_claim: forbidden
+  mathematical_replay_executed: false
+source_validation:
+  required_source_existence:
+  - source_id: raw_sigma_xxx_dc_finite_gamma
+    source_path: benchmarks/sigma_xxx_finite_gamma_replay/source_reference/private_source_root/low_frequency/Sigma_abc_dc_1D.txt
+    source_type: file
+    required: true
+    exists: true
+  - source_id: low_frequency_verified_chain
+    source_path: benchmarks/sigma_xxx_finite_gamma_replay/source_reference/private_source_root/low_frequency
+    source_type: directory
+    required: true
+    exists: true
+  - source_id: modify4_anan_closed_form_pipeline
+    source_path: benchmarks/sigma_xxx_finite_gamma_replay/source_reference/private_source_root/modify4_anan
+    source_type: directory
+    required: true
+    exists: true
+  - source_id: modify5_rice_mele_regression
+    source_path: benchmarks/sigma_xxx_finite_gamma_replay/source_reference/private_source_root/modify5
+    source_type: directory
+    required: true
+    exists: true
+  inventory_count_after_exclusions: 1090
+  excluded_count: 263
+  forbidden_sources_consumed: []
+  incoming_materials_consumed_as_source: false
+source_to_target_mapping:
+  incoming_materials/01_raw_sigma_xxx.txt:
+  - path: low_frequency/Sigma_abc_dc_1D.txt
+    sha256: f613a4ce5bdb0972c32b7f799fbb408be237c94648fb9945e1b055914cfacace
+    bytes: 121067
+    classes:
+    - DUPLICATE
+  incoming_materials/02_scientific_definitions.yaml:
+  - path: low_frequency/Sigma_abc_dc_1D.txt
+    sha256: f613a4ce5bdb0972c32b7f799fbb408be237c94648fb9945e1b055914cfacace
+    bytes: 121067
+    classes:
+    - DUPLICATE
+  - path: low_frequency/band_sum_abstractor.wl
+    sha256: dad9e4599976af5f869643a7fdd016258f7a790d6da02f666646b7f112691ebf
+    bytes: 15162
+    classes:
+    - DERIVATION_STEP_SOURCE
+    - SCIENTIFIC_DEFINITION_SOURCE
+  - path: modify4_anan/output/anan_basis_dictionary.wl
+    sha256: 4523d2e5fb2892f27dd149d7cfab688e4195e263a787e428b8366fb8372998ec
+    bytes: 1147
+    classes:
+    - IDENTITY_SOURCE
+    - INTERMEDIATE_SYMBOLIC_ORACLE
+  - path: modify4_anan/PLAN.md
+    sha256: e2efb2f8818581d89b793c65b09f6a95d19c95f41000746bce6d57b2f8678eba
+    bytes: 18995
+    classes:
+    - PROVENANCE_ONLY
+  incoming_materials/03_model_and_parameters.yaml:
+  - path: modify5/PLAN.md
+    sha256: 44b656660bda68760518a7df92a72ad3e9f85f8ee962885c62801695fdcff3e1
+    bytes: 13804
+    classes:
+    - PROVENANCE_ONLY
+  - path: modify5/input/rice_mele_geometric_closed_form.wl
+    sha256: 2a6f4ab7b2010696c8c78fd42cb24f4a6659c68e7340981e6306a8cccd5f6c3c
+    bytes: 6789
+    classes:
+    - MODEL_SOURCE
+    - INTERMEDIATE_SYMBOLIC_ORACLE
+  - path: modify5/input/rice_mele_integrand.py
+    sha256: 6e9693311d4f02d9e08e74bee94fcc80ff2d11215d48e8b2a025203f63ee922f
+    bytes: 10188
+    classes:
+    - MODEL_SOURCE
+  - path: modify5/input/rice_mele_integrand.wl
+    sha256: 30a152a8e32cf1d5689018f0a15f855c6d6e5bb305acfa6dacdcfabceef23dbb
+    bytes: 190
+    classes:
+    - MODEL_SOURCE
+    - INTERMEDIATE_SYMBOLIC_ORACLE
+  incoming_materials/04_human_authority.yaml:
+  - path: authorized_source_allowlist.yaml
+    sha256: 937ecadc6ede074a9420f50ce294cff602048cb271f61b306f392012e6717ee1
+    bytes: 8209
+  incoming_materials/05_derivation_steps.jsonl:
+  - path: low_frequency/1D-PG2.nb
+    sha256: 5b176b610a28fbb14ad94ee35f01eacac38be88ca0ef15c2dc556f686bdab5c0
+    bytes: 275194
+    classes:
+    - DERIVATION_STEP_SOURCE
+    - PROVENANCE_ONLY
+  - path: low_frequency/abc_w1_w2_1D.txt
+    sha256: 03da44d8a00727547775306cd39125d0f14740a60c2871fa09d1fa91e0b6c52e
+    bytes: 112470
+    classes:
+    - DERIVATION_STEP_SOURCE
+    - SCIENTIFIC_DEFINITION_SOURCE
+    - INTERMEDIATE_SYMBOLIC_ORACLE
+  - path: low_frequency/band_sum_abstractor.wl
+    sha256: dad9e4599976af5f869643a7fdd016258f7a790d6da02f666646b7f112691ebf
+    bytes: 15162
+    classes:
+    - DERIVATION_STEP_SOURCE
+    - SCIENTIFIC_DEFINITION_SOURCE
+  - path: low_frequency/band_sum_expression.nb
+    sha256: a5d856e53fae0b4442989022f201ce54b07691c0a3fb4850c1c4b93cacb77846
+    bytes: 434769
+    classes:
+    - DERIVATION_STEP_SOURCE
+    - INTERMEDIATE_SYMBOLIC_ORACLE
+    - PROVENANCE_ONLY
+  - path: low_frequency/DC limit - Gamma Expansion -1D.nb
+    sha256: d7f8a70bfbbea1242f5c08d7305026929fd226a4a5923f41f794c718dbe687b2
+    bytes: 212684
+    classes:
+    - DERIVATION_STEP_SOURCE
+    - PROVENANCE_ONLY
+  - path: low_frequency/exprExpandedSimplified-separated.txt
+    sha256: 8bca5707a04950e920f1d7724360e7ced3e21a70d22554cf82704f7c87dc226b
+    bytes: 4759
+    classes:
+    - DERIVATION_STEP_SOURCE
+    - SCIENTIFIC_DEFINITION_SOURCE
+    - INTERMEDIATE_SYMBOLIC_ORACLE
+  - path: low_frequency/exprExpandedSimplified.txt
+    sha256: cf1dc3c6e4980742017d94f5e7c2c28bb5e3dc8a9d521d2120e11ba50015f49b
+    bytes: 4623
+    classes:
+    - DERIVATION_STEP_SOURCE
+    - SCIENTIFIC_DEFINITION_SOURCE
+    - INTERMEDIATE_SYMBOLIC_ORACLE
+  - path: low_frequency/exprSimplified.txt
+    sha256: 9d143a819641ca24e8f97ee3ca09cefcc85af236f03fd5b424fc38f8724c44f3
+    bytes: 6004
+    classes:
+    - DERIVATION_STEP_SOURCE
+    - SCIENTIFIC_DEFINITION_SOURCE
+    - INTERMEDIATE_SYMBOLIC_ORACLE
+  - path: low_frequency/Sigma_abc_ad_1D-epsilon1.txt
+    sha256: d88d1511506287061407ccdfdd0f6d77c0f46261a5669831778f239e95350c0f
+    bytes: 12698
+    classes:
+    - DERIVATION_STEP_SOURCE
+    - SCIENTIFIC_DEFINITION_SOURCE
+    - INTERMEDIATE_SYMBOLIC_ORACLE
+  - path: low_frequency/Sigma_abc_dc_1D.txt
+    sha256: f613a4ce5bdb0972c32b7f799fbb408be237c94648fb9945e1b055914cfacace
+    bytes: 121067
+    classes:
+    - DUPLICATE
+  incoming_materials/06_sector_decomposition.yaml:
+  - path: modify4_anan/output/center_sector_decomposition.wl
+    sha256: 8d5a2b0fe2ca2568882f59295d20299dcfb91235890b4e7960588455a6281524
+    bytes: 156
+    classes:
+    - SECTOR_DEFINITION_SOURCE
+    - INTERMEDIATE_SYMBOLIC_ORACLE
+  - path: modify4_anan/output/pair_sector_anan_decomposition.wl
+    sha256: 9aa70a82b01601280eeb2e096c2ef1a549f247079ab7501750f1184b3fc5809f
+    bytes: 256
+    classes:
+    - SECTOR_DEFINITION_SOURCE
+    - INTERMEDIATE_SYMBOLIC_ORACLE
+  - path: modify4_anan/output/loop_sector_anan_decomposition.wl
+    sha256: ef7759d5a602b7e66d999c856600345241307db393afb9ecae0f19ae144d1db7
+    bytes: 248
+    classes:
+    - SECTOR_DEFINITION_SOURCE
+    - INTERMEDIATE_SYMBOLIC_ORACLE
+  - path: modify4_anan/final_projected_multiband_report/CURRENT_STATUS.md
+    sha256: e420be919f17e3cf37d0a55588c8b1e49047971fcf137fab89b733cdd63308c8
+    bytes: 1321
+    classes:
+    - VALIDATION_EVIDENCE
+    - PROVENANCE_ONLY
+  incoming_materials/07_identity_registry.yaml:
+  - path: modify4_anan/pair_hkk_geometry_closure/output/pair_hkk_geometry_rules.wl
+    sha256: 6462856c7f7a7b1b9b8c1398882bfdf2f23aec00fba36eea084ea3202dd068b3
+    bytes: 623
+    classes:
+    - IDENTITY_SOURCE
+    - INTERMEDIATE_SYMBOLIC_ORACLE
+  - path: modify4_anan/pair_reconstruction_validation/output/pair_basis_expansion_rules.wl
+    sha256: 6cb43b596c47993e13a7f5ae9c727aa94d2d7e35db890f7ebabb0f0dfdd8738e
+    bytes: 613
+    classes:
+    - IDENTITY_SOURCE
+    - INTERMEDIATE_SYMBOLIC_ORACLE
+  - path: modify5/output/pg_to_fplus_rules.wl
+    sha256: b95332bbc14e0ae272d6d6d784d6aef0ec567ef4332fb84854ca0222f2e6ebcc
+    bytes: 496
+    classes:
+    - MODEL_SOURCE
+    - INTERMEDIATE_SYMBOLIC_ORACLE
+    - IDENTITY_SOURCE
+  - path: modify5/v2_normal_form/output/X12_identity_rules.wl
+    sha256: 60c4f7f620d74d2970f32c51be7ba698ab545a18da40f2a6daf8fccb76ed8cec
+    bytes: 345
+    classes:
+    - MODEL_SOURCE
+    - INTERMEDIATE_SYMBOLIC_ORACLE
+    - IDENTITY_SOURCE
+  - path: modify5/v2_normal_form/output/rice_mele_identity_rules.wl
+    sha256: f5ccafb95c081ed44f7fb6e86cc1ce13f9225430505ae8e2acd118088cda2ee7
+    bytes: 454
+    classes:
+    - MODEL_SOURCE
+    - INTERMEDIATE_SYMBOLIC_ORACLE
+    - IDENTITY_SOURCE
+  incoming_materials/08_expected_symbolic_results.yaml:
+  - path: modify4_anan/output/projected_multiband_anan_style_formula.wl
+    sha256: a09903f4950e4f25825bf0c7e11659102ac08e48f1cac6f2ad42d78c4e06b67c
+    bytes: 596
+    classes:
+    - INTERMEDIATE_SYMBOLIC_ORACLE
+  - path: modify4_anan/projected_xxx_reduced_pair_shift_final/output/final_projected_xxx_integrand.wl
+    sha256: 9e8aa111adf3c11ca8b202f53f63726832e7db6fa230f8afe41dd148b700addb
+    bytes: 342
+    classes:
+    - FINAL_SYMBOLIC_ORACLE
+    - INTERMEDIATE_SYMBOLIC_ORACLE
+  - path: modify4_anan/projected_xxx_reduced_pair_shift_final/output/final_surviving_kernels.wl
+    sha256: 1e1e315fc9e5fa028831126bc47972b0369f73b389f7df67d742b2c672755cd1
+    bytes: 1045
+    classes:
+    - FINAL_SYMBOLIC_ORACLE
+    - INTERMEDIATE_SYMBOLIC_ORACLE
+  - path: modify4_anan/projected_xxx_reduced_pair_shift_final/output/final_formula_reconstruction_validation.wl
+    sha256: bccfcdad0549fa215abbc988b40feedd82d2fa1e8f4131c1cc2d46c10a1bf38d
+    bytes: 219
+    classes:
+    - FINAL_SYMBOLIC_ORACLE
+    - VALIDATION_EVIDENCE
+    - INTERMEDIATE_SYMBOLIC_ORACLE
+  - path: modify4_anan/utimate_form/modify4_anan_master_pipeline/output/projected_multiband_sigma_xxx_final_tables.wl
+    sha256: 2d6007caef67fdd18c54d30c8251a520fdb59e5678c1d417e7f6a6a52948500c
+    bytes: 192187
+    classes:
+    - FINAL_SYMBOLIC_ORACLE
+    - INTERMEDIATE_SYMBOLIC_ORACLE
+  incoming_materials/09_expected_numerical_and_scaling_results.yaml:
+  - path: modify5/data/modify5_target_comparison_samples.csv
+    sha256: 32f52f16d3c4416570a8a8f8aaa1af00bfb6d2412f892a759e63739568e4ab76
+    bytes: 3985
+    classes:
+    - MODEL_SOURCE
+    - INTERMEDIATE_SYMBOLIC_ORACLE
+    - NUMERICAL_REGRESSION_SOURCE
+    - VALIDATION_EVIDENCE
+  - path: modify5/input/fig2a_heatmap_data.csv
+    sha256: 7df265e954d3947b28368fda990e6ab748d484350e13c28b6b1be0b15444ad85
+    bytes: 6061750
+    classes:
+    - NUMERICAL_REGRESSION_SOURCE
+    - FIGURE_SOURCE
+  - path: modify5/input/fig2b_linecuts_data.csv
+    sha256: 55c19d6cfedea89a23c449e7711eded122818c2b3436670ef017b5265be3b049
+    bytes: 206255
+    classes:
+    - NUMERICAL_REGRESSION_SOURCE
+    - FIGURE_SOURCE
+  - path: modify5/summary/data/ibp_reduced_validation_samples.csv
+    sha256: 5eb591afe823f4ee934fa1a1e66cde32bb829ce19e54908de2d2941ab7dc981c
+    bytes: 1153
+    classes:
+    - NUMERICAL_REGRESSION_SOURCE
+    - VALIDATION_EVIDENCE
+  - path: modify5/summary/data/ibp_reduced_worst_case_convergence.csv
+    sha256: 8cdb349597d01dc8e712d82b4ea44bb384e0aa1887743016f89da574027b86a4
+    bytes: 332
+    classes:
+    - NUMERICAL_REGRESSION_SOURCE
+    - SCALING_REGRESSION_SOURCE
+  - path: modify5/summary/README.md
+    sha256: 394382bdf2336d5934a0762c2b0b712e7b5a0164cf21c8b15af4072dd85411a0
+    bytes: 1835
+    classes:
+    - PROVENANCE_ONLY
+  incoming_materials/10_source_and_generation_note.md:
+  - path: authorized_source_allowlist.yaml
+    sha256: 937ecadc6ede074a9420f50ce294cff602048cb271f61b306f392012e6717ee1
+    bytes: 8209
+  incoming_materials/11_attribution_and_permissions.md:
+  - path: authorized_source_allowlist.yaml
+    sha256: 937ecadc6ede074a9420f50ce294cff602048cb271f61b306f392012e6717ee1
+    bytes: 8209
+required_targets:
+- incoming_materials/00_case_manifest.yaml
+- incoming_materials/01_raw_sigma_xxx.txt
+- incoming_materials/02_scientific_definitions.yaml
+- incoming_materials/03_model_and_parameters.yaml
+- incoming_materials/04_human_authority.yaml
+- incoming_materials/05_derivation_steps.jsonl
+- incoming_materials/06_sector_decomposition.yaml
+- incoming_materials/07_identity_registry.yaml
+- incoming_materials/08_expected_symbolic_results.yaml
+- incoming_materials/09_expected_numerical_and_scaling_results.yaml
+- incoming_materials/10_source_and_generation_note.md
+- incoming_materials/11_attribution_and_permissions.md
+additional_package_artifacts:
+- incoming_materials/source_inventory_classification.jsonl
+- incoming_materials/source_snapshot_manifest.json
+- incoming_materials/source_to_target_mapping.yaml
+- incoming_materials/excluded_source_inventory.jsonl
+- incoming_materials/validation/package_validation.json
+duplicate_objects:
+- path: low_frequency/Sigma_abc_dc_1D.txt
+  admitted_by_source_ids:
+  - raw_sigma_xxx_dc_finite_gamma
+  - low_frequency_verified_chain
+  resolution: import authoritative raw source once
+superseded_policy: DO_NOT_USE_AS_ACTIVE_ORACLE
+ambiguous_role_policy: DO_NOT_IMPORT

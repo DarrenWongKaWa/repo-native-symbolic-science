@@ -1,0 +1,206 @@
+symbolic_targets:
+- target_id: SYM001
+  target_type: RAW_OBJECT
+  object_name: post-DC finite-Gamma raw sigma_xxx
+  expected_expression: Sigma_abc_dc_1D.txt and Sigma_abc_dc_1D-separated.txt
+  expected_relation: LITERAL_IDENTITY
+  required: true
+  authority_class: HUMAN_CONFIRMED
+  source_locator: authoritative raw-object boundary
+  verification_method_previously_used: immutable source and exact separated expression
+  caveat: Checksum missing.
+- target_id: SYM002
+  target_type: TERM_COUNT
+  object_name: raw provenance inventory
+  expected_expression: 8 center + 50 pair + 60 loop = 118
+  expected_relation: EXACT_COUNT
+  required: true
+  authority_class: SYMBOLICALLY_VERIFIED
+  source_locator: theoretical supplement, Supplementary Note 2
+  verification_method_previously_used: row-ledger count
+  caveat: ''
+- target_id: SYM003
+  target_type: RECONSTRUCTION
+  object_name: center/pair/loop split
+  expected_expression: I_raw-(I_center_raw+I_pair_raw+I_loop_raw)=0
+  expected_relation: EXACT_SYMBOLIC_EQUALITY
+  required: true
+  authority_class: SYMBOLICALLY_VERIFIED
+  source_locator: theoretical supplement validation ledger
+  verification_method_previously_used: symbolic subtraction
+  caveat: ''
+- target_id: SYM004
+  target_type: SECTOR
+  object_name: center sector
+  expected_expression: I_center=sum_a v_a^3 K_c(a); exact kernel in K_center.wl
+  expected_relation: EXACT_SYMBOLIC_EQUALITY
+  required: true
+  authority_class: SYMBOLICALLY_VERIFIED
+  source_locator: theoretical supplement, Supplementary Note 4
+  verification_method_previously_used: center expansion reconstruction
+  caveat: Not IBP-exact.
+- target_id: SYM005
+  target_type: STRUCTURAL_FEATURE
+  object_name: pair closure basis
+  expected_expression: B_R, B_vminus, B_vplus, B_vepsilon, B_X
+  expected_relation: EXACT_PARENT_RECONSTRUCTION
+  required: true
+  authority_class: SYMBOLICALLY_VERIFIED
+  source_locator: theoretical supplement, Supplementary Note 5
+  verification_method_previously_used: pair hxx reconstruction
+  caveat: ''
+- target_id: SYM006
+  target_type: TERM_COUNT
+  object_name: pair hxx closure inventory
+  expected_expression: 46 residual -> 14 hxx targets -> 10 shift entries + 12 derivative
+    candidates; 32 diagonal-velocity residual rows remain
+  expected_relation: EXACT_COUNT
+  required: false
+  authority_class: SYMBOLICALLY_VERIFIED
+  source_locator: pair_hkk_geometry_closure/gpt_review_prompt.md
+  verification_method_previously_used: row-ledger audit
+  caveat: Historical intermediate stage.
+- target_id: SYM007
+  target_type: SECTOR
+  object_name: loop sector
+  expected_expression: Re[A_ab A_bc A_ca] K_ReL + Im[A_ab A_bc A_ca] K_ImL
+  expected_relation: EXACT_PARENT_RECONSTRUCTION
+  required: true
+  authority_class: SYMBOLICALLY_VERIFIED
+  source_locator: theoretical supplement, Supplementary Note 7
+  verification_method_previously_used: loop orbit reconstruction
+  caveat: ''
+- target_id: SYM008
+  target_type: TERM_COUNT
+  object_name: kernel fusion inventory
+  expected_expression: 208 post-expansion/post-orbit rows -> 7 kernels
+  expected_relation: EXACT_COUNT_AND_RECONSTRUCTION
+  required: true
+  authority_class: SYMBOLICALLY_VERIFIED
+  source_locator: theoretical supplement reduction diagram
+  verification_method_previously_used: kernel fusion gate
+  caveat: 208 is not raw row count.
+- target_id: SYM009
+  target_type: RECONSTRUCTION
+  object_name: pair post-IBP reduction
+  expected_expression: I_pair_full-I_pair_R-partial_k F_pair_total=0
+  expected_relation: EXACT_SYMBOLIC_EQUALITY
+  required: true
+  authority_class: SYMBOLICALLY_VERIFIED
+  source_locator: final_pair_reduction_validation.wl
+  verification_method_previously_used: exact symbolic subtraction
+  caveat: Primitive file not embedded.
+- target_id: SYM010
+  target_type: TERM_COUNT
+  object_name: pair primitive solve
+  expected_expression: 10 residual components -> 6 cokernel -> 0; 1+4+12=17 primitive
+    components
+  expected_relation: EXACT_COUNT_AND_ELIMINATION
+  required: true
+  authority_class: SYMBOLICALLY_VERIFIED
+  source_locator: theoretical supplement, Supplementary Note 6 and Appendix B
+  verification_method_previously_used: rational primitive verifier and coupled solve
+  caveat: ''
+- target_id: SYM011
+  target_type: CLOSED_FORM
+  object_name: sigma_xxx_projected_closed_form
+  expected_expression: K_center.wl + K_pair_R.wl + K_loop_ReL.wl + K_loop_ImL.wl,
+    modulo input_snapshots/F_pair_total.wl
+  expected_relation: EXACT_SYMBOLIC_EQUALITY_MOD_EXPLICIT_BZ_TOTAL_DERIVATIVE
+  required: true
+  authority_class: HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED
+  source_locator: theoretical supplement, Supplementary Note 8 and Appendix C
+  verification_method_previously_used: final claim-boundary and reconstruction gates
+  caveat: Complete expressions referenced, not paraphrased.
+- target_id: SYM012
+  target_type: STRUCTURAL_FEATURE
+  object_name: surviving kernel families
+  expected_expression: '[K_c,K_R,K_ReL,K_ImL]'
+  expected_relation: EXACT_KERNEL_FAMILY_LIST
+  required: true
+  authority_class: HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED
+  source_locator: theoretical supplement, Appendix D
+  verification_method_previously_used: 7-to-4 reduction ledger
+  caveat: ''
+- target_id: SYM013
+  target_type: STRUCTURAL_FEATURE
+  object_name: finite-Gamma denominator towers
+  expected_expression: Exact rational factors in energy differences and (2 Gamma +/-
+    i dE)^p multiplied by PolyGamma blocks
+  expected_relation: STRUCTURAL_FEATURE
+  required: true
+  authority_class: EXPLICITLY_STATED_IN_CONVERSATION
+  source_locator: Sigma_abc_dc_1D-separated.txt and raw row appendix
+  verification_method_previously_used: exact row serialization
+  caveat: Complete tower inventory needs machine rows.
+- target_id: SYM014
+  target_type: STRUCTURAL_FEATURE
+  object_name: Anan pair comparison
+  expected_expression: K_R plus branch matches Anan Eq.(6) after Delta_Anan=-d
+  expected_relation: EXACT_COEFFICIENT_MATCH_FOR_ONE_BRANCH
+  required: false
+  authority_class: SYMBOLICALLY_VERIFIED
+  source_locator: theoretical supplement, Supplementary Note 9
+  verification_method_previously_used: convention-map comparison
+  caveat: Not full Eq.(5) equality.
+- target_id: SYM015
+  target_type: STRUCTURAL_FEATURE
+  object_name: Anan loop comparison
+  expected_expression: same A_ab A_bc A_ca product type
+  expected_relation: STRUCTURAL_EQUIVALENCE
+  required: false
+  authority_class: STRUCTURALLY_VERIFIED
+  source_locator: theoretical supplement, Supplementary Note 9
+  verification_method_previously_used: geometric structure comparison
+  caveat: Coefficient kernel does not match compact Eq.(7).
+- target_id: SYM016
+  target_type: VANISHING_STATEMENT
+  object_name: Rice–Mele loop sector
+  expected_expression: I_loop^RM=0
+  expected_relation: EXACT_SYMBOLIC_EQUALITY
+  required: true
+  authority_class: SYMBOLICALLY_VERIFIED
+  source_locator: theoretical supplement, Supplementary Note 10
+  verification_method_previously_used: empty distinct-band triple
+  caveat: Two-band only.
+- target_id: SYM017
+  target_type: VANISHING_STATEMENT
+  object_name: Rice–Mele center BZ integral
+  expected_expression: integral_BZ I_center^RM=0
+  expected_relation: EXACT_INTEGRATED_PARITY_CANCELLATION
+  required: true
+  authority_class: SYMBOLICALLY_VERIFIED
+  source_locator: theoretical supplement, Supplementary Note 10
+  verification_method_previously_used: spinless-TRS parity
+  caveat: Center integrand not pointwise zero.
+- target_id: SYM018
+  target_type: CLOSED_FORM
+  object_name: Rice–Mele longitudinal result
+  expected_expression: sum over ordered pairs R_ab |A_ab|^2 K_R(a,b); complete target-inspired
+    normal form in modify5_v2_complete_1d_kkk.pdf
+  expected_relation: MODEL_SPECIALIZATION_EQUALITY
+  required: true
+  authority_class: HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED
+  source_locator: theoretical supplement, Supplementary Note 10; Modify5-v2
+  verification_method_previously_used: symbolic specialization and numerical regression
+  caveat: Model-specific.
+- target_id: SYM019
+  target_type: VANISHING_STATEMENT
+  object_name: general sigma_abc solved
+  expected_expression: 'false'
+  expected_relation: CLAIM_BOUNDARY
+  required: true
+  authority_class: HUMAN_CONFIRMED
+  source_locator: scope audit and theoretical supplement Appendix D
+  verification_method_previously_used: claim-boundary review
+  caveat: ''
+- target_id: SYM020
+  target_type: VANISHING_STATEMENT
+  object_name: canonical promotion authorization
+  expected_expression: 'false'
+  expected_relation: WORKFLOW_AUTHORITY_BOUNDARY
+  required: true
+  authority_class: HUMAN_CONFIRMED
+  source_locator: current extraction instructions
+  verification_method_previously_used: human authority gate
+  caveat: ''

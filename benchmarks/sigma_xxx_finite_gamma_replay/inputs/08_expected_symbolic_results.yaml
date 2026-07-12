@@ -1,0 +1,68 @@
+closed_form_objectives:
+- finite-Gamma sigma_xxx closed form
+- exact reconstruction targets
+- model-specific closed-form targets
+primary_oracles:
+- path: modify4_anan/output/projected_multiband_anan_style_formula.wl
+  sha256: a09903f4950e4f25825bf0c7e11659102ac08e48f1cac6f2ad42d78c4e06b67c
+  bytes: 596
+  classes:
+  - INTERMEDIATE_SYMBOLIC_ORACLE
+- path: modify4_anan/projected_xxx_reduced_pair_shift_final/output/final_projected_xxx_integrand.wl
+  sha256: 9e8aa111adf3c11ca8b202f53f63726832e7db6fa230f8afe41dd148b700addb
+  bytes: 342
+  classes:
+  - FINAL_SYMBOLIC_ORACLE
+  - INTERMEDIATE_SYMBOLIC_ORACLE
+- path: modify4_anan/projected_xxx_reduced_pair_shift_final/output/final_surviving_kernels.wl
+  sha256: 1e1e315fc9e5fa028831126bc47972b0369f73b389f7df67d742b2c672755cd1
+  bytes: 1045
+  classes:
+  - FINAL_SYMBOLIC_ORACLE
+  - INTERMEDIATE_SYMBOLIC_ORACLE
+- path: modify4_anan/utimate_form/modify4_anan_master_pipeline/output/projected_multiband_sigma_xxx_final_tables.wl
+  sha256: 2d6007caef67fdd18c54d30c8251a520fdb59e5678c1d417e7f6a6a52948500c
+  bytes: 192187
+  classes:
+  - FINAL_SYMBOLIC_ORACLE
+  - INTERMEDIATE_SYMBOLIC_ORACLE
+exact_reconstruction_validation_sources:
+- path: modify4_anan/projected_xxx_reduced_pair_shift_final/output/final_formula_reconstruction_validation.wl
+  sha256: bccfcdad0549fa215abbc988b40feedd82d2fa1e8f4131c1cc2d46c10a1bf38d
+  bytes: 219
+  classes:
+  - FINAL_SYMBOLIC_ORACLE
+  - VALIDATION_EVIDENCE
+  - INTERMEDIATE_SYMBOLIC_ORACLE
+- path: modify4_anan/projected_xxx_reduced_pair_shift_final/output/final_pair_reduction_validation.wl
+  sha256: 30802cdba81e8e3a74d2732bda38911552fd5a82d54915812ced18b078410b91
+  bytes: 375
+  classes:
+  - FINAL_SYMBOLIC_ORACLE
+  - VALIDATION_EVIDENCE
+  - INTERMEDIATE_SYMBOLIC_ORACLE
+- path: modify4_anan/modify4_to_modify5_rice_mele_consistency/input_snapshots/modify5_v2_normal_form_validation_summary.json
+  sha256: 152cfa2ee23ae9d170676a4587a2ff928bafd9449d0e3b97b2ec22d469df3bfc
+  bytes: 3780
+  classes:
+  - VALIDATION_EVIDENCE
+  - INTERMEDIATE_SYMBOLIC_ORACLE
+rice_mele_consistency_sources:
+- path: modify4_anan/modify4_to_modify5_rice_mele_consistency/output/modify4_specialized_RM_formula.wl
+  sha256: ba33ee81c34dbcb5b92974072827c090ef5140c2a2ee898c61338ecc631858c8
+  bytes: 396
+  classes:
+  - INTERMEDIATE_SYMBOLIC_ORACLE
+- path: modify4_anan/modify4_to_modify5_rice_mele_consistency/output/modify5_RM_reference_formula.wl
+  sha256: e3d6cbe37faded091d8be26b28f574f471bc663d55df7ecf65c6bbfa0d2a9e18
+  bytes: 291
+  classes:
+  - INTERMEDIATE_SYMBOLIC_ORACLE
+- path: modify5/v2_normal_form/output/modify4_target_style_integrand.wl
+  sha256: ab1534f3c445aa9655d8ee075a37311a981f4d957aa1aa4c4425e7ec20f7628c
+  bytes: 2451
+  classes:
+  - MODEL_SOURCE
+  - INTERMEDIATE_SYMBOLIC_ORACLE
+claim_boundary: expected results are human-supplied/replay oracles, not newly discovered
+  formulas

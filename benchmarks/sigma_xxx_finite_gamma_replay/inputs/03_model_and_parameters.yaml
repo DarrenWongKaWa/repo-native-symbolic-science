@@ -1,0 +1,58 @@
+model_scope: one-dimensional Rice-Mele specialization and regression target set
+source_id: modify5_rice_mele_regression
+authority: HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED
+definitions_and_conventions:
+  projected_channel: sigma_dc_kkk == sigma_xxx
+  two_band_specialization: C2 true three-band loop sector vanishes in two-band Rice-Mele
+    specialization
+  internal_units_from_source:
+  - t0=1
+  - a=1
+  - hbar=1
+  - e=1
+  BZ_measure: integral dk/(2*pi)
+  target_structure: sum_{a != b} R_ab |A_ab|^2 D_ab^(2)
+model_source_files:
+- path: modify5/PLAN.md
+  sha256: 44b656660bda68760518a7df92a72ad3e9f85f8ee962885c62801695fdcff3e1
+  bytes: 13804
+  classes:
+  - PROVENANCE_ONLY
+- path: modify5/input/rice_mele_geometric_closed_form.wl
+  sha256: 2a6f4ab7b2010696c8c78fd42cb24f4a6659c68e7340981e6306a8cccd5f6c3c
+  bytes: 6789
+  classes:
+  - MODEL_SOURCE
+  - INTERMEDIATE_SYMBOLIC_ORACLE
+- path: modify5/input/rice_mele_integrand.py
+  sha256: 6e9693311d4f02d9e08e74bee94fcc80ff2d11215d48e8b2a025203f63ee922f
+  bytes: 10188
+  classes:
+  - MODEL_SOURCE
+- path: modify5/input/rice_mele_integrand.wl
+  sha256: 30a152a8e32cf1d5689018f0a15f855c6d6e5bb305acfa6dacdcfabceef23dbb
+  bytes: 190
+  classes:
+  - MODEL_SOURCE
+  - INTERMEDIATE_SYMBOLIC_ORACLE
+regression_source_files:
+- path: modify5/data/modify5_target_comparison_samples.csv
+  sha256: 32f52f16d3c4416570a8a8f8aaa1af00bfb6d2412f892a759e63739568e4ab76
+  bytes: 3985
+  classes:
+  - MODEL_SOURCE
+  - INTERMEDIATE_SYMBOLIC_ORACLE
+  - NUMERICAL_REGRESSION_SOURCE
+  - VALIDATION_EVIDENCE
+- path: modify5/input/fig2a_heatmap_data.csv
+  sha256: 7df265e954d3947b28368fda990e6ab748d484350e13c28b6b1be0b15444ad85
+  bytes: 6061750
+  classes:
+  - NUMERICAL_REGRESSION_SOURCE
+  - FIGURE_SOURCE
+- path: modify5/input/fig2b_linecuts_data.csv
+  sha256: 55c19d6cfedea89a23c449e7711eded122818c2b3436670ef017b5265be3b049
+  bytes: 206255
+  classes:
+  - NUMERICAL_REGRESSION_SOURCE
+  - FIGURE_SOURCE
