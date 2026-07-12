@@ -208,3 +208,21 @@ For most users, explicit skill selection is unnecessary. The agent reads the rep
 ## Explicit Skill Invocation (Advanced)
 
 For advanced users who prefer explicit control, each skill can be invoked directly by name. The agent reads the skill's `SKILL.md` and follows its activation conditions. Explicit invocation bypasses the safety checks in `scientific_symbolic_repo_entry` and is not recommended for routine use.
+
+---
+
+## Public finite-Gamma sigma_xxx replay benchmark
+
+- **Location**: `benchmarks/sigma_xxx_finite_gamma_replay/`
+- **Purpose**: Exercise the public framework on a human-specified, previously verified, non-interactive replay benchmark with structured semantics, derivation-DAG replay, sector reconstruction, symbolic-oracle comparison, numerical and Gamma-scaling regressions, scoped closures, and provenance-backed reports.
+- **Run command**:
+
+```bash
+python3 benchmarks/sigma_xxx_finite_gamma_replay/tests/validate_public_benchmark.py benchmarks/sigma_xxx_finite_gamma_replay
+```
+
+- **Dependencies**: Python 3 and PyYAML for YAML parsing.
+- **Scientific boundary**: DC limit first; Gamma finite and exact in the raw one-dimensional `sigma_xxx` object; then normalization, decomposition, simplification, and closed-form processing.
+- **Reference result**: `NONINTERACTIVE_REPLAY_COMPLETED_WITH_BOUNDED_CAVEATS`.
+- **Independent verification**: `PENDING`.
+- **Non-claims**: no autonomous mathematical discovery, no general tensorial `sigma_abc` solution, and no canonical scientific promotion.

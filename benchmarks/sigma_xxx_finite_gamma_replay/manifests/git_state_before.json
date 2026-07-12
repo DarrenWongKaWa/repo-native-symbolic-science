@@ -1,0 +1,25 @@
+{
+  "branch_at_materialization": {
+    "command": [
+      "git",
+      "branch",
+      "--show-current"
+    ],
+    "returncode": 0,
+    "status": "PASS",
+    "stderr": "",
+    "stdout": "benchmark/sigma-xxx-finite-gamma-replay"
+  },
+  "main_remote_sha_before_modification": {
+    "command": [
+      "git",
+      "rev-parse",
+      "origin/main"
+    ],
+    "returncode": 0,
+    "status": "PASS",
+    "stderr": "",
+    "stdout": "f4384a2319e323780a4b6b560f3ed822210eb4c8"
+  },
+  "status_before_materialization": "captured before benchmark-tree commit; see runtime_log for command output"
+}

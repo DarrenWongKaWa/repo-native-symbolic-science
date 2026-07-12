@@ -1,0 +1,99 @@
+regression_status: targets materialized for later bounded regression; replay not executed
+  in this task
+csv_regression_sources:
+- path: modify5/data/modify5_target_comparison_samples.csv
+  rows_including_header: 25
+  columns:
+  - convention
+  - mu
+  - Gamma
+  - beta
+  - maxPointwiseAbsDiff
+  - integratedDiffRe
+  - integratedDiffIm
+  - modify4ResponseRe
+  - modify4ResponseIm
+  - targetResponse
+  sha256: 32f52f16d3c4416570a8a8f8aaa1af00bfb6d2412f892a759e63739568e4ab76
+- path: modify5/input/fig2a_heatmap_data.csv
+  rows_including_header: 72542
+  columns:
+  - mu
+  - Gamma
+  - beta
+  - sigmaRe
+  - sigmaIm
+  sha256: 7df265e954d3947b28368fda990e6ab748d484350e13c28b6b1be0b15444ad85
+- path: modify5/input/fig2b_linecuts_data.csv
+  rows_including_header: 3205
+  columns:
+  - mu
+  - Gamma
+  - beta
+  - sigmaRe
+  - sigmaIm
+  sha256: 55c19d6cfedea89a23c449e7711eded122818c2b3436670ef017b5265be3b049
+- path: modify5/summary/data/ibp_reduced_validation_samples.csv
+  rows_including_header: 19
+  columns:
+  - mu
+  - Gamma
+  - beta
+  - normalMinusThinAbs
+  - thinMinusModify4Abs
+  sha256: 5eb591afe823f4ee934fa1a1e66cde32bb829ce19e54908de2d2941ab7dc981c
+- path: modify5/summary/data/ibp_reduced_worst_case_convergence.csv
+  rows_including_header: 6
+  columns:
+  - Nk
+  - maxResponseAbsDifference
+  - maxResponseAbsDifferenceAgainstModify4Evaluator
+  sha256: 8cdb349597d01dc8e712d82b4ea44bb384e0aa1887743016f89da574027b86a4
+- path: modify5/v2_normal_form/data/normal_form_validation_samples.csv
+  rows_including_header: 19
+  columns:
+  - mu
+  - Gamma
+  - beta
+  - normalMinusOldResponseAbs
+  - normalMinusModify4ResponseAbs
+  sha256: 10594aaecf31726b378f6e34dfe3657a8bf6589ae835e55668aa028b145b1b29
+declared_validation_features:
+  two_band_decomposition_source:
+    path: modify5/input/two_band_decomposition_validation.md
+    sha256: 3f7e896d90c873cea163afff27d82be0616028a058c1d911ac5d0b61264fa7b6
+    bytes: 980
+    classes:
+    - VALIDATION_EVIDENCE
+  target_formula_source:
+    path: modify5/input/target_formula_comparison.md
+    sha256: 5a832b2f90e66d02d04cc3b6bec23e9f27fc71477a7672954faca59496123db1
+    bytes: 654
+    classes:
+    - MODEL_SOURCE
+    - INTERMEDIATE_SYMBOLIC_ORACLE
+    - VALIDATION_EVIDENCE
+  mesh_convergence_source:
+    path: modify5/input/fig2_mesh_convergence.md
+    sha256: 4d703368cb48066027c154206455d7ed3141a0ccc0a295c3b72f049fd0c63d0c
+    bytes: 3018
+    classes:
+    - SCALING_REGRESSION_SOURCE
+    - FIGURE_SOURCE
+    - VALIDATION_EVIDENCE
+  heatmap_linecut_source:
+    path: modify5/input/fig2_heatmap_linecut_consistency.md
+    sha256: b660f326a32f50bb3b5b65d01815c7dbed85c64595b0b77a223a12000feb78fa
+    bytes: 349
+    classes:
+    - FIGURE_SOURCE
+  modify5_v2_summary_source:
+    path: modify5/summary/README.md
+    sha256: 394382bdf2336d5934a0762c2b0b712e7b5a0164cf21c8b15af4072dd85411a0
+    bytes: 1835
+    classes:
+    - PROVENANCE_ONLY
+scaling_targets:
+- Gamma-dependent finite-broadening kernels
+- worst-case mesh convergence sample in modify5 summary data
+- Fig.2 heatmap and linecut features

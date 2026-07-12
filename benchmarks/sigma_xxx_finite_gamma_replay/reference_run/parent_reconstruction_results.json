@@ -1,0 +1,53 @@
+{
+  "closure": "EXACT_PARENT_RECONSTRUCTION_CLOSED",
+  "source": {
+    "all_declared_differences_zero": true,
+    "claim_classification": "EXACT_RECONSTRUCTION_VERIFIED",
+    "difference_terms": {
+      "CenterDifference": 0,
+      "LoopDifference": 0,
+      "PairVelocityReductionDifference": 0
+    },
+    "file_verification": {
+      "actual_bytes": 219,
+      "actual_sha256": "bccfcdad0549fa215abbc988b40feedd82d2fa1e8f4131c1cc2d46c10a1bf38d",
+      "bytes_match": true,
+      "declared_bytes": 219,
+      "declared_sha256": "bccfcdad0549fa215abbc988b40feedd82d2fa1e8f4131c1cc2d46c10a1bf38d",
+      "declared_source_path": "modify4_anan/projected_xxx_reduced_pair_shift_final/output/final_formula_reconstruction_validation.wl",
+      "exists": true,
+      "sha256_match": true,
+      "snapshot_path": "incoming_materials/source_snapshots/modify4_anan/projected_xxx_reduced_pair_shift_final/output/final_formula_reconstruction_validation.wl"
+    },
+    "gate": "PASS",
+    "source": {
+      "bytes": 219,
+      "classes": [
+        "FINAL_SYMBOLIC_ORACLE",
+        "VALIDATION_EVIDENCE",
+        "INTERMEDIATE_SYMBOLIC_ORACLE"
+      ],
+      "path": "modify4_anan/projected_xxx_reduced_pair_shift_final/output/final_formula_reconstruction_validation.wl",
+      "sha256": "bccfcdad0549fa215abbc988b40feedd82d2fa1e8f4131c1cc2d46c10a1bf38d"
+    },
+    "wolfram_parse": {
+      "available": true,
+      "backend": "wolframscript",
+      "parsed": {
+        "CenterDifference": 0,
+        "FinalSurvivingKernelCount": 4,
+        "FusedFormulaKernelCount": 7,
+        "LoopDifference": 0,
+        "OverallGate": "PASS",
+        "PairReductionGate": "PASS",
+        "PairVelocityReductionDifference": 0
+      },
+      "returncode": 0,
+      "runtime_seconds": 1.458,
+      "status": "PARSED",
+      "stderr": ""
+    }
+  },
+  "sum_of_child_sectors_equals_parent_expression": true,
+  "term_count_only_used_as_substitute": false
+}

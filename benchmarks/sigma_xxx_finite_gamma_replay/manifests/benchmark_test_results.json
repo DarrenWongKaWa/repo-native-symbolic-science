@@ -1,0 +1,57 @@
+{
+  "commands": [
+    {
+      "command": [
+        "python3",
+        "-m",
+        "py_compile",
+        "scripts/materialize_sigma_xxx_public_benchmark.py",
+        "benchmarks/sigma_xxx_finite_gamma_replay/execution/run_case003r1_replay.py",
+        "benchmarks/sigma_xxx_finite_gamma_replay/tests/validate_public_benchmark.py",
+        "benchmarks/sigma_xxx_finite_gamma_replay/tests/test_public_benchmark.py"
+      ],
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "python3",
+        "benchmarks/sigma_xxx_finite_gamma_replay/tests/validate_public_benchmark.py",
+        "benchmarks/sigma_xxx_finite_gamma_replay"
+      ],
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "{\n  \"checks\": [\n    \"required input existence\",\n    \"YAML parsing\",\n    \"JSON parsing\",\n    \"JSONL derivation-step parsing\",\n    \"input SHA verification\",\n    \"scientific boundary assertions\",\n    \"derivation DAG acyclicity\",\n    \"identity reference resolution\",\n    \"sector contract consistency\",\n    \"reference result schema\",\n    \"Gamma-scaling target schema\",\n    \"public safety scan\"\n  ],\n  \"passed\": true\n}"
+    },
+    {
+      "command": [
+        "python3",
+        "-c",
+        "from pathlib import Path; import json, yaml; root=Path('benchmarks/sigma_xxx_finite_gamma_replay'); [json.loads(p.read_text()) for p in sorted(root.rglob('*.json'))]; [yaml.safe_load(p.read_text()) for p in sorted(root.rglob('*.yaml'))+sorted(root.rglob('*.yml'))]; [json.loads(line) for p in sorted(root.rglob('*.jsonl')) for line in p.read_text().splitlines() if line.strip()]; print('PARSE_OK')"
+      ],
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "PARSE_OK"
+    }
+  ],
+  "generated_at_utc": "2026-07-12T08:50:58Z",
+  "manifest_verification": {
+    "command": [
+      "python3",
+      "benchmarks/sigma_xxx_finite_gamma_replay/tests/validate_public_benchmark.py",
+      "benchmarks/sigma_xxx_finite_gamma_replay"
+    ],
+    "returncode": 0,
+    "status": "PASS",
+    "verified_inputs": "12 required inputs verified against public_manifest.json"
+  },
+  "overall_status": "PASS",
+  "public_scan": {
+    "findings": [],
+    "status": "PASS"
+  }
+}

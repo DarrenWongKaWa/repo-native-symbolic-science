@@ -1,0 +1,40 @@
+{
+  "benchmark_validation": {
+    "command": [
+      "python3",
+      "benchmarks/sigma_xxx_finite_gamma_replay/tests/validate_public_benchmark.py",
+      "benchmarks/sigma_xxx_finite_gamma_replay"
+    ],
+    "returncode": 0,
+    "status": "PASS",
+    "stderr": "",
+    "stdout": "{\n  \"checks\": [\n    \"required input existence\",\n    \"YAML parsing\",\n    \"JSON parsing\",\n    \"JSONL derivation-step parsing\",\n    \"input SHA verification\",\n    \"scientific boundary assertions\",\n    \"derivation DAG acyclicity\",\n    \"identity reference resolution\",\n    \"sector contract consistency\",\n    \"reference result schema\",\n    \"Gamma-scaling target schema\",\n    \"public safety scan\"\n  ],\n  \"passed\": true\n}"
+  },
+  "generated_at_utc": "2026-07-12T08:48:23Z",
+  "inputs_copied": [
+    "00_case_manifest.yaml",
+    "01_raw_sigma_xxx.txt",
+    "02_scientific_definitions.yaml",
+    "03_model_and_parameters.yaml",
+    "04_human_authority.yaml",
+    "05_derivation_steps.jsonl",
+    "06_sector_decomposition.yaml",
+    "07_identity_registry.yaml",
+    "08_expected_symbolic_results.yaml",
+    "09_expected_numerical_and_scaling_results.yaml",
+    "10_source_and_generation_note.md",
+    "11_attribution_and_permissions.md"
+  ],
+  "public_scan_status": "PASS",
+  "reference_files_copied": [
+    "case003r1_result.json",
+    "closure_matrix_final.json",
+    "validation_summary.md",
+    "final_case_study_report.md",
+    "gamma_scaling_results.json",
+    "symbolic_oracle_comparison.json",
+    "parent_reconstruction_results.json",
+    "local_exact_algebra_results.json"
+  ],
+  "run_id": "SLOOP_SIGMAXXX_CASE_GITHUB_001_PUBLISH_PUBLIC_BENCHMARK_TO_FRAMEWORK_REPOSITORY"
+}
