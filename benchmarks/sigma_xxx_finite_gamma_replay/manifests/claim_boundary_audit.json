@@ -1,0 +1,10 @@
+{
+  "canonical_promotion": "NOT_ASSIGNED",
+  "conversation_bundle_primary_oracle": false,
+  "general_sigma_abc": "NOT_ESTABLISHED",
+  "independent_verification": "PENDING",
+  "local_exact_algebra": "PASS_WITH_CAVEAT",
+  "pre_raw_gamma_expansion_authorized": false,
+  "scientific_boundary": "DC limit first\nGamma finite and exact in the raw one-dimensional sigma_xxx object\nthen normalization, decomposition, simplification,\nclosed-form construction and model-specific validation",
+  "status": "PASS"
+}

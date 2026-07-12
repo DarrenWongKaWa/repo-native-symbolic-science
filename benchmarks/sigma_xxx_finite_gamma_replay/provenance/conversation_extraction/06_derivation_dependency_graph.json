@@ -1,0 +1,510 @@
+{
+  "branch_points": [
+    {
+      "branches": [
+        "H008 pair closure",
+        "H009 center",
+        "H010 loop"
+      ],
+      "step_id": "H007"
+    },
+    {
+      "branches": [
+        "H019 normal-form rendering",
+        "H020 numerical validation",
+        "H021 scaling/figures"
+      ],
+      "step_id": "H018"
+    }
+  ],
+  "dependency_cycles": [],
+  "duplicate_step_ids": [],
+  "edges": [
+    {
+      "from": "H001",
+      "to": "H002"
+    },
+    {
+      "from": "H002",
+      "to": "H003"
+    },
+    {
+      "from": "H003",
+      "to": "H004"
+    },
+    {
+      "from": "H004",
+      "to": "H005"
+    },
+    {
+      "from": "H005",
+      "to": "H006"
+    },
+    {
+      "from": "H006",
+      "to": "H007"
+    },
+    {
+      "from": "H007",
+      "to": "H008"
+    },
+    {
+      "from": "H007",
+      "to": "H009"
+    },
+    {
+      "from": "H007",
+      "to": "H010"
+    },
+    {
+      "from": "H008",
+      "to": "H011"
+    },
+    {
+      "from": "H009",
+      "to": "H011"
+    },
+    {
+      "from": "H010",
+      "to": "H011"
+    },
+    {
+      "from": "H011",
+      "to": "H012"
+    },
+    {
+      "from": "H012",
+      "to": "H013"
+    },
+    {
+      "from": "H013",
+      "to": "H014"
+    },
+    {
+      "from": "H012",
+      "to": "H015"
+    },
+    {
+      "from": "H013",
+      "to": "H015"
+    },
+    {
+      "from": "H014",
+      "to": "H015"
+    },
+    {
+      "from": "H009",
+      "to": "H016"
+    },
+    {
+      "from": "H010",
+      "to": "H016"
+    },
+    {
+      "from": "H015",
+      "to": "H016"
+    },
+    {
+      "from": "H016",
+      "to": "H017"
+    },
+    {
+      "from": "H016",
+      "to": "H018"
+    },
+    {
+      "from": "H018",
+      "to": "H019"
+    },
+    {
+      "from": "H018",
+      "to": "H020"
+    },
+    {
+      "from": "H019",
+      "to": "H020"
+    },
+    {
+      "from": "H018",
+      "to": "H021"
+    }
+  ],
+  "graph_defect_note": "Objects with no producer are human-supplied files, model inputs, or named stage inputs. They are not silently repaired.",
+  "input_objects": [
+    "F_coupled",
+    "F_epsilon_0",
+    "F_pair_total",
+    "F_second",
+    "H_Rice_Mele",
+    "I_center",
+    "I_center_raw",
+    "I_loop",
+    "I_loop_raw",
+    "I_pair_R",
+    "I_pair_full",
+    "I_pair_raw",
+    "I_physical_basis_unfused",
+    "I_projected_N_band",
+    "I_raw_separated",
+    "Modify5_v2_complete_1D_kkk_normal_form",
+    "Sigma_abc_dc_1D.txt",
+    "band_sum_abstractor.wl",
+    "band_sum_expression.nb",
+    "coefficient_row_ledger_118",
+    "final_Rice_Mele_parameters",
+    "geometric_decomposition",
+    "low_frequency/1D-PG2.nb",
+    "low_frequency/abc_w1_w2_1D.txt",
+    "pair_cokernel_6",
+    "pair_residual_after_targeted_IBP",
+    "pair_residual_rows_after_hxx_closure",
+    "pair_residual_rows_clean.wl",
+    "raw_two_band_h_basis",
+    "seven_kernel_formula",
+    "sigma_xxx_Rice_Mele_shift_sector",
+    "sigma_xxx_projected_closed_form"
+  ],
+  "merge_points": [
+    {
+      "inputs": [
+        "H008",
+        "H009",
+        "H010"
+      ],
+      "step_id": "H011"
+    },
+    {
+      "inputs": [
+        "H009",
+        "H010",
+        "H015"
+      ],
+      "step_id": "H016"
+    }
+  ],
+  "model_independent_branch": [
+    "H001",
+    "H002",
+    "H003",
+    "H004",
+    "H005",
+    "H006",
+    "H007",
+    "H008",
+    "H009",
+    "H010",
+    "H011",
+    "H012",
+    "H013",
+    "H014",
+    "H015",
+    "H016",
+    "H017"
+  ],
+  "nodes": [
+    {
+      "active": true,
+      "authority_class": "HUMAN_CONFIRMED",
+      "human_step_name": "Establish the post-DC finite-Gamma raw object",
+      "stage": "RAW_OBJECT",
+      "step_id": "H001"
+    },
+    {
+      "active": true,
+      "authority_class": "HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED",
+      "human_step_name": "Separate the explicit finite-Gamma DC expression",
+      "stage": "NORMALIZATION",
+      "step_id": "H002"
+    },
+    {
+      "active": true,
+      "authority_class": "STRUCTURALLY_VERIFIED",
+      "human_step_name": "Abstract explicit band labels to the projected N-band notation",
+      "stage": "INDEX_SPLIT",
+      "step_id": "H003"
+    },
+    {
+      "active": true,
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "human_step_name": "Build the PolyGamma coefficient-row representation",
+      "stage": "SPECIAL_FUNCTION_SPLIT",
+      "step_id": "H004"
+    },
+    {
+      "active": true,
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "human_step_name": "Partition into center, pair, and loop sectors",
+      "stage": "SECTOR_DECOMPOSITION",
+      "step_id": "H005"
+    },
+    {
+      "active": true,
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "human_step_name": "Verify the raw sector reconstruction",
+      "stage": "RECONSTRUCTION",
+      "step_id": "H006"
+    },
+    {
+      "active": true,
+      "authority_class": "HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED",
+      "human_step_name": "Apply the projected matrix-element dictionary",
+      "stage": "IDENTITY_REWRITE",
+      "step_id": "H007"
+    },
+    {
+      "active": true,
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "human_step_name": "Close the pair hxx geometry",
+      "stage": "IDENTITY_REWRITE",
+      "step_id": "H008"
+    },
+    {
+      "active": true,
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "human_step_name": "Collect the center sector",
+      "stage": "CLOSED_FORM",
+      "step_id": "H009"
+    },
+    {
+      "active": true,
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "human_step_name": "Canonicalize the genuine three-band loop sector",
+      "stage": "IDENTITY_REWRITE",
+      "step_id": "H010"
+    },
+    {
+      "active": true,
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "human_step_name": "Fuse the physical rows into seven kernels",
+      "stage": "RECONSTRUCTION",
+      "step_id": "H011"
+    },
+    {
+      "active": true,
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "human_step_name": "Perform the targeted pair v-epsilon IBP",
+      "stage": "IDENTITY_REWRITE",
+      "step_id": "H012"
+    },
+    {
+      "active": true,
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "human_step_name": "Run the residual-driven rational primitive solve",
+      "stage": "IDENTITY_REWRITE",
+      "step_id": "H013"
+    },
+    {
+      "active": true,
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "human_step_name": "Run the global coupled pair IBP solve",
+      "stage": "IDENTITY_REWRITE",
+      "step_id": "H014"
+    },
+    {
+      "active": true,
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "human_step_name": "Validate the full pair post-IBP reconstruction",
+      "stage": "RECONSTRUCTION",
+      "step_id": "H015"
+    },
+    {
+      "active": true,
+      "authority_class": "HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED",
+      "human_step_name": "Assemble the final four-kernel projected closed form",
+      "stage": "CLOSED_FORM",
+      "step_id": "H016"
+    },
+    {
+      "active": true,
+      "authority_class": "STRUCTURALLY_VERIFIED",
+      "human_step_name": "Compare the pair and loop structures with supplied reference targets",
+      "stage": "RECONSTRUCTION",
+      "step_id": "H017"
+    },
+    {
+      "active": true,
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "human_step_name": "Specialize to the two-band spinless-TRS Rice\u2013Mele model",
+      "stage": "MODEL_SPECIALIZATION",
+      "step_id": "H018"
+    },
+    {
+      "active": true,
+      "authority_class": "HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED",
+      "human_step_name": "Render the complete two-band target-inspired finite-Gamma normal form",
+      "stage": "MODEL_SPECIALIZATION",
+      "step_id": "H019"
+    },
+    {
+      "active": true,
+      "authority_class": "NUMERICALLY_SUPPORTED",
+      "human_step_name": "Validate physical-basis and Modify4-to-Modify5 reductions",
+      "stage": "NUMERICAL_VALIDATION",
+      "step_id": "H020"
+    },
+    {
+      "active": true,
+      "authority_class": "NUMERICALLY_SUPPORTED",
+      "human_step_name": "Validate figures, meshes, and post-raw Gamma scaling",
+      "stage": "SCALING_VALIDATION",
+      "step_id": "H021"
+    },
+    {
+      "active": false,
+      "authority_class": "CONTRADICTED",
+      "human_step_name": "Pre-raw Gamma-expansion interpretation",
+      "stage": "RAW_OBJECT",
+      "step_id": "S001"
+    },
+    {
+      "active": false,
+      "authority_class": "SUPERSEDED",
+      "human_step_name": "Conservative no-nontrivial-IBP evaluator",
+      "stage": "IDENTITY_REWRITE",
+      "step_id": "S002"
+    },
+    {
+      "active": false,
+      "authority_class": "SUPERSEDED",
+      "human_step_name": "Early truncated Gamma-plus-Gamma-squared Rice\u2013Mele plotting branch",
+      "stage": "SCALING_VALIDATION",
+      "step_id": "S003"
+    },
+    {
+      "active": false,
+      "authority_class": "CONTRADICTED",
+      "human_step_name": "Promote projected band abstraction to full tensorial sigma_abc",
+      "stage": "INDEX_SPLIT",
+      "step_id": "S004"
+    }
+  ],
+  "numerical_validation_branch": [
+    "H020",
+    "H021"
+  ],
+  "objects_with_multiple_active_producers": {},
+  "objects_with_no_producer": [
+    "low_frequency/abc_w1_w2_1D.txt",
+    "low_frequency/1D-PG2.nb",
+    "band_sum_abstractor.wl",
+    "band_sum_expression.nb",
+    "pair_residual_rows_clean.wl",
+    "I_pair_full",
+    "I_pair_R",
+    "H_Rice_Mele",
+    "raw_two_band_h_basis",
+    "geometric_decomposition",
+    "final_Rice_Mele_parameters"
+  ],
+  "output_objects": [
+    "Anan_loop_structural_match",
+    "Anan_pair_plus_branch_match",
+    "C0",
+    "C1",
+    "C2",
+    "D_pair_derivative_IBP_candidates.wl",
+    "D_pair_shift_table.wl",
+    "F_coupled",
+    "F_epsilon_0",
+    "F_pair_total",
+    "F_second",
+    "Fig2_heatmap",
+    "Fig2_linecuts",
+    "Fig3_scaling_results",
+    "I_center",
+    "I_center_raw",
+    "I_loop",
+    "I_loop_raw",
+    "I_pair_raw",
+    "I_physical_basis_unfused",
+    "I_projected_N_band",
+    "I_raw_post_DC_finite_Gamma",
+    "I_raw_separated",
+    "K_ImL",
+    "K_ReL",
+    "K_c",
+    "Modify5_v2_complete_1D_kkk_normal_form",
+    "Sigma_abc_dc_1D-separated.txt",
+    "Sigma_abc_dc_1D.txt",
+    "coefficient_row_ledger_118",
+    "integrated_consistency_pass",
+    "pair_cokernel_6",
+    "pair_post_ibp_kernel_tables.wl",
+    "pair_reduction_zero",
+    "pair_residual_after_targeted_IBP",
+    "pair_residual_rows_after_hxx_closure",
+    "pair_velocity_total_derivative",
+    "pointwise_regression_pass",
+    "raw_sector_reconstruction_zero",
+    "seven_kernel_formula",
+    "sigma_xxx_Rice_Mele_shift_sector",
+    "sigma_xxx_projected_closed_form"
+  ],
+  "rice_mele_branch": [
+    "H018",
+    "H019",
+    "H020",
+    "H021"
+  ],
+  "superseded_branches": [
+    "S001",
+    "S002",
+    "S003",
+    "S004"
+  ],
+  "symbolic_validation_branch": [
+    "H006",
+    "H008",
+    "H009",
+    "H010",
+    "H011",
+    "H015",
+    "H016",
+    "H018"
+  ],
+  "unique_object_producers": {
+    "Anan_loop_structural_match": "H017",
+    "Anan_pair_plus_branch_match": "H017",
+    "C0": "H004",
+    "C1": "H004",
+    "C2": "H004",
+    "D_pair_derivative_IBP_candidates.wl": "H008",
+    "D_pair_shift_table.wl": "H008",
+    "F_coupled": "H014",
+    "F_epsilon_0": "H012",
+    "F_pair_total": "H015",
+    "F_second": "H013",
+    "Fig2_heatmap": "H021",
+    "Fig2_linecuts": "H021",
+    "Fig3_scaling_results": "H021",
+    "I_center": "H009",
+    "I_center_raw": "H005",
+    "I_loop": "H010",
+    "I_loop_raw": "H005",
+    "I_pair_raw": "H005",
+    "I_physical_basis_unfused": "H007",
+    "I_projected_N_band": "H003",
+    "I_raw_post_DC_finite_Gamma": "H001",
+    "I_raw_separated": "H002",
+    "K_ImL": "H010",
+    "K_ReL": "H010",
+    "K_c": "H009",
+    "Modify5_v2_complete_1D_kkk_normal_form": "H019",
+    "Sigma_abc_dc_1D-separated.txt": "H002",
+    "Sigma_abc_dc_1D.txt": "H001",
+    "coefficient_row_ledger_118": "H004",
+    "integrated_consistency_pass": "H020",
+    "pair_cokernel_6": "H013",
+    "pair_post_ibp_kernel_tables.wl": "H011",
+    "pair_reduction_zero": "H015",
+    "pair_residual_after_targeted_IBP": "H012",
+    "pair_residual_rows_after_hxx_closure": "H008",
+    "pair_velocity_total_derivative": "H014",
+    "pointwise_regression_pass": "H020",
+    "raw_sector_reconstruction_zero": "H006",
+    "seven_kernel_formula": "H011",
+    "sigma_xxx_Rice_Mele_shift_sector": "H018",
+    "sigma_xxx_projected_closed_form": "H016"
+  },
+  "unresolved_dependencies": []
+}

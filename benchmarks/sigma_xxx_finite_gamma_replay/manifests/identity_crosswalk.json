@@ -1,0 +1,134 @@
+[
+  {
+    "authority_class": "HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "ID001",
+    "source_locator": "sigma_xxx_simplification_supplement.pdf, Sec. 3"
+  },
+  {
+    "authority_class": "HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "ID002",
+    "source_locator": "sigma_xxx_simplification_supplement.pdf, Sec. 3"
+  },
+  {
+    "authority_class": "HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "ID003",
+    "source_locator": "sigma_xxx_simplification_supplement.pdf, Sec. 3"
+  },
+  {
+    "authority_class": "HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "ID004",
+    "source_locator": "theoretical supplement, Supplementary Note 1"
+  },
+  {
+    "authority_class": "AMBIGUOUS",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "ID005",
+    "source_locator": "sigma_xxx_simplification_supplement.pdf, Sec. 3"
+  },
+  {
+    "authority_class": "SYMBOLICALLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "ID006",
+    "source_locator": "theoretical supplement, Supplementary Note 2"
+  },
+  {
+    "authority_class": "SYMBOLICALLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "ID007",
+    "source_locator": "pair_hkk_geometry_closure/gpt_review_prompt.md and final supplement"
+  },
+  {
+    "authority_class": "SYMBOLICALLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "ID008",
+    "source_locator": "sigma_xxx_theoretical_derivation_supplement.pdf, Supplementary Note 5"
+  },
+  {
+    "authority_class": "SUPERSEDED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "ID009",
+    "source_locator": "pair_hkk_geometry_closure/gpt_review_prompt.md"
+  },
+  {
+    "authority_class": "SYMBOLICALLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "ID010",
+    "source_locator": "theoretical supplement, Supplementary Note 4"
+  },
+  {
+    "authority_class": "SYMBOLICALLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "ID011",
+    "source_locator": "theoretical supplement, Supplementary Note 7"
+  },
+  {
+    "authority_class": "SYMBOLICALLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "ID012",
+    "source_locator": "theoretical supplement, Supplementary Note 6 and Appendix B"
+  },
+  {
+    "authority_class": "SYMBOLICALLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "ID013",
+    "source_locator": "theoretical supplement, Supplementary Note 10"
+  },
+  {
+    "authority_class": "SYMBOLICALLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "ID014",
+    "source_locator": "theoretical supplement, Supplementary Note 10"
+  },
+  {
+    "authority_class": "HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "ID015",
+    "source_locator": "fullmodify4_summary_report.pdf, Sec. 7"
+  },
+  {
+    "authority_class": "HUMAN_CONFIRMED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "ID016",
+    "source_locator": "pair IBP chain"
+  },
+  {
+    "authority_class": "STRUCTURALLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "ID017",
+    "source_locator": "band_sum_abstractor.wl and scope audit"
+  },
+  {
+    "authority_class": "HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "ID018",
+    "source_locator": "modify5_v2_complete_1d_kkk.pdf"
+  },
+  {
+    "authority_class": "HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "ID019",
+    "source_locator": "modify5_v2_complete_1d_kkk.pdf"
+  },
+  {
+    "authority_class": "HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_id": "ID020",
+    "source_locator": "fullmodify6_report.pdf, Sec. 5"
+  },
+  {
+    "authority_class": "MISSING_FROM_CONVERSATION",
+    "classification": "NO_AUTHORITATIVE_SOURCE_FOUND",
+    "conversation_id": "ID021",
+    "source_locator": "requested coverage; not recovered explicitly"
+  },
+  {
+    "authority_class": "MISSING_FROM_CONVERSATION",
+    "classification": "NO_AUTHORITATIVE_SOURCE_FOUND",
+    "conversation_id": "ID022",
+    "source_locator": "project discussion of covariant normalization"
+  }
+]

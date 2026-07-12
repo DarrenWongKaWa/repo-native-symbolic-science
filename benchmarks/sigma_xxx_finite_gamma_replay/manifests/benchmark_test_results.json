@@ -6,25 +6,17 @@
         "-m",
         "py_compile",
         "scripts/materialize_sigma_xxx_public_benchmark.py",
+        "scripts/materialize_sigma_xxx_decision_provenance.py",
         "benchmarks/sigma_xxx_finite_gamma_replay/execution/run_case003r1_replay.py",
         "benchmarks/sigma_xxx_finite_gamma_replay/tests/validate_public_benchmark.py",
-        "benchmarks/sigma_xxx_finite_gamma_replay/tests/test_public_benchmark.py"
+        "benchmarks/sigma_xxx_finite_gamma_replay/tests/validate_decision_provenance.py",
+        "benchmarks/sigma_xxx_finite_gamma_replay/tests/test_public_benchmark.py",
+        "benchmarks/sigma_xxx_finite_gamma_replay/tests/test_decision_provenance.py"
       ],
       "returncode": 0,
       "status": "PASS",
       "stderr": "",
       "stdout": ""
-    },
-    {
-      "command": [
-        "python3",
-        "benchmarks/sigma_xxx_finite_gamma_replay/tests/validate_public_benchmark.py",
-        "benchmarks/sigma_xxx_finite_gamma_replay"
-      ],
-      "returncode": 0,
-      "status": "PASS",
-      "stderr": "",
-      "stdout": "{\n  \"checks\": [\n    \"required input existence\",\n    \"YAML parsing\",\n    \"JSON parsing\",\n    \"JSONL derivation-step parsing\",\n    \"input SHA verification\",\n    \"scientific boundary assertions\",\n    \"derivation DAG acyclicity\",\n    \"identity reference resolution\",\n    \"sector contract consistency\",\n    \"reference result schema\",\n    \"Gamma-scaling target schema\",\n    \"public safety scan\"\n  ],\n  \"passed\": true\n}"
     },
     {
       "command": [
@@ -36,22 +28,53 @@
       "status": "PASS",
       "stderr": "",
       "stdout": "PARSE_OK"
+    },
+    {
+      "command": [
+        "python3",
+        "benchmarks/sigma_xxx_finite_gamma_replay/tests/validate_public_benchmark.py",
+        "benchmarks/sigma_xxx_finite_gamma_replay"
+      ],
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "{\n  \"checks\": [\n    \"required input existence\",\n    \"YAML parsing\",\n    \"JSON parsing\",\n    \"JSONL derivation-step parsing\",\n    \"input SHA verification\",\n    \"scientific boundary assertions\",\n    \"derivation DAG acyclicity\",\n    \"identity reference resolution\",\n    \"sector contract consistency\",\n    \"reference result schema\",\n    \"Gamma-scaling target schema\",\n    \"public safety scan\",\n    \"decision provenance: conversation extraction manifest integrity\",\n    \"decision provenance: JSON/YAML/JSONL parsing\",\n    \"decision provenance: derivation DAG parsing and acyclicity\",\n    \"decision provenance: identity-reference resolution\",\n    \"decision provenance: active versus superseded status consistency\",\n    \"decision provenance: combined readiness separation\",\n    \"decision provenance: crosswalk target existence\",\n    \"decision provenance: scoped authorization schema consistency\",\n    \"decision provenance: pair-sector scope restriction\",\n    \"decision provenance: center and loop IBP exclusion\",\n    \"decision provenance: independent-verification pending status\",\n    \"decision provenance: public-path scan\"\n  ],\n  \"passed\": true\n}"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "pytest",
+        "benchmarks/sigma_xxx_finite_gamma_replay/tests"
+      ],
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "============================= test session starts ==============================\nplatform darwin -- Python 3.12.0, pytest-9.1.1, pluggy-1.6.0\nrootdir: .\nconfigfile: pyproject.toml\nplugins: typeguard-4.4.1, xonsh-0.18.4, anyio-4.6.2.post1\ncollected 7 items\n\nbenchmarks/sigma_xxx_finite_gamma_replay/tests/test_decision_provenance.py . [ 14%]\n.....                                                                    [ 85%]\nbenchmarks/sigma_xxx_finite_gamma_replay/tests/test_public_benchmark.py . [100%]\n\n============================== 7 passed in 0.18s ==============================="
+    },
+    {
+      "command": [
+        "python3",
+        "-c",
+        "import json, pathlib, re\nroot=pathlib.Path('benchmarks/sigma_xxx_finite_gamma_replay')\npats=[re.compile('/'+'Users'+'/'), re.compile(r'github_pat_[A-Za-z0-9_]{20,}'), re.compile(r'ghp_[A-Za-z0-9]{20,}'), re.compile(r'BEGIN (RSA|OPENSSH|DSA|EC|PGP) PRIVATE KEY'), re.compile(r'api[_-]?key\\s*[:=]', re.I), re.compile('sec'+'ret'+r'\\s*[:=]', re.I), re.compile('pass'+'word'+r'\\s*[:=]', re.I), re.compile('coo'+'kie'+r'\\s*[:=]', re.I)]\nhits=[]\nfor p in sorted(root.rglob('*')):\n    if not p.is_file() or '__pycache__' in p.parts or p.suffix in {'.pyc','.pyo'}:\n        continue\n    try:\n        text=p.read_text()\n    except UnicodeDecodeError:\n        continue\n    for pat in pats:\n        if pat.search(text):\n            hits.append(str(p))\nprint(json.dumps({'hits':hits,'passed':not hits}, indent=2))\nraise SystemExit(0 if not hits else 1)\n"
+      ],
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "{\n  \"hits\": [],\n  \"passed\": true\n}"
+    },
+    {
+      "command": [
+        "python3",
+        "-c",
+        "from pathlib import Path; import json, hashlib; root=Path('benchmarks/sigma_xxx_finite_gamma_replay'); man=json.loads((root/'manifests/conversation_extraction_public_manifest.json').read_text()); by={x['path']:x['sha256'] for x in man['files']}; h=lambda p: hashlib.sha256(p.read_bytes()).hexdigest(); assert all(h(root/'provenance/conversation_extraction'/k)==v for k,v in by.items()); print('MANIFEST_OK')"
+      ],
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "MANIFEST_OK"
     }
   ],
-  "generated_at_utc": "2026-07-12T08:50:58Z",
-  "manifest_verification": {
-    "command": [
-      "python3",
-      "benchmarks/sigma_xxx_finite_gamma_replay/tests/validate_public_benchmark.py",
-      "benchmarks/sigma_xxx_finite_gamma_replay"
-    ],
-    "returncode": 0,
-    "status": "PASS",
-    "verified_inputs": "12 required inputs verified against public_manifest.json"
-  },
-  "overall_status": "PASS",
-  "public_scan": {
-    "findings": [],
-    "status": "PASS"
-  }
+  "generated_at_utc": "2026-07-12T09:24:12Z",
+  "overall_status": "PASS"
 }

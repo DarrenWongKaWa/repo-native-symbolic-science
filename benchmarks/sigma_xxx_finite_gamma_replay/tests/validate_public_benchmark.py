@@ -32,7 +32,8 @@ REQUIRED_INPUTS = [
 EXPECTED_BOUNDARY = [
     "DC limit first",
     "Gamma finite and exact in the raw one-dimensional sigma_xxx object",
-    "then normalization, decomposition, simplification and closed-form processing",
+    "then normalization, decomposition, simplification,",
+    "closed-form construction and model-specific validation",
 ]
 EXPECTED_SLOPES = {
     "low_temperature_insulating_regime": 1.9845925371006055,
@@ -180,6 +181,12 @@ def validate(root: Path) -> dict:
 
     assert_no_public_safety_findings(root)
     checks.append("public safety scan")
+
+    from validate_decision_provenance import validate as validate_decision_provenance
+
+    provenance_result = validate_decision_provenance(root)
+    assert provenance_result["passed"] is True
+    checks.extend(f"decision provenance: {check}" for check in provenance_result["checks"])
 
     return {"passed": True, "checks": checks}
 

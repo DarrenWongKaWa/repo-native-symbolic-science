@@ -1,0 +1,347 @@
+authority_classes:
+- EXPLICITLY_STATED_IN_CONVERSATION
+- HUMAN_CONFIRMED
+- HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED
+- GPT_PROPOSED_BUT_NOT_CONFIRMED
+- NUMERICALLY_SUPPORTED
+- SYMBOLICALLY_VERIFIED
+- STRUCTURALLY_VERIFIED
+- SUPERSEDED
+- CONTRADICTED
+- AMBIGUOUS
+- MISSING_FROM_CONVERSATION
+symbols:
+- symbol: sigma_xxx
+  meaning: Projected one-dimensional nonlinear DC conductivity sigma^dc_kkk.
+  mathematical_type: scalar response component
+  domain: one-dimensional Brillouin zone
+  units: MISSING_FROM_CONVERSATION; reports use e^3/h as global prefactor and dimensionless
+    internal units for plots.
+  index_role: three projected spatial indices all equal to k
+  definition_status: DEFINED
+  authority_class: HUMAN_CONFIRMED
+  source_locator: sigma_xxx_theoretical_derivation_supplement.pdf, Supplementary Note
+    1
+  caveat: Not the full tensorial response.
+- symbol: sigma_abc
+  meaning: General rank-three nonlinear conductivity used only as a scope boundary
+    and future target.
+  mathematical_type: rank-three response tensor
+  domain: general spatial indices
+  units: MISSING_FROM_CONVERSATION
+  index_role: a,b,c are spatial indices in this notation
+  definition_status: SCOPE_ONLY
+  authority_class: HUMAN_CONFIRMED
+  source_locator: Repeated claim boundary in theoretical supplement and project history
+  caveat: Not solved by the projected sigma_xxx chain.
+- symbol: Gamma
+  meaning: Finite dissipation/broadening parameter retained exactly in the post-DC
+    raw object.
+  mathematical_type: real parameter
+  domain: finite positive values in evaluations
+  units: energy; often reported in units of t0
+  index_role: null
+  definition_status: DEFINED
+  authority_class: HUMAN_CONFIRMED
+  source_locator: Direct human boundary; PolyGamma arguments in source files
+  caveat: No pre-raw Gamma expansion.
+- symbol: beta
+  meaning: Inverse-temperature parameter in the PolyGamma thermal argument.
+  mathematical_type: positive real parameter
+  domain: beta>0
+  units: inverse energy
+  index_role: null
+  definition_status: DEFINED
+  authority_class: EXPLICITLY_STATED_IN_CONVERSATION
+  source_locator: Modify5-v2 thermal factors; Fig. 2 parameter lists
+  caveat: The k_B convention is not explicitly stated.
+- symbol: mu
+  meaning: Chemical potential.
+  mathematical_type: real parameter
+  domain: energy axis
+  units: energy, plotted in units of t0
+  index_role: null
+  definition_status: DEFINED
+  authority_class: EXPLICITLY_STATED_IN_CONVERSATION
+  source_locator: PolyGamma thermal argument; fullmodify4 Fig. 2
+  caveat: ''
+- symbol: t0
+  meaning: Rice–Mele hopping and energy scale multiplying cos(k) sigma_x.
+  mathematical_type: real model parameter
+  domain: positive
+  units: energy
+  index_role: null
+  definition_status: DEFINED
+  authority_class: HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED
+  source_locator: Rice–Mele Hamiltonian in fullmodify4 and Modify5-v2 reports
+  caveat: Final exact validation uses t0=1.
+- symbol: m
+  meaning: Rice–Mele staggered onsite/mass parameter multiplying sigma_z.
+  mathematical_type: real model parameter
+  domain: real
+  units: energy
+  index_role: null
+  definition_status: DEFINED
+  authority_class: HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED
+  source_locator: Rice–Mele Hamiltonian
+  caveat: Final exact validation uses m=0.1 t0; an older truncated plot used m=0.2
+    and is superseded.
+- symbol: delta_t
+  meaning: Rice–Mele dimerized hopping multiplying sin(k) sigma_y.
+  mathematical_type: real model parameter
+  domain: real
+  units: energy
+  index_role: null
+  definition_status: DEFINED
+  authority_class: HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED
+  source_locator: Rice–Mele Hamiltonian
+  caveat: Final exact validation uses delta_t=0.1 t0; an older truncated plot used
+    0.5 and is superseded.
+- symbol: Delta_half
+  meaning: Rice–Mele half gap sqrt(m^2+delta_t^2) for the final parameter set.
+  mathematical_type: nonnegative real
+  domain: energy
+  units: energy
+  index_role: null
+  definition_status: DEFINED
+  authority_class: NUMERICALLY_SUPPORTED
+  source_locator: fullmodify4_summary_report.pdf, Secs. 7–9
+  caveat: Do not confuse with signed band-energy differences Delta_nm.
+- symbol: k
+  meaning: One-dimensional crystal momentum.
+  mathematical_type: periodic real coordinate
+  domain: Brillouin zone; final Rice–Mele numerical integration uses [-pi,pi)
+  units: inverse lattice spacing or dimensionless with lattice spacing one
+  index_role: projected momentum direction
+  definition_status: DEFINED
+  authority_class: HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED
+  source_locator: theoretical supplement and fullmodify4 numerical convention
+  caveat: ''
+- symbol: n,m,l
+  meaning: Band indices in the raw/projected row tables.
+  mathematical_type: discrete indices
+  domain: band set
+  units: not applicable
+  index_role: n external; m pair/internal; l distinct third band in loop rows
+  definition_status: DEFINED_BY_USAGE
+  authority_class: EXPLICITLY_STATED_IN_CONVERSATION
+  source_locator: sigma_xxx_simplification_supplement.pdf, raw row notation
+  caveat: ''
+- symbol: a,b,c (band notation)
+  meaning: Band indices in the final theoretical supplement.
+  mathematical_type: discrete indices
+  domain: band set
+  units: not applicable
+  index_role: pair sums use a!=b; loop sums use mutually distinct a,b,c
+  definition_status: DEFINED
+  authority_class: HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED
+  source_locator: sigma_xxx_theoretical_derivation_supplement.pdf, Supplementary Note
+    1
+  caveat: Context distinguishes these from spatial indices in sigma_abc.
+- symbol: spatial indices
+  meaning: The raw full-tensor labels were projected to a=b=c=k before the active
+    sigma_xxx chain.
+  mathematical_type: Cartesian tensor labels
+  domain: one projected direction
+  units: not applicable
+  index_role: all equal in the active chain
+  definition_status: DEFINED_AS_SCOPE_BOUNDARY
+  authority_class: HUMAN_CONFIRMED
+  source_locator: fullmodify4_summary_report.pdf, scope diagram
+  caveat: Independent h^a,h^b,h^c,h^{ab},... are absent.
+- symbol: H(k)
+  meaning: Bloch Hamiltonian.
+  mathematical_type: Hermitian matrix-valued function
+  domain: Brillouin zone
+  units: energy
+  index_role: null
+  definition_status: DEFINED
+  authority_class: EXPLICITLY_STATED_IN_CONVERSATION
+  source_locator: Rice–Mele Hamiltonian and generic matrix-element dictionary
+  caveat: ''
+- symbol: h^x_nm / ha[n,m]
+  meaning: <u_n|partial_k H|u_m> in the projected one-dimensional channel.
+  mathematical_type: band-basis matrix element
+  domain: band pair and k
+  units: energy times length in dimensional units
+  index_role: two band indices
+  definition_status: DEFINED
+  authority_class: HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED
+  source_locator: sigma_xxx_simplification_supplement.pdf, projected matrix-element
+    dictionary
+  caveat: The raw files use the head ha.
+- symbol: h^{xx}_nm / haa[n,m]
+  meaning: <u_n|partial_k^2 H|u_m> in the projected one-dimensional channel.
+  mathematical_type: band-basis matrix element
+  domain: band pair and k
+  units: energy times length^2 in dimensional units
+  index_role: two band indices
+  definition_status: DEFINED
+  authority_class: HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED
+  source_locator: pair hkk closure reports and raw row tables
+  caveat: The raw files use the head haa.
+- symbol: epsilon_a(k)
+  meaning: Band energy.
+  mathematical_type: real band function
+  domain: Brillouin zone
+  units: energy
+  index_role: band label
+  definition_status: DEFINED
+  authority_class: HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED
+  source_locator: theoretical supplement, Supplementary Note 1
+  caveat: ''
+- symbol: Delta_nm
+  meaning: Signed band-energy difference epsilon_n-epsilon_m.
+  mathematical_type: real function
+  domain: ordered band pair and k
+  units: energy
+  index_role: ordered pair
+  definition_status: DEFINED
+  authority_class: HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED
+  source_locator: sigma_xxx_simplification_supplement.pdf, Sec. 3
+  caveat: Other stages use d=epsilon_m-epsilon_n; signs must be mapped explicitly.
+- symbol: d
+  meaning: Pair gap epsilon_b-epsilon_a or epsilon_m-epsilon_n in the relevant ordered-pair
+    convention.
+  mathematical_type: real function
+  domain: ordered band pair and k
+  units: energy
+  index_role: ordered pair
+  definition_status: DEFINED_WITH_SIGN_MAP
+  authority_class: HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED
+  source_locator: theoretical supplement; Modify5-v2
+  caveat: Anan comparison uses Delta_Anan=-d.
+- symbol: f
+  meaning: Fermi function.
+  mathematical_type: scalar distribution
+  domain: energy
+  units: dimensionless
+  index_role: null
+  definition_status: MISSING_FROM_CONVERSATION
+  authority_class: MISSING_FROM_CONVERSATION
+  source_locator: Only referred to indirectly in scaling/paper-comparison discussions
+  caveat: Use the explicit PolyGamma representation unless a source formula is supplied.
+- symbol: PG^eta_{r,a}
+  meaning: PolyGamma thermal block psi^(r)(z^eta_a).
+  mathematical_type: complex special function
+  domain: r=0,...,4 and eta in {+,-}
+  units: dimensionless
+  index_role: band, derivative order, branch
+  definition_status: DEFINED
+  authority_class: HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED
+  source_locator: theoretical supplement and Modify5-v2
+  caveat: ''
+- symbol: z^eta_a
+  meaning: 1/2 + beta Gamma/(2 pi) + s_eta i beta(mu-epsilon_a)/(2 pi).
+  mathematical_type: complex scalar
+  domain: complex plane
+  units: dimensionless
+  index_role: band and branch
+  definition_status: DEFINED
+  authority_class: HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED
+  source_locator: theoretical supplement, Supplementary Note 1
+  caveat: s_+=+1 and s_-=-1.
+- symbol: A_ab
+  meaning: Berry-connection matrix element i<u_a|partial_k u_b>.
+  mathematical_type: complex band-basis matrix element
+  domain: band pair and k
+  units: length in dimensional units
+  index_role: ordered pair
+  definition_status: DEFINED
+  authority_class: HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED
+  source_locator: theoretical supplement, Supplementary Note 1
+  caveat: Individual matrix elements are gauge dependent.
+- symbol: R_ab
+  meaning: Shift-vector-like object partial_k arg A_ba + A_aa - A_bb.
+  mathematical_type: real geometric function
+  domain: ordered pair and k
+  units: length in dimensional units
+  index_role: ordered pair
+  definition_status: DEFINED
+  authority_class: HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED
+  source_locator: theoretical supplement, Supplementary Note 1
+  caveat: A local h-matrix ratio representation is two-band specific.
+- symbol: L_abc
+  meaning: Three-band loop product A_ab A_bc A_ca.
+  mathematical_type: complex geometric scalar
+  domain: mutually distinct band triple
+  units: length^3 in dimensional units
+  index_role: ordered triple
+  definition_status: DEFINED
+  authority_class: HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED
+  source_locator: theoretical supplement, Supplementary Notes 1 and 7
+  caveat: ''
+- symbol: integration measure
+  meaning: (e^3/h) integral_BZ dk/(2 pi).
+  mathematical_type: global prefactor and measure
+  domain: Brillouin zone
+  units: response units
+  index_role: null
+  definition_status: DEFINED
+  authority_class: HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED
+  source_locator: theoretical supplement and Modify5-v2
+  caveat: Some intermediate reports discuss only the integrand and omit the global
+    prefactor.
+- symbol: Brillouin-zone domain
+  meaning: Periodic one-dimensional BZ; final Rice–Mele numerical work uses [-pi,pi).
+  mathematical_type: periodic interval
+  domain: '[-pi,pi)'
+  units: dimensionless with lattice spacing one
+  index_role: null
+  definition_status: DEFINED_FOR_MODEL_STAGE
+  authority_class: HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED
+  source_locator: fullmodify4_summary_report.pdf, numerical convention
+  caveat: Generic projected derivation writes BZ without fixing endpoints.
+- symbol: derivative convention
+  meaning: partial_k acts on k-dependent energies, eigenvectors, matrix elements,
+    and PolyGamma arguments.
+  mathematical_type: differential convention
+  domain: one-dimensional BZ
+  units: not applicable
+  index_role: null
+  definition_status: PARTIALLY_DEFINED
+  authority_class: HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED
+  source_locator: matrix-element dictionary and PG derivative rule
+  caveat: A complete held-fixed-variable declaration is missing.
+- symbol: held-fixed variables
+  meaning: mu, beta, and Gamma appear to be held fixed under partial_k in the documented
+    PG derivative rule.
+  mathematical_type: differentiation convention
+  domain: not applicable
+  units: not applicable
+  index_role: null
+  definition_status: AMBIGUOUS
+  authority_class: AMBIGUOUS
+  source_locator: fullmodify6_report.pdf, PG derivative rule
+  caveat: The convention should be stated explicitly in a replay config.
+- symbol: normalization factors
+  meaning: Global response prefactor e^3/h and BZ measure dk/(2 pi); internal numerical
+    units use t0=1 and commonly a=e=hbar=1.
+  mathematical_type: normalization convention
+  domain: not applicable
+  units: mixed symbolic and internal units
+  index_role: null
+  definition_status: PARTIALLY_DEFINED
+  authority_class: EXPLICITLY_STATED_IN_CONVERSATION
+  source_locator: theoretical supplement and fullmodify4 plotting convention
+  caveat: A single fully dimensional SI conversion is missing.
+- symbol: band ordering
+  meaning: Rice–Mele epsilon_1=-E and epsilon_2=+E.
+  mathematical_type: ordering convention
+  domain: two-band Rice–Mele model
+  units: not applicable
+  index_role: band 1 lower, band 2 upper
+  definition_status: DEFINED
+  authority_class: HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED
+  source_locator: fullmodify4_summary_report.pdf and Modify5-v2
+  caveat: Delta_12=-2E while d=epsilon_2-epsilon_1=+2E in another convention.
+- symbol: gauge or basis convention
+  meaning: Instantaneous Bloch-band eigenbasis with A_ab=i<u_a|partial_k u_b>.
+  mathematical_type: basis convention
+  domain: nondegenerate band representation
+  units: not applicable
+  index_role: null
+  definition_status: PARTIALLY_DEFINED
+  authority_class: HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED
+  source_locator: matrix-element dictionary
+  caveat: Explicit Rice–Mele eigenvectors and phase convention are missing.

@@ -1,0 +1,49 @@
+{
+  "applicability_status": "AUTHORIZED_PENDING_APPLICABILITY_VERIFICATION",
+  "authorization_id": "SIGMAXXX_PAIR_IBP_AUTH_001",
+  "decision": {
+    "authority": "HUMAN_SCIENTIST",
+    "status": "AUTHORIZED"
+  },
+  "expected_relation": {
+    "type": "BZ_TOTAL_DERIVATIVE_EQUIVALENCE"
+  },
+  "explicit_exclusions": [
+    "center_sector_ibp_exactness",
+    "loop_sector_ibp_exactness",
+    "global_full_integrand_ibp_exactness",
+    "general_sigma_abc"
+  ],
+  "operation": "integration_by_parts",
+  "operation_statuses": {
+    "APPLICABILITY_VERIFIED": false,
+    "AUTHORIZATION_MATERIALIZED": true,
+    "INDEPENDENTLY_VERIFIED": false,
+    "OPERATION_EXECUTED": false,
+    "RESULT_RELATION_VERIFIED": false
+  },
+  "preconditions": [
+    "finite_gamma_raw_object_frozen",
+    "pair_sector_frozen",
+    "brillouin_zone_domain_defined",
+    "periodic_boundary_convention_defined",
+    "differentiability_conditions_declared"
+  ],
+  "scope": {
+    "benchmark": "sigma_xxx_finite_gamma_replay",
+    "parent_sector": "pair_sector",
+    "permitted_output": [
+      "F_pair_total"
+    ],
+    "permitted_stages": [
+      "targeted_v_epsilon_ibp",
+      "residual_driven_rational_primitive_solve",
+      "global_coupled_pair_ibp"
+    ]
+  },
+  "verification": {
+    "exact_verification_required": true,
+    "independent_verification_status": "PENDING",
+    "numerical_only_insufficient": true
+  }
+}

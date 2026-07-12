@@ -1,0 +1,85 @@
+{
+  "files": [
+    {
+      "bytes": 10903,
+      "path": "00_extraction_summary.md",
+      "sha256": "d84cea18d10c9e5d3925b4e5de96f2c214422355385131bf401ce079ee4adefa"
+    },
+    {
+      "bytes": 3190,
+      "path": "01_scientific_problem.md",
+      "sha256": "cef6309d4fb7c94431e12946745a0e55258005c01b975cf511d909469f9998b7"
+    },
+    {
+      "bytes": 14143,
+      "path": "02_scientific_definitions.yaml",
+      "sha256": "0cbee5fe1dd8c35d815e4def7d0ff4c63821555ab43a0d86995bcbaf284b5486"
+    },
+    {
+      "bytes": 3020,
+      "path": "03_model_and_parameters.yaml",
+      "sha256": "120f6705cef3f5bb3fc0da241f2f8cec1c55242d5a5a3117801982b9a93d6f35"
+    },
+    {
+      "bytes": 4833,
+      "path": "04_human_authority.yaml",
+      "sha256": "3ceedfd23b5f7fc794c5faa6b227ea2a230645fa204ce9fb68d6266e2c87343d"
+    },
+    {
+      "bytes": 24649,
+      "path": "05_derivation_steps.jsonl",
+      "sha256": "3a701ff77c1ca3e1e261abf10f2903cdbe28441caff53006b080b7c0baf25ab8"
+    },
+    {
+      "bytes": 12352,
+      "path": "06_derivation_dependency_graph.json",
+      "sha256": "32c5820f287174f0a93d86cc5433d37c067de7cb90119619082cf031fcf781a2"
+    },
+    {
+      "bytes": 8448,
+      "path": "07_sector_decomposition.yaml",
+      "sha256": "7f24b94519c751671be7430bcf58c017de0111d2fd2350ff2f171b1938f1db7f"
+    },
+    {
+      "bytes": 11870,
+      "path": "08_identity_registry.yaml",
+      "sha256": "3dba0ee19dc70fb2982a9dd2b7ce218f6be8c32c2cc75a963d249eb8bdaffe83"
+    },
+    {
+      "bytes": 8689,
+      "path": "09_expected_symbolic_results.yaml",
+      "sha256": "f9440418fc5ebe6cbd52a797df9072417489a648c194489dfc1556426477e359"
+    },
+    {
+      "bytes": 6361,
+      "path": "10_expected_numerical_and_scaling_results.yaml",
+      "sha256": "ded61c7e1965339ba5f4f0635ac75f63a3b029964b8e4f756ca850ebac8837bb"
+    },
+    {
+      "bytes": 5382,
+      "path": "11_source_and_generation_note.md",
+      "sha256": "f320d6f4bc065a7a25a6ff000368430297d931267adea455947b769d9433bd43"
+    },
+    {
+      "bytes": 9124,
+      "path": "12_claim_evidence_matrix.json",
+      "sha256": "1e9cacdcf8146a89d433cc2420e96994ccc6ea927c9984d95017dc657b50f80c"
+    },
+    {
+      "bytes": 6143,
+      "path": "13_missing_information.md",
+      "sha256": "96a1f3673639daff36b4a08f2058e8b666f30020c1ef6a86431ad869b62ddf27"
+    },
+    {
+      "bytes": 1665,
+      "path": "14_codex_replay_readiness.json",
+      "sha256": "2c504b7d6bbbd9f5d0343f9d7736be27eaa66679deb9495c22740eafa85f32aa"
+    },
+    {
+      "bytes": 702,
+      "path": "README.md",
+      "sha256": "d624bd6b5d0072f914a162687ca6822ce9bacd385851941a2a3b48811fb74e5e"
+    }
+  ],
+  "generated_at_utc": "2026-07-12T09:18:54Z"
+}

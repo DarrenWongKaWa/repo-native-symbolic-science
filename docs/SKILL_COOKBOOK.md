@@ -222,7 +222,8 @@ python3 benchmarks/sigma_xxx_finite_gamma_replay/tests/validate_public_benchmark
 ```
 
 - **Dependencies**: Python 3 and PyYAML for YAML parsing.
-- **Scientific boundary**: DC limit first; Gamma finite and exact in the raw one-dimensional `sigma_xxx` object; then normalization, decomposition, simplification, and closed-form processing.
+- **Scientific boundary**: DC limit first; Gamma finite and exact in the raw one-dimensional `sigma_xxx` object; then normalization, decomposition, simplification, closed-form construction, and model-specific validation.
+- **Decision provenance**: sanitized conversation-derived records are secondary provenance; benchmark-local pair-sector IBP authority is scoped and does not authorize center, loop, full-integrand, or tensorial `sigma_abc` IBP claims.
 - **Reference result**: `NONINTERACTIVE_REPLAY_COMPLETED_WITH_BOUNDED_CAVEATS`.
 - **Independent verification**: `PENDING`.
 - **Non-claims**: no autonomous mathematical discovery, no general tensorial `sigma_abc` solution, and no canonical scientific promotion.

@@ -13,10 +13,19 @@ It does not demonstrate autonomous mathematical discovery.
 ```text
 DC limit first
 Gamma finite and exact in the raw one-dimensional sigma_xxx object
-then normalization, decomposition, simplification and closed-form processing
+then normalization, decomposition, simplification,
+closed-form construction and model-specific validation
 ```
 
 The raw object must not be described as resulting from a prior Gamma-order expansion.
+
+## Decision Provenance
+
+The sanitized conversation extraction in `provenance/conversation_extraction/` is secondary provenance. It records human-confirmed scientific decisions and recovered workflow structure, but it is not the primary oracle and it is not a self-contained algebraic replay package.
+
+The benchmark uses scoped operation authority because integration by parts is only authorized for the documented pair-sector reduction. Human authorization records permission to consider that operation under stated preconditions; it does not by itself verify the mathematical relation.
+
+Pair-sector IBP authority does not authorize center-sector IBP, loop-sector IBP, full-integrand IBP, or any general tensorial `sigma_abc` claim. The current scoped authority status remains `AUTHORIZED_PENDING_APPLICABILITY_VERIFICATION`, with independent verification still `PENDING`.
 
 ## Run Command
 

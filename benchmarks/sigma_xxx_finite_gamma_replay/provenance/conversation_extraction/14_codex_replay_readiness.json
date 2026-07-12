@@ -1,0 +1,32 @@
+{
+  "blocking_items": [
+    "Mount immutable authoritative raw source and checksum.",
+    "Mount complete 118-row sector tables.",
+    "Mount seven pre-IBP and four final kernel tables.",
+    "Mount F_pair_total.wl and deterministic symbolic verifier scripts.",
+    "Mount Rice\u2013Mele eigenstate/gauge and numerical data/scripts.",
+    "Provide an execution environment manifest."
+  ],
+  "bounded_caveats": [
+    "Projected one-dimensional sigma_xxx only; general sigma_abc is not established.",
+    "No pre-raw Gamma expansion.",
+    "Center and loop IBP exactness are not claimed.",
+    "Loop comparison with Anan Eq.(7) is structural only.",
+    "Numerical regressions are not symbolic proofs.",
+    "Canonical promotion is forbidden."
+  ],
+  "definitions_complete": false,
+  "dependency_graph_acyclic": true,
+  "derivation_steps_complete": "COMPLETE_AT_WORKFLOW_AND_CONTRACT_LEVEL; INCOMPLETE_AT_FULL_FORMULA_BYTE_LEVEL",
+  "identity_registry_complete": false,
+  "index_semantics_complete": true,
+  "numerical_targets_available": true,
+  "raw_object_available": "REFERENCED_AND_PARTIALLY_VISIBLE_BUT_NOT_EMBEDDED_AS_IMMUTABLE_FILE",
+  "raw_object_boundary_unambiguous": true,
+  "recommended_next_action": "Place named immutable source, kernel, primitive, verifier, numerical, and environment files beside this bundle, then run a dry non-interactive replay that stops at every exact reconstruction gate.",
+  "routine_human_interaction_needed": false,
+  "safe_for_noninteractive_codex_replay": false,
+  "sector_contract_complete": true,
+  "symbolic_oracles_available": "NAMED_BUT_NOT_EMBEDDED",
+  "verdict": "CONVERSATION_EXTRACTION_READY_WITH_BOUNDED_GAPS"
+}

@@ -1,0 +1,18 @@
+{
+  "active_derivation_steps": 21,
+  "counts_not_interchangeable": {
+    "center_rows": 8,
+    "kernel_families_before_pair_ibp": 7,
+    "later_coefficient_rows": 208,
+    "loop_rows": 60,
+    "pair_primitive_components": 17,
+    "pair_rows": 50,
+    "raw_provenance_rows": 118,
+    "surviving_kernel_families": 4
+  },
+  "identity_records": 22,
+  "numerical_scaling_targets": 11,
+  "sector_records": 16,
+  "superseded_or_contradicted_steps": 4,
+  "symbolic_regression_targets": 20
+}

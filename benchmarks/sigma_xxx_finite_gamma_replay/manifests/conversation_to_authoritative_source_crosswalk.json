@@ -1,0 +1,651 @@
+{
+  "derivation_steps": [
+    {
+      "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+      "authority_class": "HUMAN_CONFIRMED",
+      "classification": "SEMANTIC_MATCH",
+      "conversation_step_id": "H001",
+      "name": "Establish the post-DC finite-Gamma raw object",
+      "stage": "RAW_OBJECT",
+      "status": "ACTIVE"
+    },
+    {
+      "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+      "authority_class": "HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_step_id": "H002",
+      "name": "Separate the explicit finite-Gamma DC expression",
+      "stage": "NORMALIZATION",
+      "status": "ACTIVE"
+    },
+    {
+      "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+      "authority_class": "STRUCTURALLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_step_id": "H003",
+      "name": "Abstract explicit band labels to the projected N-band notation",
+      "stage": "INDEX_SPLIT",
+      "status": "ACTIVE"
+    },
+    {
+      "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_step_id": "H004",
+      "name": "Build the PolyGamma coefficient-row representation",
+      "stage": "SPECIAL_FUNCTION_SPLIT",
+      "status": "ACTIVE"
+    },
+    {
+      "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_step_id": "H005",
+      "name": "Partition into center, pair, and loop sectors",
+      "stage": "SECTOR_DECOMPOSITION",
+      "status": "ACTIVE"
+    },
+    {
+      "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_step_id": "H006",
+      "name": "Verify the raw sector reconstruction",
+      "stage": "RECONSTRUCTION",
+      "status": "ACTIVE"
+    },
+    {
+      "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+      "authority_class": "HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_step_id": "H007",
+      "name": "Apply the projected matrix-element dictionary",
+      "stage": "IDENTITY_REWRITE",
+      "status": "ACTIVE"
+    },
+    {
+      "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_step_id": "H008",
+      "name": "Close the pair hxx geometry",
+      "stage": "IDENTITY_REWRITE",
+      "status": "ACTIVE"
+    },
+    {
+      "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_step_id": "H009",
+      "name": "Collect the center sector",
+      "stage": "CLOSED_FORM",
+      "status": "ACTIVE"
+    },
+    {
+      "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_step_id": "H010",
+      "name": "Canonicalize the genuine three-band loop sector",
+      "stage": "IDENTITY_REWRITE",
+      "status": "ACTIVE"
+    },
+    {
+      "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_step_id": "H011",
+      "name": "Fuse the physical rows into seven kernels",
+      "stage": "RECONSTRUCTION",
+      "status": "ACTIVE"
+    },
+    {
+      "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_step_id": "H012",
+      "name": "Perform the targeted pair v-epsilon IBP",
+      "stage": "IDENTITY_REWRITE",
+      "status": "ACTIVE"
+    },
+    {
+      "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_step_id": "H013",
+      "name": "Run the residual-driven rational primitive solve",
+      "stage": "IDENTITY_REWRITE",
+      "status": "ACTIVE"
+    },
+    {
+      "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_step_id": "H014",
+      "name": "Run the global coupled pair IBP solve",
+      "stage": "IDENTITY_REWRITE",
+      "status": "ACTIVE"
+    },
+    {
+      "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_step_id": "H015",
+      "name": "Validate the full pair post-IBP reconstruction",
+      "stage": "RECONSTRUCTION",
+      "status": "ACTIVE"
+    },
+    {
+      "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+      "authority_class": "HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_step_id": "H016",
+      "name": "Assemble the final four-kernel projected closed form",
+      "stage": "CLOSED_FORM",
+      "status": "ACTIVE"
+    },
+    {
+      "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+      "authority_class": "STRUCTURALLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_step_id": "H017",
+      "name": "Compare the pair and loop structures with supplied reference targets",
+      "stage": "RECONSTRUCTION",
+      "status": "ACTIVE"
+    },
+    {
+      "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_step_id": "H018",
+      "name": "Specialize to the two-band spinless-TRS Rice\u2013Mele model",
+      "stage": "MODEL_SPECIALIZATION",
+      "status": "ACTIVE"
+    },
+    {
+      "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+      "authority_class": "HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_step_id": "H019",
+      "name": "Render the complete two-band target-inspired finite-Gamma normal form",
+      "stage": "MODEL_SPECIALIZATION",
+      "status": "ACTIVE"
+    },
+    {
+      "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+      "authority_class": "NUMERICALLY_SUPPORTED",
+      "classification": "AUTHORITATIVE_SOURCE_MORE_COMPLETE",
+      "conversation_step_id": "H020",
+      "name": "Validate physical-basis and Modify4-to-Modify5 reductions",
+      "stage": "NUMERICAL_VALIDATION",
+      "status": "ACTIVE"
+    },
+    {
+      "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+      "authority_class": "NUMERICALLY_SUPPORTED",
+      "classification": "AUTHORITATIVE_SOURCE_MORE_COMPLETE",
+      "conversation_step_id": "H021",
+      "name": "Validate figures, meshes, and post-raw Gamma scaling",
+      "stage": "SCALING_VALIDATION",
+      "status": "ACTIVE"
+    },
+    {
+      "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+      "authority_class": "CONTRADICTED",
+      "classification": "CONTRADICTED_BY_AUTHORITATIVE_SOURCE",
+      "conversation_step_id": "S001",
+      "name": "Pre-raw Gamma-expansion interpretation",
+      "stage": "RAW_OBJECT",
+      "status": "SUPERSEDED_OR_CONTRADICTED"
+    },
+    {
+      "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+      "authority_class": "SUPERSEDED",
+      "classification": "SUPERSEDED_IN_EXTRACTION",
+      "conversation_step_id": "S002",
+      "name": "Conservative no-nontrivial-IBP evaluator",
+      "stage": "IDENTITY_REWRITE",
+      "status": "SUPERSEDED_OR_CONTRADICTED"
+    },
+    {
+      "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+      "authority_class": "SUPERSEDED",
+      "classification": "SUPERSEDED_IN_EXTRACTION",
+      "conversation_step_id": "S003",
+      "name": "Early truncated Gamma-plus-Gamma-squared Rice\u2013Mele plotting branch",
+      "stage": "SCALING_VALIDATION",
+      "status": "SUPERSEDED_OR_CONTRADICTED"
+    },
+    {
+      "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+      "authority_class": "CONTRADICTED",
+      "classification": "CONTRADICTED_BY_AUTHORITATIVE_SOURCE",
+      "conversation_step_id": "S004",
+      "name": "Promote projected band abstraction to full tensorial sigma_abc",
+      "stage": "INDEX_SPLIT",
+      "status": "SUPERSEDED_OR_CONTRADICTED"
+    }
+  ],
+  "identities": [
+    {
+      "authority_class": "HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "ID001",
+      "source_locator": "sigma_xxx_simplification_supplement.pdf, Sec. 3"
+    },
+    {
+      "authority_class": "HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "ID002",
+      "source_locator": "sigma_xxx_simplification_supplement.pdf, Sec. 3"
+    },
+    {
+      "authority_class": "HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "ID003",
+      "source_locator": "sigma_xxx_simplification_supplement.pdf, Sec. 3"
+    },
+    {
+      "authority_class": "HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "ID004",
+      "source_locator": "theoretical supplement, Supplementary Note 1"
+    },
+    {
+      "authority_class": "AMBIGUOUS",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "ID005",
+      "source_locator": "sigma_xxx_simplification_supplement.pdf, Sec. 3"
+    },
+    {
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "ID006",
+      "source_locator": "theoretical supplement, Supplementary Note 2"
+    },
+    {
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "ID007",
+      "source_locator": "pair_hkk_geometry_closure/gpt_review_prompt.md and final supplement"
+    },
+    {
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "ID008",
+      "source_locator": "sigma_xxx_theoretical_derivation_supplement.pdf, Supplementary Note 5"
+    },
+    {
+      "authority_class": "SUPERSEDED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "ID009",
+      "source_locator": "pair_hkk_geometry_closure/gpt_review_prompt.md"
+    },
+    {
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "ID010",
+      "source_locator": "theoretical supplement, Supplementary Note 4"
+    },
+    {
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "ID011",
+      "source_locator": "theoretical supplement, Supplementary Note 7"
+    },
+    {
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "ID012",
+      "source_locator": "theoretical supplement, Supplementary Note 6 and Appendix B"
+    },
+    {
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "ID013",
+      "source_locator": "theoretical supplement, Supplementary Note 10"
+    },
+    {
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "ID014",
+      "source_locator": "theoretical supplement, Supplementary Note 10"
+    },
+    {
+      "authority_class": "HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "ID015",
+      "source_locator": "fullmodify4_summary_report.pdf, Sec. 7"
+    },
+    {
+      "authority_class": "HUMAN_CONFIRMED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "ID016",
+      "source_locator": "pair IBP chain"
+    },
+    {
+      "authority_class": "STRUCTURALLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "ID017",
+      "source_locator": "band_sum_abstractor.wl and scope audit"
+    },
+    {
+      "authority_class": "HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "ID018",
+      "source_locator": "modify5_v2_complete_1d_kkk.pdf"
+    },
+    {
+      "authority_class": "HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "ID019",
+      "source_locator": "modify5_v2_complete_1d_kkk.pdf"
+    },
+    {
+      "authority_class": "HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "ID020",
+      "source_locator": "fullmodify6_report.pdf, Sec. 5"
+    },
+    {
+      "authority_class": "MISSING_FROM_CONVERSATION",
+      "classification": "NO_AUTHORITATIVE_SOURCE_FOUND",
+      "conversation_id": "ID021",
+      "source_locator": "requested coverage; not recovered explicitly"
+    },
+    {
+      "authority_class": "MISSING_FROM_CONVERSATION",
+      "classification": "NO_AUTHORITATIVE_SOURCE_FOUND",
+      "conversation_id": "ID022",
+      "source_locator": "project discussion of covariant normalization"
+    }
+  ],
+  "numerical_targets": [
+    {
+      "authority_class": "NUMERICALLY_SUPPORTED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "NUM001",
+      "source_locator": "sigma_xxx_simplification_supplement.pdf"
+    },
+    {
+      "authority_class": "NUMERICALLY_SUPPORTED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "NUM002",
+      "source_locator": "theoretical supplement, Supplementary Note 10"
+    },
+    {
+      "authority_class": "NUMERICALLY_SUPPORTED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "NUM003",
+      "source_locator": "fullmodify4_summary_report.pdf, Fig. 2(a)"
+    },
+    {
+      "authority_class": "NUMERICALLY_SUPPORTED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "NUM004",
+      "source_locator": "fullmodify4_summary_report.pdf, Sec. 9 and Appendix C"
+    },
+    {
+      "authority_class": "NUMERICALLY_SUPPORTED",
+      "classification": "SEMANTIC_MATCH",
+      "conversation_id": "NUM005",
+      "source_locator": "fullmodify4_summary_report.pdf, validation summary"
+    },
+    {
+      "authority_class": "NUMERICALLY_SUPPORTED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "NUM006",
+      "source_locator": "sigma_xxx_simplification_supplement.pdf and fullmodify4 validation summary"
+    },
+    {
+      "authority_class": "NUMERICALLY_SUPPORTED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "NUM007",
+      "source_locator": "human project summary and Rice\u2013Mele scaling validation"
+    },
+    {
+      "authority_class": "NUMERICALLY_SUPPORTED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "NUM008",
+      "source_locator": "human project summary and Rice\u2013Mele scaling validation"
+    },
+    {
+      "authority_class": "NUMERICALLY_SUPPORTED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "NUM009",
+      "source_locator": "human project summary and mini-review discussion"
+    },
+    {
+      "authority_class": "MISSING_FROM_CONVERSATION",
+      "classification": "NO_AUTHORITATIVE_SOURCE_FOUND",
+      "conversation_id": "NUM010",
+      "source_locator": "not recovered from available conversation text"
+    },
+    {
+      "authority_class": "SUPERSEDED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "NUM011",
+      "source_locator": "rice_mele_plot_report.pdf"
+    }
+  ],
+  "sectors": [
+    {
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "SEC_C0",
+      "source_locator": "sigma_xxx_simplification_supplement.pdf, raw row tables"
+    },
+    {
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "SEC_C1",
+      "source_locator": "sigma_xxx_simplification_supplement.pdf, raw row tables"
+    },
+    {
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "SEC_C2",
+      "source_locator": "sigma_xxx_simplification_supplement.pdf, raw row tables"
+    },
+    {
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "SEC_PG",
+      "source_locator": "raw row convention"
+    },
+    {
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "SEC_CENTER_FINAL",
+      "source_locator": "theoretical supplement, Supplementary Note 4"
+    },
+    {
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "SEC_PAIR_SHIFT",
+      "source_locator": "theoretical supplement, Supplementary Notes 5\u20138"
+    },
+    {
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "SEC_PAIR_VMINUS",
+      "source_locator": "theoretical supplement, Supplementary Notes 5\u20136"
+    },
+    {
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "SEC_PAIR_VPLUS",
+      "source_locator": "theoretical supplement, Supplementary Notes 5\u20136"
+    },
+    {
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "SEC_PAIR_VEPSILON",
+      "source_locator": "theoretical supplement, Supplementary Notes 5\u20136"
+    },
+    {
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "SEC_PAIR_X",
+      "source_locator": "pair_hkk_geometry_closure/gpt_review_prompt.md"
+    },
+    {
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "SEC_LOOP_REL",
+      "source_locator": "theoretical supplement, Supplementary Note 7"
+    },
+    {
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "SEC_LOOP_IML",
+      "source_locator": "theoretical supplement, Supplementary Note 7"
+    },
+    {
+      "authority_class": "HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "SEC_RESIDUAL_EARLY",
+      "source_locator": "sigma_xxx_simplification_supplement.pdf"
+    },
+    {
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "SEC_RM_LOOP_ZERO",
+      "source_locator": "theoretical supplement, Supplementary Note 10"
+    },
+    {
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "SEC_RM_CENTER_ODD",
+      "source_locator": "theoretical supplement, Supplementary Note 10"
+    },
+    {
+      "authority_class": "NUMERICALLY_SUPPORTED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "SEC_POST_RAW_GAMMA_SCALING",
+      "source_locator": "human project summary and Rice\u2013Mele validation"
+    }
+  ],
+  "symbolic_targets": [
+    {
+      "authority_class": "HUMAN_CONFIRMED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "SYM001",
+      "source_locator": "authoritative raw-object boundary"
+    },
+    {
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "SYM002",
+      "source_locator": "theoretical supplement, Supplementary Note 2"
+    },
+    {
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "SYM003",
+      "source_locator": "theoretical supplement validation ledger"
+    },
+    {
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "SYM004",
+      "source_locator": "theoretical supplement, Supplementary Note 4"
+    },
+    {
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "SYM005",
+      "source_locator": "theoretical supplement, Supplementary Note 5"
+    },
+    {
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "SYM006",
+      "source_locator": "pair_hkk_geometry_closure/gpt_review_prompt.md"
+    },
+    {
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "classification": "SEMANTIC_MATCH",
+      "conversation_id": "SYM007",
+      "source_locator": "theoretical supplement, Supplementary Note 7"
+    },
+    {
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "SYM008",
+      "source_locator": "theoretical supplement reduction diagram"
+    },
+    {
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "SYM009",
+      "source_locator": "final_pair_reduction_validation.wl"
+    },
+    {
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "SYM010",
+      "source_locator": "theoretical supplement, Supplementary Note 6 and Appendix B"
+    },
+    {
+      "authority_class": "HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "SYM011",
+      "source_locator": "theoretical supplement, Supplementary Note 8 and Appendix C"
+    },
+    {
+      "authority_class": "HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "SYM012",
+      "source_locator": "theoretical supplement, Appendix D"
+    },
+    {
+      "authority_class": "EXPLICITLY_STATED_IN_CONVERSATION",
+      "classification": "NO_AUTHORITATIVE_SOURCE_FOUND",
+      "conversation_id": "SYM013",
+      "source_locator": "Sigma_abc_dc_1D-separated.txt and raw row appendix"
+    },
+    {
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "SYM014",
+      "source_locator": "theoretical supplement, Supplementary Note 9"
+    },
+    {
+      "authority_class": "STRUCTURALLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "SYM015",
+      "source_locator": "theoretical supplement, Supplementary Note 9"
+    },
+    {
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "SYM016",
+      "source_locator": "theoretical supplement, Supplementary Note 10"
+    },
+    {
+      "authority_class": "SYMBOLICALLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "SYM017",
+      "source_locator": "theoretical supplement, Supplementary Note 10"
+    },
+    {
+      "authority_class": "HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED",
+      "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+      "conversation_id": "SYM018",
+      "source_locator": "theoretical supplement, Supplementary Note 10; Modify5-v2"
+    },
+    {
+      "authority_class": "HUMAN_CONFIRMED",
+      "classification": "SEMANTIC_MATCH",
+      "conversation_id": "SYM019",
+      "source_locator": "scope audit and theoretical supplement Appendix D"
+    },
+    {
+      "authority_class": "HUMAN_CONFIRMED",
+      "classification": "SEMANTIC_MATCH",
+      "conversation_id": "SYM020",
+      "source_locator": "current extraction instructions"
+    }
+  ]
+}

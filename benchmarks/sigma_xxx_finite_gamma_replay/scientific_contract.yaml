@@ -4,7 +4,8 @@ visibility: PUBLIC
 scientific_boundary: |-
   DC limit first
   Gamma finite and exact in the raw one-dimensional sigma_xxx object
-  then normalization, decomposition, simplification and closed-form processing
+  then normalization, decomposition, simplification,
+  closed-form construction and model-specific validation
 raw_object:
   observable: sigma_xxx
   dimensional_scope: one_dimensional

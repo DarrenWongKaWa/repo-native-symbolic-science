@@ -1,0 +1,227 @@
+[
+  {
+    "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+    "authority_class": "HUMAN_CONFIRMED",
+    "classification": "SEMANTIC_MATCH",
+    "conversation_step_id": "H001",
+    "name": "Establish the post-DC finite-Gamma raw object",
+    "stage": "RAW_OBJECT",
+    "status": "ACTIVE"
+  },
+  {
+    "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+    "authority_class": "HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_step_id": "H002",
+    "name": "Separate the explicit finite-Gamma DC expression",
+    "stage": "NORMALIZATION",
+    "status": "ACTIVE"
+  },
+  {
+    "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+    "authority_class": "STRUCTURALLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_step_id": "H003",
+    "name": "Abstract explicit band labels to the projected N-band notation",
+    "stage": "INDEX_SPLIT",
+    "status": "ACTIVE"
+  },
+  {
+    "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+    "authority_class": "SYMBOLICALLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_step_id": "H004",
+    "name": "Build the PolyGamma coefficient-row representation",
+    "stage": "SPECIAL_FUNCTION_SPLIT",
+    "status": "ACTIVE"
+  },
+  {
+    "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+    "authority_class": "SYMBOLICALLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_step_id": "H005",
+    "name": "Partition into center, pair, and loop sectors",
+    "stage": "SECTOR_DECOMPOSITION",
+    "status": "ACTIVE"
+  },
+  {
+    "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+    "authority_class": "SYMBOLICALLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_step_id": "H006",
+    "name": "Verify the raw sector reconstruction",
+    "stage": "RECONSTRUCTION",
+    "status": "ACTIVE"
+  },
+  {
+    "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+    "authority_class": "HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_step_id": "H007",
+    "name": "Apply the projected matrix-element dictionary",
+    "stage": "IDENTITY_REWRITE",
+    "status": "ACTIVE"
+  },
+  {
+    "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+    "authority_class": "SYMBOLICALLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_step_id": "H008",
+    "name": "Close the pair hxx geometry",
+    "stage": "IDENTITY_REWRITE",
+    "status": "ACTIVE"
+  },
+  {
+    "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+    "authority_class": "SYMBOLICALLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_step_id": "H009",
+    "name": "Collect the center sector",
+    "stage": "CLOSED_FORM",
+    "status": "ACTIVE"
+  },
+  {
+    "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+    "authority_class": "SYMBOLICALLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_step_id": "H010",
+    "name": "Canonicalize the genuine three-band loop sector",
+    "stage": "IDENTITY_REWRITE",
+    "status": "ACTIVE"
+  },
+  {
+    "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+    "authority_class": "SYMBOLICALLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_step_id": "H011",
+    "name": "Fuse the physical rows into seven kernels",
+    "stage": "RECONSTRUCTION",
+    "status": "ACTIVE"
+  },
+  {
+    "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+    "authority_class": "SYMBOLICALLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_step_id": "H012",
+    "name": "Perform the targeted pair v-epsilon IBP",
+    "stage": "IDENTITY_REWRITE",
+    "status": "ACTIVE"
+  },
+  {
+    "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+    "authority_class": "SYMBOLICALLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_step_id": "H013",
+    "name": "Run the residual-driven rational primitive solve",
+    "stage": "IDENTITY_REWRITE",
+    "status": "ACTIVE"
+  },
+  {
+    "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+    "authority_class": "SYMBOLICALLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_step_id": "H014",
+    "name": "Run the global coupled pair IBP solve",
+    "stage": "IDENTITY_REWRITE",
+    "status": "ACTIVE"
+  },
+  {
+    "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+    "authority_class": "SYMBOLICALLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_step_id": "H015",
+    "name": "Validate the full pair post-IBP reconstruction",
+    "stage": "RECONSTRUCTION",
+    "status": "ACTIVE"
+  },
+  {
+    "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+    "authority_class": "HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_step_id": "H016",
+    "name": "Assemble the final four-kernel projected closed form",
+    "stage": "CLOSED_FORM",
+    "status": "ACTIVE"
+  },
+  {
+    "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+    "authority_class": "STRUCTURALLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_step_id": "H017",
+    "name": "Compare the pair and loop structures with supplied reference targets",
+    "stage": "RECONSTRUCTION",
+    "status": "ACTIVE"
+  },
+  {
+    "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+    "authority_class": "SYMBOLICALLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_step_id": "H018",
+    "name": "Specialize to the two-band spinless-TRS Rice\u2013Mele model",
+    "stage": "MODEL_SPECIALIZATION",
+    "status": "ACTIVE"
+  },
+  {
+    "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+    "authority_class": "HUMAN_SUPPLIED_PREVIOUSLY_VERIFIED",
+    "classification": "EXTRACTION_MORE_DESCRIPTIVE",
+    "conversation_step_id": "H019",
+    "name": "Render the complete two-band target-inspired finite-Gamma normal form",
+    "stage": "MODEL_SPECIALIZATION",
+    "status": "ACTIVE"
+  },
+  {
+    "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+    "authority_class": "NUMERICALLY_SUPPORTED",
+    "classification": "AUTHORITATIVE_SOURCE_MORE_COMPLETE",
+    "conversation_step_id": "H020",
+    "name": "Validate physical-basis and Modify4-to-Modify5 reductions",
+    "stage": "NUMERICAL_VALIDATION",
+    "status": "ACTIVE"
+  },
+  {
+    "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+    "authority_class": "NUMERICALLY_SUPPORTED",
+    "classification": "AUTHORITATIVE_SOURCE_MORE_COMPLETE",
+    "conversation_step_id": "H021",
+    "name": "Validate figures, meshes, and post-raw Gamma scaling",
+    "stage": "SCALING_VALIDATION",
+    "status": "ACTIVE"
+  },
+  {
+    "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+    "authority_class": "CONTRADICTED",
+    "classification": "CONTRADICTED_BY_AUTHORITATIVE_SOURCE",
+    "conversation_step_id": "S001",
+    "name": "Pre-raw Gamma-expansion interpretation",
+    "stage": "RAW_OBJECT",
+    "status": "SUPERSEDED_OR_CONTRADICTED"
+  },
+  {
+    "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+    "authority_class": "SUPERSEDED",
+    "classification": "SUPERSEDED_IN_EXTRACTION",
+    "conversation_step_id": "S002",
+    "name": "Conservative no-nontrivial-IBP evaluator",
+    "stage": "IDENTITY_REWRITE",
+    "status": "SUPERSEDED_OR_CONTRADICTED"
+  },
+  {
+    "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+    "authority_class": "SUPERSEDED",
+    "classification": "SUPERSEDED_IN_EXTRACTION",
+    "conversation_step_id": "S003",
+    "name": "Early truncated Gamma-plus-Gamma-squared Rice\u2013Mele plotting branch",
+    "stage": "SCALING_VALIDATION",
+    "status": "SUPERSEDED_OR_CONTRADICTED"
+  },
+  {
+    "authoritative_target": "benchmarks/sigma_xxx_finite_gamma_replay/inputs/05_derivation_steps.jsonl",
+    "authority_class": "CONTRADICTED",
+    "classification": "CONTRADICTED_BY_AUTHORITATIVE_SOURCE",
+    "conversation_step_id": "S004",
+    "name": "Promote projected band abstraction to full tensorial sigma_abc",
+    "stage": "INDEX_SPLIT",
+    "status": "SUPERSEDED_OR_CONTRADICTED"
+  }
+]

@@ -50,7 +50,9 @@ Run the benchmark-local public validation:
 python3 benchmarks/sigma_xxx_finite_gamma_replay/tests/validate_public_benchmark.py benchmarks/sigma_xxx_finite_gamma_replay
 ```
 
-The scientific boundary is: DC limit first; Gamma finite and exact in the raw one-dimensional `sigma_xxx` object; then normalization, decomposition, simplification, and closed-form processing. The raw object must not be described as resulting from a prior Gamma-order expansion.
+The scientific boundary is: DC limit first; Gamma finite and exact in the raw one-dimensional `sigma_xxx` object; then normalization, decomposition, simplification, closed-form construction, and model-specific validation. The raw object must not be described as resulting from a prior Gamma-order expansion.
+
+Secondary conversation-derived decision provenance and the benchmark-local scoped pair-sector IBP authority record are documented under `benchmarks/sigma_xxx_finite_gamma_replay/docs/`.
 
 ## Limitations
 
