@@ -289,6 +289,17 @@ Mathematica is optional and is not required for the open-source core workflow.
 | [Object and Task Lifecycle](docs/object_and_task_lifecycle.md) | Task and object state machine |
 | [Reporting Contract](docs/reporting_contract.md) | Required artifact formats and claim boundaries |
 | [Semantic Escalation](docs/semantic_escalation.md) | When and how the agent requests human input |
+| [Sigma XXX Repair Lineage Case Study](docs/case_studies/sigma_xxx_repair_lineage.md) | Public case study of a real repair lineage |
+
+## Benchmarks
+
+The `benchmarks/` directory contains public, repository-native benchmarks. The flagship benchmark exercises an end-to-end sigma_xxx repair lineage:
+
+```bash
+python benchmarks/sigma_xxx_finite_gamma_replay/repair_lineage/scripts/run_benchmark.py --profile fast
+```
+
+See [benchmarks/README.md](benchmarks/README.md) for details.
 
 ## Project Structure
 
