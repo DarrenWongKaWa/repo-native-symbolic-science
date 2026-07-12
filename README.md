@@ -490,7 +490,7 @@ python3 -m pip install sympy numpy scipy mpmath jsonschema
 # Install test dependencies
 python3 -m pip install pytest sympy numpy scipy mpmath jsonschema
 
-# Run the full regression suite (91 tests)
+# Run the full regression suite (104 tests)
 python3 -m pytest tests/
 
 # Run specific test files
@@ -510,21 +510,35 @@ Mathematica is optional and is not required for the open-source core workflow.
 
 ## Verified Release Status
 
-```text
-verified release commit:
-08a5ba15c645954badad1f94decd9286252cd868
+The unified main branch reconciles the public orchestration/supplement lineage
+with the local scientific-decision-provenance and repair-lineage lineages.
 
+```text
 independent remote verdict:
 CLASS A
 
 verified candidate paths:
 110
 
-remote regression:
-91/91 PASS
+unified regression:
+104/104 PASS
+
+repair-lineage benchmark:
+  fast profile: 24/24
+  standard profile: 37/37
+  full profile: 38/39 (UNRESOLVED_ENVIRONMENT_FAILURE, fail-closed,
+    MathematicaMCP autoload contamination; not a scientific failure)
+
+decision provenance tests:
+61/61
+
+engine fixtures:
+12/12
 ```
 
-No GitHub Release or version tag was created. Private scientific sigma research is excluded. Scientific canonical state is not part of this public release. Blocker 5 belongs to private scientific governance and was not changed.
+No GitHub Release or version tag was created. Private scientific sigma research is excluded.
+Scientific canonical state is not part of this public release. Blocker 5 belongs to private
+scientific governance and was not changed.
 
 ---
 
@@ -550,11 +564,21 @@ No GitHub Release or version tag was created. Private scientific sigma research 
 
 ## Benchmarks
 
-The `benchmarks/` directory contains public, repository-native benchmarks. The flagship benchmark exercises an end-to-end sigma_xxx repair lineage:
+The `benchmarks/` directory contains two public, repository-native benchmarks:
 
-```bash
-python benchmarks/sigma_xxx_finite_gamma_replay/repair_lineage/scripts/run_benchmark.py --profile fast
-```
+1. **Original finite-Gamma sigma_xxx replay benchmark** — demonstrates framework
+   ingestion, derivation-DAG replay, sector reconstruction, symbolic-oracle
+   comparison, numerical/scaling regressions, and provenance-backed reporting.
+   ```bash
+   python3 benchmarks/sigma_xxx_finite_gamma_replay/tests/validate_public_benchmark.py benchmarks/sigma_xxx_finite_gamma_replay
+   ```
+
+2. **Repair-lineage flagship benchmark** — end-to-end repair lineage with
+   defect detection, checkpoint rollback, source-backed repair, and
+   source-authentication recovery.
+   ```bash
+   python benchmarks/sigma_xxx_finite_gamma_replay/repair_lineage/scripts/run_benchmark.py --profile fast
+   ```
 
 See [benchmarks/README.md](benchmarks/README.md) for details.
 
@@ -579,7 +603,7 @@ See [benchmarks/README.md](benchmarks/README.md) for details.
 ├── skills/                 # Symbolic, orchestration, and supplement skills
 ├── templates/              # Task and artifact templates
 ├── policies/               # Governance policies
-├── tests/                  # Public fixture suites (91 tests)
+├── tests/                  # Public fixture suites (104 tests)
 ├── fixtures/               # Public synthetic ORCH/SUPP fixtures
 ├── examples/               # Synthetic end-to-end examples
 └── docs/                   # Architectural and workflow documentation

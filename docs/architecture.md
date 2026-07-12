@@ -12,7 +12,7 @@ Repo-Native Symbolic Science is organized into layered modules:
 6. **Validators** — Validator implementations including the SUPP derivation-validation plugin
 7. **Templates** — Reusable task and artifact templates
 8. **Policies** — Governance and operation policies
-9. **Tests** — Public fixture suites and synthetic test cases (91 tests)
+9. **Tests** — Public fixture suites and synthetic test cases (104 tests)
 
 ## Data Flow
 
