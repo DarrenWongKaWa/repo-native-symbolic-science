@@ -1,0 +1,189 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "schemas/decision_provenance.schema.json",
+  "title": "Decision Provenance",
+  "description": "Decision events, verification results, artifact runs, projection comparisons, and rollback decisions. All decisions must be recorded and immutable.",
+  "definitions": {
+    "DecisionEvent": {
+      "type": "object",
+      "required": [
+        "decision_event_id",
+        "claim_id",
+        "decision_type",
+        "from_state",
+        "to_state",
+        "timestamp",
+        "authorized_by_role",
+        "evidence_artifact_ids"
+      ],
+      "properties": {
+        "decision_event_id": { "type": "string" },
+        "claim_id": { "type": "string" },
+        "decision_type": {
+          "type": "string",
+          "enum": ["promotion", "invalidation", "supersession", "stale_rejection", "rollback", "block", "unblock"]
+        },
+        "from_state": { "type": "string" },
+        "to_state": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "authorized_by_role": {
+          "type": "string",
+          "enum": ["executor", "independent_verifier", "integration_executor", "integration_verifier", "human_scientist"]
+        },
+        "evidence_artifact_ids": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "reason": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "VerificationResult": {
+      "type": "object",
+      "required": [
+        "verification_id",
+        "claim_id",
+        "verification_method",
+        "verdict",
+        "timestamp",
+        "verifier_role"
+      ],
+      "properties": {
+        "verification_id": { "type": "string" },
+        "claim_id": { "type": "string" },
+        "verification_method": {
+          "type": "string",
+          "enum": [
+            "exact_symbolic_replay",
+            "finite_index_replay",
+            "parent_child_reconstruction",
+            "random_exact_rational_substitution",
+            "high_precision_numerical_sampling",
+            "counterexample_search",
+            "projection_regression",
+            "scope_and_assumption_audit",
+            "linear_system_exact_solve",
+            "augmented_rank_check",
+            "residual_norm_check"
+          ]
+        },
+        "verdict": {
+          "type": "string",
+          "enum": ["PASS", "FAIL", "CAVEATED_PASS", "INCONCLUSIVE"]
+        },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "verifier_role": {
+          "type": "string",
+          "enum": ["independent_verifier", "integration_verifier", "human_scientist"]
+        },
+        "evidence_detail": { "type": "object" },
+        "caveats": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": false
+    },
+    "ArtifactRun": {
+      "type": "object",
+      "required": [
+        "artifact_run_id",
+        "artifact_type",
+        "authority_tier",
+        "artifact_sha",
+        "timestamp",
+        "generated_by_role"
+      ],
+      "properties": {
+        "artifact_run_id": { "type": "string" },
+        "artifact_type": {
+          "type": "string",
+          "enum": [
+            "executable_replay",
+            "frozen_machine_readable_operand",
+            "structured_result_summary",
+            "human_readable_report",
+            "historical_pass_field"
+          ]
+        },
+        "authority_tier": { "type": "integer", "minimum": 0, "maximum": 5 },
+        "artifact_sha": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "generated_by_role": {
+          "type": "string",
+          "enum": ["executor", "independent_verifier", "integration_executor", "report_generator"]
+        },
+        "input_artifact_ids": { "type": "array", "items": { "type": "string" } },
+        "linked_execution_truth_id": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "ProjectionComparison": {
+      "type": "object",
+      "required": [
+        "projection_id",
+        "source_claim_id",
+        "target_claim_id",
+        "projection_method",
+        "injectivity_established",
+        "authorized_scope"
+      ],
+      "properties": {
+        "projection_id": { "type": "string" },
+        "source_claim_id": { "type": "string" },
+        "target_claim_id": { "type": "string" },
+        "projection_method": { "type": "string" },
+        "injectivity_established": { "type": "boolean" },
+        "authorized_scope": {
+          "type": "string",
+          "enum": ["MODEL_SPECIFIC_EQUIVALENCE", "GENERAL_SYMBOLIC_IDENTITY"]
+        },
+        "local_exact_identity_gate": {
+          "type": "object",
+          "properties": {
+            "passed": { "type": "boolean" },
+            "method": { "type": "string" },
+            "evidence_artifact_id": { "type": "string" }
+          }
+        },
+        "boundary_applicability_gate": {
+          "type": "object",
+          "properties": {
+            "passed": { "type": "boolean" },
+            "method": { "type": "string" },
+            "evidence_artifact_id": { "type": "string" }
+          }
+        },
+        "cannot_promote_to_general": { "type": "boolean" },
+        "reason": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "RollbackDecision": {
+      "type": "object",
+      "required": [
+        "rollback_id",
+        "target_checkpoint_id",
+        "invalidated_claim_ids",
+        "timestamp",
+        "authorized_by_role"
+      ],
+      "properties": {
+        "rollback_id": { "type": "string" },
+        "target_checkpoint_id": { "type": "string" },
+        "invalidated_claim_ids": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "authorized_by_role": {
+          "type": "string",
+          "enum": ["integration_executor", "integration_verifier", "human_scientist"]
+        },
+        "reason": { "type": "string" },
+        "recovery_actions": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}
