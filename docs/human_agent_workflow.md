@@ -9,6 +9,15 @@
 | CAS/Numerical Engine | Bounded computation |
 | Independent Verifier | Replay, comparison, adjudication |
 
+The ORCH controller routes these responsibilities through isolated contexts:
+- Planner context: converts targets into staged plans
+- Executor context: computes outputs from frozen inputs
+- Verifier context: independently checks results (cannot edit executor outputs)
+- Reviewer context: audits review packets, returns structured verdicts
+- Integration context: freezes checkpoints, opens next branches
+
+One human-facing controller coordinates these roles without conflating contexts.
+
 ## Semantic Escalation
 
 When an agent encounters ambiguity or needs scientific authorization:

@@ -1,6 +1,8 @@
 # Skill Cookbook
 
-This document describes every public skill in the Repo-Native Symbolic Science framework. Natural-language automatic routing through `scientific_symbolic_repo_entry` is recommended for most users. Explicit skill naming is available for advanced control.
+This document describes the public skills in the Repo-Native Symbolic Science framework. Natural-language automatic routing through `scientific_symbolic_repo_entry` is recommended for most users. Explicit skill naming is available for advanced control.
+
+See the `skills/` directory for the complete current inventory (18 skills at the time of the verified ORCH + SUPP release). This cookbook covers the core symbolic-science skills in detail.
 
 ---
 

@@ -2,6 +2,11 @@
 
 This guide explains how to use the Repo-Native Symbolic Science framework through an agent-enabled coding environment such as Codex or Claude Code. No manual schema selection, validator invocation, or fixture execution is required to begin a scientific project.
 
+Two entry paths are available:
+
+- **Agent-first**: ask the agent in natural language to read the repo policies and route your request (recommended for most users)
+- **Executable controller**: run the CLI directly with `python3 scripts/orch_controller.py` (see [Agent-First Controller Usage](agent_first_controller_usage.md) for the full guide)
+
 ## Clone and Open
 
 ```bash
