@@ -74,6 +74,20 @@ Secondary conversation-derived decision provenance and the benchmark-local scope
 
 ## Two Supported User Pathways
 
+### Theoretical Supplement Pipeline
+
+Generate a human-readable theoretical supplement with one command.
+
+```bash
+python3 scripts/build_theoretical_supplement.py --request examples/theoretical_supplement_request.json
+```
+
+Use this as the documented default when you want a complete provenance-traceable theoretical supplement. The facade coordinates the internal derivation graph, narrative, interpretation, long-expression, evidence mapping, assembly, handoff validation, renderer authorization, readability audit, and finalization stages.
+
+Do not invoke `verified_provenance_to_latex_pdf` directly unless a validated `reporting_handoff_package.json` already exists.
+
+See [Theoretical Supplement Quickstart](docs/theoretical_supplement_quickstart.md).
+
 ### Agent-First Pathway
 
 Works through an agent-enabled coding environment. No CLI knowledge required.
@@ -370,10 +384,11 @@ rejected result
 
 ## Skill Map
 
-The repository contains 18 public skills. Refer to the skill directories under `skills/` and the [Skill Cookbook](docs/SKILL_COOKBOOK.md) for the current inventory.
+The repository contains 19 public skills. Refer to the skill directories under `skills/` and the [Skill Cookbook](docs/SKILL_COOKBOOK.md) for the current inventory.
 
 | Scientific intention | Primary skill |
 |---|---|
+| Generate a complete theoretical supplement with one command | `theoretical_supplement_pipeline` |
 | Start or route a project | `scientific_symbolic_repo_entry` |
 | Freeze and inventory a raw expression | `generic_raw_expression_ingestion` |
 | Request missing definitions from a scientist | `human_scientist_semantic_escalation` |
@@ -546,6 +561,7 @@ scientific governance and was not changed.
 
 | Document | Purpose |
 |----------|---------|
+| [Theoretical Supplement Quickstart](docs/theoretical_supplement_quickstart.md) | One-command default workflow for complete theoretical supplements |
 | [Getting Started with an Agent](docs/GETTING_STARTED_WITH_AN_AGENT.md) | First-time user guide for agent-based interaction |
 | [Agent-First Controller Usage](docs/agent_first_controller_usage.md) | Complete executable controller guide |
 | [Skill Cookbook](docs/SKILL_COOKBOOK.md) | Reference of all public skills |
@@ -596,7 +612,8 @@ See [benchmarks/README.md](benchmarks/README.md) for details.
 │   ├── orch_registry.py    #   Role and adapter registry
 │   └── orch_adapters/      #   Adapter/plugin registry
 ├── scripts/                # Orchestration, validation, and controller CLI
-│   └── orch_controller.py  #   Controller CLI entry point
+│   ├── orch_controller.py  #   Controller CLI entry point
+│   └── build_theoretical_supplement.py  # Supplement pipeline facade
 ├── schemas/                # JSON schemas (ORCH and SUPP artifacts)
 ├── validators/             # Validator implementations
 │   └── supplement_validator.py  #   SUPP derivation-validation plugin

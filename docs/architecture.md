@@ -37,11 +37,30 @@ human-facing request
 → provenance-backed reporting
 ```
 
+### Theoretical supplement facade pathway
+
+```
+user request
+→ theoretical_supplement_pipeline
+→ source authentication
+→ derivation graph validation
+→ narrative / interpretation / long-expression artifact checks
+→ equation evidence mapping checks
+→ SUPP handoff assembly
+→ validated reporting_handoff_package.json
+→ verified_provenance_to_latex_pdf dispatch authorization
+→ readability audit
+→ final result envelope
+```
+
+The facade does not replace the internal skills. It coordinates their native artifact contracts and blocks renderer dispatch until `reporting_handoff_package.json` validates.
+
 ## Controller Component Map
 
 | Component | Path | Purpose |
 |-----------|------|---------|
 | CLI entry point | `scripts/orch_controller.py` | Four subcommands: validate-task, check-transition, list-roles, run-workflow |
+| Supplement facade CLI | `scripts/build_theoretical_supplement.py` | One-command theoretical supplement pipeline with resumable state and renderer gate |
 | Dispatcher | `loop_engine/orch_dispatcher.py` | Role routing, validation orchestration, workflow execution |
 | Registry | `loop_engine/orch_registry.py` | Role definitions, adapter mappings, claim boundaries |
 | Adapter registry | `loop_engine/orch_adapters/registry.json` | Combined ORCH + SUPP adapter configuration |

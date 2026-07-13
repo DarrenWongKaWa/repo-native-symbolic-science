@@ -1,0 +1,11 @@
+{
+  "request_id": "example_theoretical_supplement",
+  "source_manifest": "fixtures/supplement/two_sector_response/source_artifact_manifest.json",
+  "output_directory": "output/example_theoretical_supplement",
+  "audience": "theoretical_physicist",
+  "output_formats": ["latex", "pdf"],
+  "pipeline_mode": "full",
+  "require_term_level_interpretation": true,
+  "require_long_expression_reconstruction": true,
+  "require_independent_readability_review": true
+}
