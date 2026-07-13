@@ -2,21 +2,48 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/scientific-symbolic-repo/schemas/theoretical_supplement_request.schema.json",
   "title": "Theoretical Supplement Request",
-  "description": "Top-level request specifying the scientific scope, artifact manifest, section profile, claim boundary, and reader pathway targets for a supplementary material build.",
+  "description": "Top-level request specifying either the minimal theoretical supplement pipeline facade request or the detailed scientific scope, artifact manifest, section profile, claim boundary, and reader pathway targets for a supplementary material build.",
   "version": "0.1.0",
   "type": "object",
-  "required": [
-    "request_id",
-    "scientific_scope",
-    "artifact_manifest",
-    "section_profile",
-    "claim_boundary",
-    "reader_pathway_targets"
-  ],
+  "required": ["request_id"],
   "properties": {
     "request_id": {
       "type": "string",
       "description": "Unique identifier for this supplement request."
+    },
+    "source_manifest": {
+      "type": "string",
+      "description": "Path to the source artifact manifest used by the theoretical_supplement_pipeline facade."
+    },
+    "output_directory": {
+      "type": "string",
+      "description": "Directory where the pipeline facade writes plan, state, event log, handoff, rendering dispatch, and final result artifacts."
+    },
+    "audience": {
+      "type": "string",
+      "description": "Primary audience for the generated supplement."
+    },
+    "output_formats": {
+      "type": "array",
+      "items": {"type": "string", "enum": ["latex", "pdf", "markdown"]},
+      "description": "Requested output formats for the facade workflow."
+    },
+    "pipeline_mode": {
+      "type": "string",
+      "enum": ["full", "plan_only", "validate_only"],
+      "description": "Pipeline mode requested by the user-facing facade."
+    },
+    "require_term_level_interpretation": {
+      "type": "boolean",
+      "description": "Whether physical interpretation artifacts are mandatory."
+    },
+    "require_long_expression_reconstruction": {
+      "type": "boolean",
+      "description": "Whether omission ledgers and reconstruction evidence are mandatory for long expressions."
+    },
+    "require_independent_readability_review": {
+      "type": "boolean",
+      "description": "Whether the pipeline must produce and validate a readability audit before final success."
     },
     "scientific_scope": {
       "type": "object",

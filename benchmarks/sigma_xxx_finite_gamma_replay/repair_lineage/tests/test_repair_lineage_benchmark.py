@@ -450,7 +450,11 @@ def test_expected_verdict_files():
 # ---------------------------------------------------------------------------
 def test_no_private_paths():
     """No personal absolute paths should appear in any public benchmark file."""
-    forbidden = ["/Users/wangjiahua", "Desktop/25-26", "test_situte"]
+    forbidden = [
+        "/" + "Users" + "/wangjiahua",
+        "Desktop/" + "25-26",
+        "test_" + "situte",
+    ]
     found = []
     for root, dirs, files in os.walk(REPAIR_LINEAGE_DIR):
         for name in files:
