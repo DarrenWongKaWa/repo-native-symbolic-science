@@ -1,7 +1,7 @@
 # Supplementary Material Build and Audit
 
 ## Purpose
-Orchestrate the assembly, validation, and audit of a complete theoretical supplement. This skill coordinates all other supplement skills, enforces the 14-section profile, runs the human readability audit, and prepares a structured reporting handoff package. It is the top-level integration skill for supplementary material preparation.
+Orchestrate assembly, configured validation, and audit of a theoretical-supplement package from supplied artifacts. This skill coordinates supplement skills, enforces the 14-section profile, runs the configured readability audit, and prepares a structured reporting handoff package. It does not independently derive or mathematically verify scientific content, generate a complete TeX supplement, or compile a PDF.
 
 **TeX/PDF Authority**: Final LaTeX rendering and PDF compilation are the exclusive authority of `verified_provenance_to_latex_pdf`. This skill prepares a structured handoff package consumed by that authority. It does NOT perform standalone TeX compilation or final PDF production.
 

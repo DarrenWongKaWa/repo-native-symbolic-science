@@ -28,7 +28,11 @@
         "UNSUPPORTED_CAPABILITY",
         "ENGINE_UNAVAILABLE",
         "EXECUTION_FAILED",
-        "POLICY_VIOLATION"
+        "POLICY_VIOLATION",
+        "POLICY_CONFIGURATION_ERROR",
+        "UNSUPPORTED_OPERATION",
+        "UNAUTHORIZED_OPERATION",
+        "INVALID_EXPRESSION"
       ]
     },
     "raw_output_preserved": { "type": "string" },

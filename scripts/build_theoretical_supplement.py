@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
-"""One-command theoretical supplement pipeline facade.
+"""Supplement-package assembly and renderer-dispatch facade.
 
 The facade coordinates repository-native supplement contracts and validators.
-It does not derive formulas, create physical interpretations, or compile PDFs.
+It authenticates and assembles supplied artifacts but does not derive or verify
+formulas, create physical interpretations, generate a complete TeX document,
+or compile PDFs.
 """
 
 from __future__ import annotations

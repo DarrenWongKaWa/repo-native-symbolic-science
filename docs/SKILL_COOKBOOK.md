@@ -1,6 +1,6 @@
 # Skill Cookbook
 
-This document describes the public skills in the Repo-Native Symbolic Science framework. Natural-language automatic routing through `scientific_symbolic_repo_entry` is recommended for most users. For complete theoretical supplements, `theoretical_supplement_pipeline` is the default user-facing entry point. Explicit skill naming is available for advanced control.
+This document describes the public skills in the Repo-Native Symbolic Science framework. Natural-language automatic routing through `scientific_symbolic_repo_entry` is recommended for most users. For supplement-package assembly and renderer dispatch from supplied artifacts, `theoretical_supplement_pipeline` is the default user-facing entry point. Explicit skill naming is available for advanced control.
 
 See the `skills/` directory for the complete current inventory. This cookbook covers the core symbolic-science skills in detail.
 
@@ -10,7 +10,7 @@ See the `skills/` directory for the complete current inventory. This cookbook co
 
 - **Skill name**: `theoretical_supplement_pipeline`
 - **Scientific intention**: Provide one default user-facing workflow for a complete human-readable, provenance-traceable theoretical supplement.
-- **Activation conditions**: A user asks for a complete theoretical supplement, one-command supplement workflow, pipeline plan, resume, or rendering authorization check.
+- **Activation conditions**: A user asks for supplement-package assembly, a one-command supplement workflow, pipeline plan, resume, or rendering authorization check.
 - **Required inputs**: Minimal request JSON with `request_id`, `source_manifest`, `output_directory`, `audience`, `output_formats`, and `pipeline_mode`.
 - **Generated outputs**: `pipeline_plan.json`, `pipeline_state.json`, `pipeline_event_log.jsonl`, `skill_execution_manifest.json`, `missing_prerequisites.json`, `final_result.json`, and gated handoff/rendering dispatch artifacts.
 - **Allowed operations**: Resolve dependencies, check native artifacts, run existing validators, persist resumable state, enforce renderer authorization, and return a final result envelope.
@@ -18,7 +18,7 @@ See the `skills/` directory for the complete current inventory. This cookbook co
 - **Human gates**: Final PDF compilation remains governed by renderer authority and human review policy.
 - **Typical next skill**: Internal stages are coordinated automatically; users normally do not invoke them manually.
 - **Copy-paste user request**:
-  > Generate a complete theoretical supplement with `python3 scripts/build_theoretical_supplement.py --request examples/theoretical_supplement_request.json`.
+  > Assemble a supplement package and renderer dispatch with `python3 scripts/build_theoretical_supplement.py --request examples/theoretical_supplement_request.json`.
 
 ---
 

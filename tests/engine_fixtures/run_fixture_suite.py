@@ -256,8 +256,10 @@ def E2_noncommutative_ordering() -> dict:
     return {
         "fixture_id": "E2",
         "name": "Noncommutative ordering protection",
-        "expected": "POLICY_VIOLATION or preserved ordering",
-        "passed": result.get("result_type") in ("POLICY_VIOLATION", "EXACT_SYMBOLIC_RESULT"),
+        "expected": "No-op request preserves declared ordering",
+        "passed": (result.get("result_type") == "EXACT_SYMBOLIC_RESULT"
+                   and result.get("raw_output") == "A*B"
+                   and result.get("operations_observed") == []),
         "result_type": result.get("result_type"),
         "details": result
     }

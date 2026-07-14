@@ -1,21 +1,22 @@
 # Theoretical Supplement Quickstart
 
-To generate a complete theoretical supplement, use:
+To assemble a provenance-traceable supplement package and renderer dispatch
+from authenticated, pre-authored artifacts, use:
 
 ```bash
 python3 scripts/build_theoretical_supplement.py --request request.json
 ```
 
-The internal supplement skills are implementation stages and normally should not be invoked manually. The pipeline facade plans dependencies, validates native artifacts, persists resumable state, enforces the renderer authorization gate, and returns one machine-readable final result envelope.
+The internal supplement skills are implementation stages and normally should not be invoked manually. The pipeline facade plans dependencies, validates native artifacts, persists resumable state, enforces the renderer authorization gate, and returns one machine-readable final result envelope. It does not independently derive or mathematically verify equations, produce a complete TeX supplement, or compile a PDF; `AUTHORIZED_PENDING_RENDERER_TOOLCHAIN` is authorization status, not PDF success.
 
 | Layer | Responsibility | Direct user invocation |
 |---|---|---|
 | Derivation graph | Formal dependency DAG | Usually no |
-| Narrative | Step-by-step explanation | Usually no |
+| Narrative | Deterministic assembly of supplied section descriptions | Usually no |
 | Interpretation | Mathematical and physical term meaning | Usually no |
 | Assembly | Section assembly, audit, handoff | Usually no |
-| Renderer | Traceable TeX/PDF from validated handoff | Usually no |
-| End-to-end pipeline | Runs the complete workflow | Yes |
+| Renderer | Renderer-dispatch stub and authorization from validated handoff | Usually no |
+| End-to-end pipeline | Runs the configured assembly and validation workflow | Yes |
 
 Warning:
 

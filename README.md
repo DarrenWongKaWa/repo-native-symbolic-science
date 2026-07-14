@@ -76,13 +76,18 @@ Secondary conversation-derived decision provenance and the benchmark-local scope
 
 ### Theoretical Supplement Pipeline
 
-Generate a human-readable theoretical supplement with one command.
+Assemble a provenance-traceable theoretical-supplement package and renderer
+dispatch from authenticated, pre-authored artifacts with one command.
 
 ```bash
 python3 scripts/build_theoretical_supplement.py --request examples/theoretical_supplement_request.json
 ```
 
-Use this as the documented default when you want a complete provenance-traceable theoretical supplement. The facade coordinates the internal derivation graph, narrative, interpretation, long-expression, evidence mapping, assembly, handoff validation, renderer authorization, readability audit, and finalization stages.
+The facade authenticates supplied artifacts, performs configured structural and
+provenance checks, copies supplied section descriptions into a narrative
+package, and authorizes a renderer dispatch. It does not independently derive
+or mathematically verify equations, generate a complete TeX supplement, or
+compile a PDF.
 
 Do not invoke `verified_provenance_to_latex_pdf` directly unless a validated `reporting_handoff_package.json` already exists.
 
@@ -388,7 +393,7 @@ The repository contains 19 public skills. Refer to the skill directories under `
 
 | Scientific intention | Primary skill |
 |---|---|
-| Generate a complete theoretical supplement with one command | `theoretical_supplement_pipeline` |
+| Assemble a supplement package and renderer dispatch from supplied artifacts | `theoretical_supplement_pipeline` |
 | Start or route a project | `scientific_symbolic_repo_entry` |
 | Freeze and inventory a raw expression | `generic_raw_expression_ingestion` |
 | Request missing definitions from a scientist | `human_scientist_semantic_escalation` |
@@ -478,7 +483,7 @@ Public SUPP (supplementary material) functions at a capability level:
 
 ```text
 typed derivation graph
-explicit mathematical reconstruction
+explicit references to supplied mathematical reconstructions
 derivative-semantic provenance
 long-expression presentation modes
 omission ledger
@@ -505,7 +510,7 @@ python3 -m pip install sympy numpy scipy mpmath jsonschema
 # Install test dependencies
 python3 -m pip install pytest sympy numpy scipy mpmath jsonschema
 
-# Run the full regression suite (104 tests)
+# Run the full regression suite
 python3 -m pytest tests/
 
 # Run specific test files
@@ -561,7 +566,7 @@ scientific governance and was not changed.
 
 | Document | Purpose |
 |----------|---------|
-| [Theoretical Supplement Quickstart](docs/theoretical_supplement_quickstart.md) | One-command default workflow for complete theoretical supplements |
+| [Theoretical Supplement Quickstart](docs/theoretical_supplement_quickstart.md) | One-command assembly and renderer-dispatch workflow |
 | [Getting Started with an Agent](docs/GETTING_STARTED_WITH_AN_AGENT.md) | First-time user guide for agent-based interaction |
 | [Agent-First Controller Usage](docs/agent_first_controller_usage.md) | Complete executable controller guide |
 | [Skill Cookbook](docs/SKILL_COOKBOOK.md) | Reference of all public skills |

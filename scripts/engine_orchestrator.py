@@ -12,8 +12,14 @@ import time
 import subprocess
 import traceback
 import platform as _platform
+from pathlib import Path
 
-REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
+# Resolve repository-relative assets from this script, never from the caller's
+# working directory.  This supports invocation from the repository root, the
+# scripts directory, and an unrelated external directory.
+REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
 
 def sha256_hex(data: str) -> str:
@@ -128,23 +134,25 @@ def run_engine_bounded(request: dict, selection: dict) -> dict:
             "capability_gaps": selection.get("capability_gaps", [])
         }
 
-    runner_path = os.path.join(REPO_ROOT, "engines", primary, "runner.py")
-    if not os.path.exists(runner_path):
+    runner_path = REPO_ROOT / "engines" / primary / "runner.py"
+    if not runner_path.is_file():
         return {
             "request_id": request.get("request_id", "unknown"),
             "engine_id": primary,
             "result_type": "EXECUTION_FAILED",
-            "errors": [f"runner_not_found: {runner_path}"]
+            "exit_code": 1,
+            "attempted_runner_path": str(runner_path),
+            "errors": [f"runner_not_found:{runner_path}"],
         }
 
     try:
         request_json = json.dumps(request)
         proc = subprocess.run(
-            [sys.executable, runner_path],
+            [sys.executable, str(runner_path)],
             input=request_json,
             capture_output=True, text=True,
             timeout=request.get("timeout", 60),
-            cwd=REPO_ROOT
+            cwd=str(REPO_ROOT)
         )
         if proc.returncode != 0 and proc.stdout.strip():
             try:
@@ -180,6 +188,11 @@ def run_engine_bounded(request: dict, selection: dict) -> dict:
         }
 
 
+def _emit_execution_result(selection: dict, result: dict) -> None:
+    print(json.dumps({"selection": selection, "result": result}, indent=2))
+    raise SystemExit(int(result.get("exit_code", 1)))
+
+
 def main():
     """Probe all engines and optionally execute a request."""
     if len(sys.argv) > 1 and sys.argv[1] == "--probe-only":
@@ -192,13 +205,13 @@ def main():
         from scripts.resolve_backend_capabilities import resolve_capabilities
         selection = resolve_capabilities(request)
         result = run_engine_bounded(request, selection)
-        print(json.dumps({"selection": selection, "result": result}, indent=2))
+        _emit_execution_result(selection, result)
     else:
         request = json.load(sys.stdin)
         from scripts.resolve_backend_capabilities import resolve_capabilities
         selection = resolve_capabilities(request)
         result = run_engine_bounded(request, selection)
-        print(json.dumps({"selection": selection, "result": result}, indent=2))
+        _emit_execution_result(selection, result)
 
 
 if __name__ == "__main__":

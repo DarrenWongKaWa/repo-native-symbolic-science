@@ -2,7 +2,7 @@
 
 ## Purpose
 
-`theoretical_supplement_pipeline` is the default user-facing orchestration facade for generating a complete human-readable, provenance-traceable theoretical supplement from verified scientific artifacts through one validated end-to-end workflow.
+`theoretical_supplement_pipeline` is the default user-facing orchestration facade for assembling a provenance-traceable supplement package and renderer dispatch from authenticated, pre-authored artifacts through one configured workflow.
 
 This skill is:
 
@@ -21,7 +21,7 @@ This skill is not:
 
 ## Public Promise
 
-Generate a human-readable, provenance-traceable theoretical supplement from verified scientific artifacts through one validated end-to-end workflow.
+Assemble a human-readable narrative package, provenance records, and renderer dispatch from supplied artifacts whose configured structural and provenance checks pass. This is not mathematical verification, complete TeX generation, or PDF compilation.
 
 ## Activation Conditions
 
