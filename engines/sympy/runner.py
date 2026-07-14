@@ -330,6 +330,15 @@ def compile_operation_plan(sp, operations: list[dict]) -> list[ValidatedOperatio
                     "derivative_order_must_be_positive_integer",
                 )
             compiled["n"] = derivative_order
+        elif operation == "apart":
+            if "variable" not in parameters:
+                raise OperationValidationError(
+                    "UNAUTHORIZED_OPERATION", index, operation, "variable", "missing",
+                )
+            compiled["variable"] = _validated_symbol(
+                sp, parameters["variable"], index=index, operation=operation,
+                parameter="variable",
+            )
         elif operation == "simplify_with_explicit_measure":
             # JSON cannot supply a callable measure safely; allow only the
             # default simplification behavior until a typed measure contract is
@@ -355,7 +364,7 @@ def _apply_operation(sp, expression, operation: str, parameters: dict):
     if operation == "together":
         return sp.together(expression)
     if operation == "apart":
-        return sp.apart(expression)
+        return sp.apart(expression, parameters["variable"])
     if operation == "diff":
         return sp.diff(expression, parameters["variable"], parameters["n"])
     if operation == "simplify_with_explicit_measure":
@@ -417,6 +426,7 @@ def run_sympy_bounded(request: dict, *, policy_path: str | Path | None = None,
 
     try:
         import sympy as sp
+        from sympy.polys.polyerrors import PolynomialError
     except ImportError:
         return _result(request, result_type="ENGINE_UNAVAILABLE", exit_code=1,
                        started_at=started_at, errors=["sympy_import_failed"],
@@ -478,10 +488,14 @@ def run_sympy_bounded(request: dict, *, policy_path: str | Path | None = None,
                 "output_srepr_sha256": sha256_hex(output_srepr),
                 "display_text_changed": input_display != output_display,
             })
-    except (InvalidExpressionError, TypeError, ValueError) as exc:
+    except (InvalidExpressionError, TypeError, ValueError, ArithmeticError,
+            NotImplementedError, PolynomialError) as exc:
         return _result(request, result_type="EXECUTION_FAILED", exit_code=1,
                        started_at=started_at, engine_version=sp.__version__,
-                       errors=[f"operation_execution_failed:{type(exc).__name__}"],
+                       errors=[
+                           f"operation_execution_failed:index={planned.index}:"
+                           f"operation={planned.operation}:reason={type(exc).__name__}"
+                       ],
                        policy_metadata=policy_metadata)
 
     return _result(request, result_type="EXACT_SYMBOLIC_RESULT", exit_code=0,

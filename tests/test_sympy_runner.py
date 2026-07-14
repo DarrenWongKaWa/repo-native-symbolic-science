@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 
 import pytest
+import sympy as sp
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 RUNNER_DIR = REPO_ROOT / "engines" / "sympy"
@@ -178,6 +179,7 @@ def test_cli_malformed_allowed_policy_root_exits_two(tmp_path):
     ("(x**2 - 1)/(x - 1)", "cancel", {}, "x + 1"),
     ("x + y", "subs", {"x": "2"}, "y + 2"),
     ("x**3", "diff", {"variable": "x", "n": 2}, "6*x"),
+    ("1/x + 1/y", "together", {}, "(x + y)/(x*y)"),
 ])
 def test_existing_authorized_operations_remain_available(expression, operation, parameters, expected):
     result = runner.run_sympy_bounded(request(
@@ -319,3 +321,106 @@ def test_orchestrator_missing_runner_is_structured_and_nonzero(tmp_path, monkeyp
     assert result["result_type"] == "EXECUTION_FAILED"
     assert result["exit_code"] == 1
     assert result["attempted_runner_path"] == str(tmp_path / "engines" / "sympy" / "runner.py")
+
+
+def apart_request(expression="1/((w - a)*(w - b))", variable="w"):
+    return request(expression, [
+        {"operation": "apart", "parameters": {"variable": variable}, "order": 1}
+    ])
+
+
+def assert_p02_equivalence(result):
+    actual = sp.sympify(result["raw_output"])
+    expected = sp.sympify("1/(a - b) * (1/(w - a) - 1/(w - b))")
+    assert sp.simplify(actual - expected) == 0
+    assert result["operations_observed"] == ["apart"]
+    assert len(result["transformation_audit"]) == 1
+    assert result["transformation_audit"][0]["parameters"]["variable"] == "w"
+
+
+def test_apart_forwards_validated_variable_and_records_audit():
+    result = runner.run_sympy_bounded(apart_request())
+    assert result["result_type"] == "EXACT_SYMBOLIC_RESULT"
+    assert result["exit_code"] == 0
+    assert_p02_equivalence(result)
+
+
+def test_apart_cli_forwards_validated_variable_and_emits_one_json_result():
+    proc = subprocess.run([sys.executable, str(RUNNER_DIR / "runner.py")],
+                          input=json.dumps(apart_request()), text=True,
+                          capture_output=True, check=False)
+    assert proc.returncode == 0
+    assert proc.stderr == ""
+    result = json.loads(proc.stdout)
+    assert result["exit_code"] == 0
+    assert_p02_equivalence(result)
+
+
+def test_apart_orchestrator_is_cwd_independent(tmp_path):
+    payload = json.dumps(apart_request())
+    for cwd in (REPO_ROOT, REPO_ROOT / "scripts", tmp_path):
+        proc = subprocess.run(
+            [sys.executable, str(REPO_ROOT / "scripts" / "engine_orchestrator.py")],
+            input=payload, text=True, capture_output=True, check=False, cwd=cwd,
+        )
+        assert proc.returncode == 0, proc.stderr
+        assert_p02_equivalence(json.loads(proc.stdout)["result"])
+
+
+def test_apart_requires_a_variable_before_execution():
+    result = runner.run_sympy_bounded(request(
+        operations=[{"operation": "apart", "parameters": {}, "order": 1}]
+    ))
+    assert result["result_type"] == "UNAUTHORIZED_OPERATION"
+    assert result["exit_code"] == 1
+    assert "index=0:operation=apart:parameter=variable:reason=missing" in result["errors"][0]
+    assert result["raw_output"] == ""
+    assert result["operations_observed"] == []
+    assert result["transformation_audit"] == []
+
+
+@pytest.mark.parametrize("variable", [1, [], "x.y", "__class__"])
+def test_apart_rejects_invalid_variable_before_execution(variable):
+    result = runner.run_sympy_bounded(apart_request(variable=variable))
+    assert result["result_type"] == "UNAUTHORIZED_OPERATION"
+    assert result["exit_code"] == 1
+    assert "index=0:operation=apart:parameter=variable:reason=symbol_name_not_allowed" in result["errors"][0]
+    assert result["raw_output"] == ""
+    assert result["operations_observed"] == []
+    assert result["transformation_audit"] == []
+
+
+def test_expected_apart_failure_is_normalized_at_cli_boundary():
+    payload = apart_request("sin(x)/x", "x")
+    proc = subprocess.run([sys.executable, str(RUNNER_DIR / "runner.py")],
+                          input=json.dumps(payload), text=True,
+                          capture_output=True, check=False)
+    assert proc.returncode == 1
+    assert proc.stderr == ""
+    result = json.loads(proc.stdout)
+    assert result["result_type"] == "EXECUTION_FAILED"
+    assert result["exit_code"] == 1
+    assert result["errors"] == [
+        "operation_execution_failed:index=0:operation=apart:reason=PolynomialError"
+    ]
+    assert result["raw_output"] == ""
+    assert result["operations_observed"] == []
+    assert result["transformation_audit"] == []
+
+
+def test_execution_failure_does_not_publish_earlier_operations():
+    result = runner.run_sympy_bounded(request(
+        "sin(x)/x",
+        [
+            {"operation": "expand", "parameters": {}, "order": 1},
+            {"operation": "apart", "parameters": {"variable": "x"}, "order": 2},
+        ],
+    ))
+    assert result["result_type"] == "EXECUTION_FAILED"
+    assert result["exit_code"] == 1
+    assert result["errors"] == [
+        "operation_execution_failed:index=1:operation=apart:reason=PolynomialError"
+    ]
+    assert result["raw_output"] == ""
+    assert result["operations_observed"] == []
+    assert result["transformation_audit"] == []
