@@ -2,6 +2,13 @@
  "bundle": "viper-frozen-release-verification",
  "purpose": "frozen release-verification corpus; NOT runtime gold data; NOT accessible to the production verifier",
  "release_commit_at_freeze": "fcc866cc3267d14efa0a607e4a0ab80bde112873 (Gate 4 commit; superseded by the commit that adds this bundle)",
+ "release_commit_at_safe_main_replay": "c0f0c19d54981685bd29d0107a669c0c7235ec46",
+ "safe_main_replay": {
+  "base_commit": "697f9af3c9062751955724a426efcf11cd83a3fb",
+  "source_viper_tip": "3913b0018d58f31cd61304cf0583beaac9537a5d",
+  "external_replay_status": "PENDING_EXTERNAL_REPLAY",
+  "scope": "Only the frozen geometric-basis verification workflow and its Gate 1-4 governance chain are covered; no universal symbolic-physics claim is implied."
+ },
  "gold_oracle": "independent_symbolic_canonicalization",
  "tested_verifier": "numerical_geobasis (vendored: loop_engine/orch_adapters/geobasis_verify)",
  "schemas": {
