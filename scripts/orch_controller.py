@@ -87,6 +87,17 @@ def _register_synthetic_adapters(registry: OrchRegistry) -> None:
         "forbidden_actions": ["self_verify_integration"],
         "claim_authority": "integration",
     })
+    # Gate 3.5: narrow geometric-basis verification capability (math unchanged).
+    registry.register_adapter("geometric_basis_verify", {
+        "module_path": "loop_engine.orch_adapters.geometric_basis_verify_adapter",
+        "class_name": "GeometricBasisVerifyAdapter",
+        "validator_scripts": [],
+        "required_inputs": [],
+        "allowed_actions": ["verify_geometric_basis_claim"],
+        "forbidden_actions": ["promote_canonical", "reinterpret_scope",
+                              "upgrade_numerical_to_symbolic"],
+        "claim_authority": "verification",
+    })
 
 
 def main() -> None:
@@ -104,9 +115,13 @@ def main() -> None:
     p.add_argument("--to", dest="to_state", required=True, help="Target state")
 
     subparsers.add_parser("list-roles", help="List all registered roles")
+    subparsers.add_parser("list-operations", help="List registered capability/adapter operations")
 
     p = subparsers.add_parser("run-workflow", help="Run a workflow fixture")
     p.add_argument("fixture_path", help="Path to the workflow fixture JSON file")
+
+    subparsers.add_parser("geometric-basis-verify",
+                          help="Route a geometric_basis_verify request (JSON on stdin) through the registry")
 
     args = parser.parse_args()
 
@@ -146,6 +161,41 @@ def main() -> None:
             print(json.dumps(output, indent=2), file=sys.stderr)
         print(json.dumps({"passed": result.passed, "blocking_findings": result.blocking_findings, "errors": result.errors}))
         sys.exit(0 if result.passed else 1)
+
+    elif args.command == "list-operations":
+        ops = sorted(registry._adapters.keys())
+        print(json.dumps({"operations": ops}))
+        sys.exit(0)
+
+    elif args.command == "geometric-basis-verify":
+        # CLI request -> ORCH registry -> adapter -> engines -> ORCH response.
+        # ORCH does NOT reinterpret scope, average oracles, upgrade evidence, or wrap a
+        # conflict as success; it routes and propagates the adapter's exit code verbatim.
+        raw = sys.stdin.read()
+        try:
+            req = json.loads(raw)
+        except Exception as exc:
+            print(json.dumps({"orch_error": "INVALID_JSON_REQUEST", "detail": str(exc)[:120]}))
+            sys.exit(1)
+        op = req.get("operation")
+        if registry.get_adapter(op) is None:
+            print(json.dumps({"orch_error": "CAPABILITY_NOT_REGISTERED", "operation": op,
+                              "attempted_registry": "loop_engine.orch_registry"}))
+            sys.exit(1)
+        try:
+            adapter = registry.load_adapter_instance(op)   # real importlib load path
+        except Exception as exc:
+            print(json.dumps({"orch_error": "ADAPTER_LOAD_FAILED", "operation": op,
+                              "detail": str(exc)[:160]}))
+            sys.exit(1)
+        try:
+            result, exit_code = adapter.run(req)
+        except Exception as exc:
+            print(json.dumps({"orch_error": getattr(exc, "code", exc.__class__.__name__),
+                              "operation": op}))
+            sys.exit(1)
+        print(json.dumps(result))
+        sys.exit(exit_code)
 
     else:
         parser.print_help()
