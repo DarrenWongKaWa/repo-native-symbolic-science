@@ -82,36 +82,6 @@ def numerical_verify(family, pw=None, sign=+1, factor=2):
             num += np.linalg.norm(Lr-Rr)**2; den += np.linalg.norm(Rr)**2
     return (num/den)**0.5 if den else 0.0
 
-# ---------------- task set: each family true + one contamination --------------
-TASKS = [
-    ("METRIC_true",       "METRIC", dict()),
-    ("METRIC_pw_2to3",    "METRIC", dict(pw=3)),          # wrong power -> reject
-    ("METRIC_factor_2to1","METRIC", dict(factor=1)),      # wrong prefactor -> reject
-    ("RENORM_true",       "RENORM", dict()),
-    ("RENORM_pw_3to2",    "RENORM", dict(pw=2)),           # this is identity 1's power -> reject for G
-    ("BERRY_true",        "BERRY",  dict()),
-    ("BERRY_sign_flip",   "BERRY",  dict(sign=-1)),        # wrong sign -> reject
-]
 
-def main():
-    import json
-    print("EXTENDED FAMILIES — independent Symbolic Gold _|_ Numerical Verifier\n"+"="*74)
-    print(f"{'task':<20}{'GOLD(symbolic)':<18}{'VERIFIER(numerical rel-resid)':<30}{'agree'}")
-    print("-"*76)
-    rows={}
-    for tid, fam, params in TASKS:
-        gold = symbolic_gold(fam, **params)
-        rel = numerical_verify(fam, **params)
-        num_holds = rel < 1e-6
-        agree = (gold and num_holds) or ((not gold) and not num_holds)
-        rows[tid]={"family":fam,"gold":bool(gold),"rel_residual":rel,"agree":bool(agree)}
-        gv = "SYMBOLIC_IDENTITY" if gold else "NOT_AN_IDENTITY"
-        nv = f"consistent {rel:.1e}" if num_holds else f"DISPROVED {rel:.1e}"
-        print(f"{tid:<20}{gv:<18}{nv:<30}{'YES' if agree else 'NO'}")
-    print("-"*76)
-    print(f"independent-oracle agreement across {len(rows)} tasks / {len(set(r['family'] for r in rows.values()))} families: "
-          f"{sum(r['agree'] for r in rows.values())}/{len(rows)}")
-    json.dump(rows, open(HERE/"families_results.json","w"), indent=1)
-
-if __name__ == "__main__":
-    main()
+# self-test scaffolding (TASKS catalog / main / result-dump writer) removed from the
+# shipped package: only symbolic_gold and numerical_verify are used by the ORCH adapter.

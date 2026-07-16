@@ -1,0 +1,14 @@
+{
+ "$schema": "http://json-schema.org/draft-07/schema#",
+ "$id": "viper.condition_d.claim.v1",
+ "type": "object",
+ "required": ["lhs", "rhs", "assumptions", "scope", "declared_basis"],
+ "additionalProperties": false,
+ "properties": {
+  "lhs": {"type": "string", "minLength": 1},
+  "rhs": {"type": "string", "minLength": 1},
+  "assumptions": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+  "scope": {"type": "string", "enum": ["two_band", "multiband", "single_band"]},
+  "declared_basis": {"type": "array", "items": {"type": "string"}, "minItems": 1}
+ }
+}

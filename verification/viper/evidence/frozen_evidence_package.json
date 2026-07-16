@@ -1,0 +1,374 @@
+{
+ "disclaimer": "prototype result != shipped-repository result; does NOT represent repo ORCH/schema/policy/provenance/replay/Full-Viper.",
+ "experiment_version": "viper-geobasis-pilot-1.5",
+ "git_commit": "6d9b2c2dacf0b9803ec76c2166bbbc514d926b73",
+ "gold_oracle": "independent_symbolic_canonicalization (sympy exact algebra on abstract atoms)",
+ "paths_share_code": false,
+ "prototype_name": "Viper Geometric-Basis Verification Prototype with an Independent Symbolic Gold Oracle",
+ "runtime_environment": {
+  "numpy": "1.26.4",
+  "platform": "Linux-6.8.0-51-generic-x86_64-with-glibc2.39",
+  "python": "3.12.3",
+  "sympy": "1.14.0"
+ },
+ "tasks": {
+  "T00_correct": {
+   "evidence_level": "3_symbolic_certificate",
+   "independent_oracle_agreement": true,
+   "mutation_operator": {
+    "kind": "none"
+   },
+   "numerical_evidence": {
+    "absolute_residual": 2.99685140327531e-08,
+    "excluded_points": "none (no |eps_nm| fell below 1e-3; small-denominator handling not triggered)",
+    "minimum_denominator_abs_eps_nm": 4.983573817329029,
+    "model_seeds": [
+     7,
+     101,
+     2024
+    ],
+    "n_samples": 243,
+    "precision": "IEEE-754 double (float64); k-derivatives by central finite difference h=2e-5",
+    "random_seed_kpoints": 0,
+    "relative_residual": 3.641444742642827e-09,
+    "sample_points_k": [
+     [
+      0.3834927245000721,
+      -0.6445972014611631,
+      -1.2852741329786548
+     ],
+     [
+      -1.3537226205201185,
+      0.8771566697607627,
+      1.1557156163776208
+     ],
+     [
+      0.2985801721481036,
+      0.6425903707551957,
+      0.12214997610318412
+     ]
+    ],
+    "target_norm": 8.229841766321313,
+    "tolerance_policy": "rel_residual < 1e-6 => NUMERICALLY_CONSISTENT_WITHIN_TOLERANCE; else DISPROVED"
+   },
+   "numerical_verifier_result": {
+    "absolute_residual": 2.99685140327531e-08,
+    "relative_residual": 3.641444742642827e-09
+   },
+   "source": {
+    "numerical_verifier": "pilot2_v2.num_f23 + geobasis.reconstruct",
+    "symbolic_oracle": "pilot2_v2.symbolic_gold_F23"
+   },
+   "symbolic_gold_result": "SYMBOLIC_IDENTITY",
+   "task_definition_hash": "246900703620ae7781438cffff7d6a2a50364998f3d956fba44b970349ef292a",
+   "verdict": "VERIFIED_SYMBOLIC_IDENTITY"
+  },
+  "T01_coeff_5to6": {
+   "evidence_level": "2_reproducible_numerical_counterexample",
+   "independent_oracle_agreement": true,
+   "mutation_operator": {
+    "c5": 6
+   },
+   "numerical_evidence": {
+    "absolute_residual": 0.13225360215351345,
+    "excluded_points": "none (no |eps_nm| fell below 1e-3; small-denominator handling not triggered)",
+    "minimum_denominator_abs_eps_nm": 4.983573817329029,
+    "model_seeds": [
+     7,
+     101,
+     2024
+    ],
+    "n_samples": 243,
+    "precision": "IEEE-754 double (float64); k-derivatives by central finite difference h=2e-5",
+    "random_seed_kpoints": 0,
+    "relative_residual": 0.017187810904335687,
+    "sample_points_k": [
+     [
+      0.3834927245000721,
+      -0.6445972014611631,
+      -1.2852741329786548
+     ],
+     [
+      -1.3537226205201185,
+      0.8771566697607627,
+      1.1557156163776208
+     ],
+     [
+      0.2985801721481036,
+      0.6425903707551957,
+      0.12214997610318412
+     ]
+    ],
+    "target_norm": 7.694615846637689,
+    "tolerance_policy": "rel_residual < 1e-6 => NUMERICALLY_CONSISTENT_WITHIN_TOLERANCE; else DISPROVED"
+   },
+   "numerical_verifier_result": {
+    "absolute_residual": 0.13225360215351345,
+    "relative_residual": 0.017187810904335687
+   },
+   "source": {
+    "numerical_verifier": "pilot2_v2.num_f23 + geobasis.reconstruct",
+    "symbolic_oracle": "pilot2_v2.symbolic_gold_F23"
+   },
+   "symbolic_gold_result": "NOT_AN_IDENTITY",
+   "task_definition_hash": "a0bc02c61a21fa5cb97353e5ec6781ce19d254702815e612a2e52d56198282d7",
+   "verdict": "DISPROVED_BY_REPRODUCIBLE_NUMERICAL_COUNTEREXAMPLE"
+  },
+  "T03_sign_m7to7": {
+   "evidence_level": "2_reproducible_numerical_counterexample",
+   "independent_oracle_agreement": true,
+   "mutation_operator": {
+    "c7": 7
+   },
+   "numerical_evidence": {
+    "absolute_residual": 1.851550412513148,
+    "excluded_points": "none (no |eps_nm| fell below 1e-3; small-denominator handling not triggered)",
+    "minimum_denominator_abs_eps_nm": 4.983573817329029,
+    "model_seeds": [
+     7,
+     101,
+     2024
+    ],
+    "n_samples": 243,
+    "precision": "IEEE-754 double (float64); k-derivatives by central finite difference h=2e-5",
+    "random_seed_kpoints": 0,
+    "relative_residual": 0.31137879664253776,
+    "sample_points_k": [
+     [
+      0.3834927245000721,
+      -0.6445972014611631,
+      -1.2852741329786548
+     ],
+     [
+      -1.3537226205201185,
+      0.8771566697607627,
+      1.1557156163776208
+     ],
+     [
+      0.2985801721481036,
+      0.6425903707551957,
+      0.12214997610318412
+     ]
+    ],
+    "target_norm": 5.946295741642049,
+    "tolerance_policy": "rel_residual < 1e-6 => NUMERICALLY_CONSISTENT_WITHIN_TOLERANCE; else DISPROVED"
+   },
+   "numerical_verifier_result": {
+    "absolute_residual": 1.851550412513148,
+    "relative_residual": 0.31137879664253776
+   },
+   "source": {
+    "numerical_verifier": "pilot2_v2.num_f23 + geobasis.reconstruct",
+    "symbolic_oracle": "pilot2_v2.symbolic_gold_F23"
+   },
+   "symbolic_gold_result": "NOT_AN_IDENTITY",
+   "task_definition_hash": "610ed2586ba1d1717792ab7b356e2b2e857f4879be09f2a98bcfd8834daf5705",
+   "verdict": "DISPROVED_BY_REPRODUCIBLE_NUMERICAL_COUNTEREXAMPLE"
+  },
+  "T04_denom_3to2": {
+   "evidence_level": "2_reproducible_numerical_counterexample",
+   "independent_oracle_agreement": true,
+   "mutation_operator": {
+    "denom": 2
+   },
+   "numerical_evidence": {
+    "absolute_residual": 3.5247403987900965,
+    "excluded_points": "none (no |eps_nm| fell below 1e-3; small-denominator handling not triggered)",
+    "minimum_denominator_abs_eps_nm": 4.983573817329029,
+    "model_seeds": [
+     7,
+     101,
+     2024
+    ],
+    "n_samples": 243,
+    "precision": "IEEE-754 double (float64); k-derivatives by central finite difference h=2e-5",
+    "random_seed_kpoints": 0,
+    "relative_residual": 0.08435855731046442,
+    "sample_points_k": [
+     [
+      0.3834927245000721,
+      -0.6445972014611631,
+      -1.2852741329786548
+     ],
+     [
+      -1.3537226205201185,
+      0.8771566697607627,
+      1.1557156163776208
+     ],
+     [
+      0.2985801721481036,
+      0.6425903707551957,
+      0.12214997610318412
+     ]
+    ],
+    "target_norm": 41.782843509497326,
+    "tolerance_policy": "rel_residual < 1e-6 => NUMERICALLY_CONSISTENT_WITHIN_TOLERANCE; else DISPROVED"
+   },
+   "numerical_verifier_result": {
+    "absolute_residual": 3.5247403987900965,
+    "relative_residual": 0.08435855731046442
+   },
+   "source": {
+    "numerical_verifier": "pilot2_v2.num_f23 + geobasis.reconstruct",
+    "symbolic_oracle": "pilot2_v2.symbolic_gold_F23"
+   },
+   "symbolic_gold_result": "NOT_AN_IDENTITY",
+   "task_definition_hash": "6de2258cbe883da434a9e565e63e50d1ef2718ebe44499da965bda3775151a5a",
+   "verdict": "DISPROVED_BY_REPRODUCIBLE_NUMERICAL_COUNTEREXAMPLE"
+  },
+  "T06_drop_term": {
+   "evidence_level": "2_reproducible_numerical_counterexample",
+   "independent_oracle_agreement": true,
+   "mutation_operator": {
+    "drop": true
+   },
+   "numerical_evidence": {
+    "absolute_residual": 0.05445408049520768,
+    "excluded_points": "none (no |eps_nm| fell below 1e-3; small-denominator handling not triggered)",
+    "minimum_denominator_abs_eps_nm": 4.983573817329029,
+    "model_seeds": [
+     7,
+     101,
+     2024
+    ],
+    "n_samples": 243,
+    "precision": "IEEE-754 double (float64); k-derivatives by central finite difference h=2e-5",
+    "random_seed_kpoints": 0,
+    "relative_residual": 0.006981707490328024,
+    "sample_points_k": [
+     [
+      0.3834927245000721,
+      -0.6445972014611631,
+      -1.2852741329786548
+     ],
+     [
+      -1.3537226205201185,
+      0.8771566697607627,
+      1.1557156163776208
+     ],
+     [
+      0.2985801721481036,
+      0.6425903707551957,
+      0.12214997610318412
+     ]
+    ],
+    "target_norm": 7.799536226724567,
+    "tolerance_policy": "rel_residual < 1e-6 => NUMERICALLY_CONSISTENT_WITHIN_TOLERANCE; else DISPROVED"
+   },
+   "numerical_verifier_result": {
+    "absolute_residual": 0.05445408049520768,
+    "relative_residual": 0.006981707490328024
+   },
+   "source": {
+    "numerical_verifier": "pilot2_v2.num_f23 + geobasis.reconstruct",
+    "symbolic_oracle": "pilot2_v2.symbolic_gold_F23"
+   },
+   "symbolic_gold_result": "NOT_AN_IDENTITY",
+   "task_definition_hash": "0bdc58bb68b16df8536ac54e5ff29dc6476e411bb5e2ef9f6b573a018aeafc08",
+   "verdict": "DISPROVED_BY_REPRODUCIBLE_NUMERICAL_COUNTEREXAMPLE"
+  },
+  "T07_dup_term": {
+   "evidence_level": "2_reproducible_numerical_counterexample",
+   "independent_oracle_agreement": true,
+   "mutation_operator": {
+    "dup": true
+   },
+   "numerical_evidence": {
+    "absolute_residual": 0.05445408799373281,
+    "excluded_points": "none (no |eps_nm| fell below 1e-3; small-denominator handling not triggered)",
+    "minimum_denominator_abs_eps_nm": 4.983573817329029,
+    "model_seeds": [
+     7,
+     101,
+     2024
+    ],
+    "n_samples": 243,
+    "precision": "IEEE-754 double (float64); k-derivatives by central finite difference h=2e-5",
+    "random_seed_kpoints": 0,
+    "relative_residual": 0.006275209406637726,
+    "sample_points_k": [
+     [
+      0.3834927245000721,
+      -0.6445972014611631,
+      -1.2852741329786548
+     ],
+     [
+      -1.3537226205201185,
+      0.8771566697607627,
+      1.1557156163776208
+     ],
+     [
+      0.2985801721481036,
+      0.6425903707551957,
+      0.12214997610318412
+     ]
+    ],
+    "target_norm": 8.67765272281319,
+    "tolerance_policy": "rel_residual < 1e-6 => NUMERICALLY_CONSISTENT_WITHIN_TOLERANCE; else DISPROVED"
+   },
+   "numerical_verifier_result": {
+    "absolute_residual": 0.05445408799373281,
+    "relative_residual": 0.006275209406637726
+   },
+   "source": {
+    "numerical_verifier": "pilot2_v2.num_f23 + geobasis.reconstruct",
+    "symbolic_oracle": "pilot2_v2.symbolic_gold_F23"
+   },
+   "symbolic_gold_result": "NOT_AN_IDENTITY",
+   "task_definition_hash": "66e006679aa4588bdb974e00b0f6bd43b4e3743542a19a891496afbeb7d68b7a",
+   "verdict": "DISPROVED_BY_REPRODUCIBLE_NUMERICAL_COUNTEREXAMPLE"
+  },
+  "T08_coeff_2to3": {
+   "evidence_level": "2_reproducible_numerical_counterexample",
+   "independent_oracle_agreement": true,
+   "mutation_operator": {
+    "c2": 3
+   },
+   "numerical_evidence": {
+    "absolute_residual": 0.13225360697278982,
+    "excluded_points": "none (no |eps_nm| fell below 1e-3; small-denominator handling not triggered)",
+    "minimum_denominator_abs_eps_nm": 4.983573817329029,
+    "model_seeds": [
+     7,
+     101,
+     2024
+    ],
+    "n_samples": 243,
+    "precision": "IEEE-754 double (float64); k-derivatives by central finite difference h=2e-5",
+    "random_seed_kpoints": 0,
+    "relative_residual": 0.016632895183315812,
+    "sample_points_k": [
+     [
+      0.3834927245000721,
+      -0.6445972014611631,
+      -1.2852741329786548
+     ],
+     [
+      -1.3537226205201185,
+      0.8771566697607627,
+      1.1557156163776208
+     ],
+     [
+      0.2985801721481036,
+      0.6425903707551957,
+      0.12214997610318412
+     ]
+    ],
+    "target_norm": 7.951328107054463,
+    "tolerance_policy": "rel_residual < 1e-6 => NUMERICALLY_CONSISTENT_WITHIN_TOLERANCE; else DISPROVED"
+   },
+   "numerical_verifier_result": {
+    "absolute_residual": 0.13225360697278982,
+    "relative_residual": 0.016632895183315812
+   },
+   "source": {
+    "numerical_verifier": "pilot2_v2.num_f23 + geobasis.reconstruct",
+    "symbolic_oracle": "pilot2_v2.symbolic_gold_F23"
+   },
+   "symbolic_gold_result": "NOT_AN_IDENTITY",
+   "task_definition_hash": "d520e4e213352a28b3c6d366702ef75b74d308f8cce8c32634c4e7b572aa2bb4",
+   "verdict": "DISPROVED_BY_REPRODUCIBLE_NUMERICAL_COUNTEREXAMPLE"
+  }
+ },
+ "tested_verifier": "numerical_geobasis_prototype (random Hamiltonian + finite differences)"
+}

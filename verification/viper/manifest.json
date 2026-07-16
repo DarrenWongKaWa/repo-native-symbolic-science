@@ -1,0 +1,35 @@
+{
+ "bundle": "viper-frozen-release-verification",
+ "purpose": "frozen release-verification corpus; NOT runtime gold data; NOT accessible to the production verifier",
+ "release_commit_at_freeze": "fcc866cc3267d14efa0a607e4a0ab80bde112873 (Gate 4 commit; superseded by the commit that adds this bundle)",
+ "gold_oracle": "independent_symbolic_canonicalization",
+ "tested_verifier": "numerical_geobasis (vendored: loop_engine/orch_adapters/geobasis_verify)",
+ "schemas": {
+  "verifier_result_contract_version": "1.x",
+  "locks": {
+   "condition_d_claim.schema.json": "8963969b35a568cf5874146cd92f9ed4a3f29f880b6199f0a4576d09dfc43799",
+   "verifier_result.schema.json": "fec7a7ebe23d0f95f975242fdc792993bf4c60476fbda8d6d27177d6c0f2eba2"
+  }
+ },
+ "evidence_lock_sha256": "5cd3f8b5368b46f42e432cadd6fe5a28366800d2614cb63dd262424403aa8e9c",
+ "corpus_locks": {
+  "corpus/expected_results/families_results.json": "363568ed0a16858f99fe5c4858f39c7c01a56f58b137c7db30e3f828747496fb",
+  "fixtures/invalid/i1_verified_but_level1.json": "e6a221b94547ae5ca19c3ed889b2ad0654580498128736e4a70a864c57b39657",
+  "fixtures/invalid/i2_verified_no_certificate.json": "03dc2f01ea115621acdf490e725b1cf2791fe7120d1940f2042a564a272f2cd2",
+  "fixtures/invalid/i3_disagree_not_flagged.json": "d48b13cd5cb03347ac7d9af9a4ddb4979142ed4c6d30bc45508f88c73ca92851",
+  "fixtures/invalid/i4_missing_numerical.json": "2912de413be81f1e45a399845937fa81ecaaea2d9f4a9c053f3d3a9cc18febcc",
+  "fixtures/invalid/i5_bad_claim.json": "bfea793394abca161a1def3926cdb35cdf20df22b798849656b926f07e246e60",
+  "fixtures/valid/v1_true_identity.json": "202e589de947c93a48b041960404a2ea6c86262183598858415c3727672d0e7c",
+  "fixtures/valid/v2_disproved.json": "7653b0aea3bad8393320110eac1726cdb70b4c1f37fbf68e2ff6a6f8321364d9"
+ },
+ "frozen": true,
+ "corpus_task_counts": {
+  "f23_tasks": 7,
+  "family_cases": 7,
+  "conformance_fixtures_valid": 2,
+  "conformance_fixtures_invalid": 5
+ },
+ "runtime_gold_isolation": "enforced by tests/test_release_bundle_isolation.py",
+ "naming": "prototype result != shipped-repository result",
+ "scope_caveat": "'Full' refers to the frozen geometric-basis verification workflow and its Gate 1-4 governance chain, not universal coverage of all symbolic-physics claims"
+}
