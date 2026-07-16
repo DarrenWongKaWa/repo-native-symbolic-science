@@ -6,7 +6,9 @@
  "safe_main_replay": {
   "base_commit": "697f9af3c9062751955724a426efcf11cd83a3fb",
   "source_viper_tip": "3913b0018d58f31cd61304cf0583beaac9537a5d",
-  "external_replay_status": "PENDING_EXTERNAL_REPLAY",
+  "external_replay_status": "PASSED",
+  "externally_replayed_release_commit": "250c8493d98a10a679e59734922094789c644cd5",
+  "external_replay_method": "fresh detached clone; new virtual environment; pip install -e .[test]; pip check; release verification; full pytest",
   "scope": "Only the frozen geometric-basis verification workflow and its Gate 1-4 governance chain are covered; no universal symbolic-physics claim is implied."
  },
  "gold_oracle": "independent_symbolic_canonicalization",
