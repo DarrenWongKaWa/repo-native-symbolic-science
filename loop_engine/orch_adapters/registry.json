@@ -26,6 +26,20 @@
       "can_verify_self": false,
       "can_repair": false,
       "requires_independent_verifier": false
+    },
+    "geometric_basis_verify": {
+      "max_claim": "verification",
+      "allowed_actions": [
+        "verify_geometric_basis_claim"
+      ],
+      "forbidden_actions": [
+        "promote_canonical",
+        "reinterpret_scope",
+        "upgrade_numerical_to_symbolic"
+      ],
+      "can_verify_self": false,
+      "can_repair": false,
+      "requires_independent_verifier": false
     }
   },
   "adapters": {
@@ -65,6 +79,20 @@
       ],
       "forbidden_actions": [
         "edit_supplement"
+      ],
+      "claim_authority": "verification"
+    },
+    "geometric_basis_verify": {
+      "module_path": "loop_engine.orch_adapters.geometric_basis_verify_adapter",
+      "class_name": "GeometricBasisVerifyAdapter",
+      "validator_scripts": [],
+      "required_inputs": [],
+      "allowed_actions": [
+        "verify_geometric_basis_claim"
+      ],
+      "forbidden_actions": [
+        "promote_canonical",
+        "reinterpret_scope"
       ],
       "claim_authority": "verification"
     }
