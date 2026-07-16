@@ -1,0 +1,44 @@
+{
+ "METRIC_true": {
+  "family": "METRIC",
+  "gold": true,
+  "rel_residual": 1.4433791427931556e-16,
+  "agree": true
+ },
+ "METRIC_pw_2to3": {
+  "family": "METRIC",
+  "gold": false,
+  "rel_residual": 1.007956601257246,
+  "agree": true
+ },
+ "METRIC_factor_2to1": {
+  "family": "METRIC",
+  "gold": false,
+  "rel_residual": 1.0,
+  "agree": true
+ },
+ "RENORM_true": {
+  "family": "RENORM",
+  "gold": true,
+  "rel_residual": 1.724287363670224e-16,
+  "agree": true
+ },
+ "RENORM_pw_3to2": {
+  "family": "RENORM",
+  "gold": false,
+  "rel_residual": 7.245669694695015,
+  "agree": true
+ },
+ "BERRY_true": {
+  "family": "BERRY",
+  "gold": true,
+  "rel_residual": 1.1064250350934482e-16,
+  "agree": true
+ },
+ "BERRY_sign_flip": {
+  "family": "BERRY",
+  "gold": false,
+  "rel_residual": 2.0,
+  "agree": true
+ }
+}

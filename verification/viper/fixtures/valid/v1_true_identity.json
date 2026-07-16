@@ -1,0 +1,6 @@
+{"combined_verdict":"VERIFIED_SYMBOLIC_IDENTITY","evidence_level":3,"agreement":true,
+ "symbolic_oracle":{"verdict":"VERIFIED_SYMBOLIC_IDENTITY","certificate":"canonical(LHS-RHS)=0"},
+ "numerical_verifier":{"verdict":"NUMERICALLY_CONSISTENT_WITHIN_TOLERANCE","evidence":{
+   "relative_residual":3.6e-9,"absolute_residual":3.0e-8,"minimum_denominator_abs_eps_nm":4.98,
+   "model_seeds":[7,101,2024],"sample_points_k":[[0.1,0.2,0.3]],"precision":"float64",
+   "tolerance_policy":"rel<1e-6","excluded_points":"none"}}}

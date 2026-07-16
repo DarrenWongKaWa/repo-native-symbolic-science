@@ -1,0 +1,22 @@
+{
+ "$schema": "http://json-schema.org/draft-07/schema#",
+ "$id": "viper.verifier_result.v1",
+ "type": "object",
+ "required": ["combined_verdict", "evidence_level", "symbolic_oracle", "numerical_verifier", "agreement"],
+ "additionalProperties": false,
+ "properties": {
+  "combined_verdict": {"type": "string", "enum": [
+    "VERIFIED_SYMBOLIC_IDENTITY", "NUMERICALLY_CONSISTENT_WITHIN_TOLERANCE",
+    "DISPROVED_BY_REPRODUCIBLE_NUMERICAL_COUNTEREXAMPLE",
+    "INDEPENDENT_ORACLE_DISAGREEMENT", "CONVENTION_MISMATCH", "MISSING_ASSUMPTION"]},
+  "evidence_level": {"type": "integer", "minimum": 0, "maximum": 3},
+  "agreement": {"type": "boolean"},
+  "symbolic_oracle": {"type": "object", "required": ["verdict"], "properties": {
+     "verdict": {"type": "string"}, "certificate": {"type": ["string", "null"]}}},
+  "numerical_verifier": {"type": "object", "required": ["verdict", "evidence"], "properties": {
+     "verdict": {"type": "string"},
+     "evidence": {"type": "object", "required": [
+        "relative_residual","absolute_residual","minimum_denominator_abs_eps_nm",
+        "model_seeds","sample_points_k","precision","tolerance_policy","excluded_points"]}}}
+ }
+}
