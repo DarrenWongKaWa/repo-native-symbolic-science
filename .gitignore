@@ -24,3 +24,5 @@ reports/
 # Temporary files
 *.tmp
 *.temp
+tests/gate4/gate4_report.json
+tests/gate4/__pycache__/

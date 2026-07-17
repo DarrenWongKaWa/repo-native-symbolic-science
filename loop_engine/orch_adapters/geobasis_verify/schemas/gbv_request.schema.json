@@ -1,0 +1,20 @@
+{
+ "$schema":"http://json-schema.org/draft-07/schema#","$id":"viper.gbv.request.v1",
+ "type":"object","required":["operation","contract_version","claim","verification_mode"],
+ "additionalProperties":false,
+ "properties":{
+  "operation":{"const":"geometric_basis_verify"},
+  "contract_version":{"const":"1.0"},
+  "verification_mode":{"enum":["symbolic_only","numerical_only","symbolic_and_numerical"]},
+  "policy_overrides":{"type":"object"},
+  "claim":{"type":"object","required":["family","params","scope","declared_basis","assumptions"],
+    "additionalProperties":false,
+    "properties":{
+      "family":{"enum":["F23","METRIC","RENORM","BERRY"]},
+      "params":{"type":"object"},
+      "lhs":{"type":"string"},"rhs":{"type":"string"},
+      "assumptions":{"type":"array","items":{"type":"string"},"minItems":1},
+      "scope":{"enum":["two_band","multiband","single_band"]},
+      "declared_basis":{"type":"array","items":{"type":"string"},"minItems":1}}}
+ }
+}

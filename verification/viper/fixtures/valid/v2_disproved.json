@@ -1,0 +1,6 @@
+{"combined_verdict":"DISPROVED_BY_REPRODUCIBLE_NUMERICAL_COUNTEREXAMPLE","evidence_level":2,"agreement":true,
+ "symbolic_oracle":{"verdict":"NOT_AN_IDENTITY","certificate":null},
+ "numerical_verifier":{"verdict":"DISPROVED_BY_REPRODUCIBLE_NUMERICAL_COUNTEREXAMPLE","evidence":{
+   "relative_residual":1.7e-2,"absolute_residual":1.3e-1,"minimum_denominator_abs_eps_nm":4.98,
+   "model_seeds":[7,101,2024],"sample_points_k":[[0.1,0.2,0.3]],"precision":"float64",
+   "tolerance_policy":"rel<1e-6","excluded_points":"none"}}}
