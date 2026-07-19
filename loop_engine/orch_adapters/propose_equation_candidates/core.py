@@ -17,26 +17,28 @@ Security posture vs LLM-SR:
   * the backend command is config-driven (`VIPER_PROPOSER_CMD`), never a hardcoded machine
     path; unset -> fail-closed PROPOSER_BACKEND_NOT_CONFIGURED;
   * every proposed lhs/rhs is run through the SAME strict whitelist/size validator the judge
-    uses (single-sourced from symbolic_identity_verify.core), so the proposer cannot emit
-    anything unsafe or anything the judge would reject as malformed — malformed candidates
-    are DROPPED (and the dropped count reported, never silently truncated).
+    uses (single-sourced from the NEUTRAL _symbolic_safe_parse module, NOT the judge), so
+    the proposer cannot emit anything unsafe or anything the judge would reject as malformed
+    — malformed candidates are DROPPED (dropped count reported, never silently truncated).
 """
 from __future__ import annotations
 import json, hashlib, os, platform, re, shlex, subprocess, tempfile
 from pathlib import Path
 
-# single-source the strict parser + error type from the Stage-1 judge
-from loop_engine.orch_adapters.symbolic_identity_verify import core as _judge
+# single-source the strict parser from the NEUTRAL shared module — NOT from the judge.
+# Fusion Stage 3 (code isolation): the proposer must have no in-process path to the
+# judge's scoring/verdict function.
+from loop_engine.orch_adapters import _symbolic_safe_parse as _safe
 
 HERE = Path(__file__).resolve().parent
 ADAPTER_VERSION = "propose-equation-candidates-1.0"
-FORBIDDEN = _judge.FORBIDDEN                      # same gold-metadata rejection
-AdapterError = _judge.AdapterError
+FORBIDDEN = _safe.FORBIDDEN                      # same gold-metadata rejection
+AdapterError = _safe.AdapterError
 
 POLICY = {"max_candidates": 16, "max_symbols": 40, "backend_timeout_seconds": 180,
-          "allowed_functions": _judge.POLICY["allowed_functions"]}
+          "allowed_functions": _safe.PARSE_POLICY["allowed_functions"]}
 POLICY_HASH = hashlib.sha256(json.dumps(POLICY, sort_keys=True, default=str).encode()).hexdigest()
-_SYMBOL_RE = _judge._SYMBOL_RE
+_SYMBOL_RE = _safe._SYMBOL_RE
 
 
 def sha(b):
@@ -119,8 +121,8 @@ def handle(req, backend=None):
             dropped += 1; continue
         lhs, rhs = c.get("lhs"), c.get("rhs")
         try:
-            _judge._validate_and_parse(lhs, symbols)
-            _judge._validate_and_parse(rhs, symbols)
+            _safe.validate_and_parse(lhs, symbols)
+            _safe.validate_and_parse(rhs, symbols)
         except AdapterError:
             dropped += 1; continue
         accepted.append({
@@ -138,7 +140,7 @@ def handle(req, backend=None):
         "authority_note": "proposer emits UNVERIFIED claims only; it cannot score, certify, "
                           "or self-verify; adjudication is the held-out symbolic judge's job",
         "provenance": {
-            "repository_commit": _judge._git(), "adapter_version": ADAPTER_VERSION,
+            "repository_commit": _safe.git_head(HERE.parents[2]), "adapter_version": ADAPTER_VERSION,
             "backend": "config-driven subprocess (VIPER_PROPOSER_CMD); output treated as data, never executed",
             "executes_model_code": False, "scores_candidates": False,
             "policy_hash": POLICY_HASH,
