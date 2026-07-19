@@ -57,6 +57,23 @@
         "accept_proposer_self_score"
       ],
       "claim_authority": "verification"
+    },
+    "propose_equation_candidates": {
+      "module_path": "loop_engine.orch_adapters.propose_equation_candidates_adapter",
+      "class_name": "ProposeEquationCandidatesAdapter",
+      "validator_scripts": [],
+      "required_inputs": [],
+      "allowed_actions": [
+        "propose_candidate_claims"
+      ],
+      "forbidden_actions": [
+        "verify_results",
+        "self_verify",
+        "promote_canonical",
+        "score_candidates",
+        "execute_generated_code"
+      ],
+      "claim_authority": "proposal"
     }
   },
   "adapters": {

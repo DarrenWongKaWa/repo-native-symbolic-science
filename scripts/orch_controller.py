@@ -112,6 +112,18 @@ def _register_synthetic_adapters(registry: OrchRegistry) -> None:
                               "accept_proposer_self_score"],
         "claim_authority": "verification",
     })
+    # Fusion Stage 2: the PROPOSER organ. Emits UNVERIFIED candidate claims only; it may
+    # never verify, score, promote, or execute generated code. proposal authority.
+    registry.register_adapter("propose_equation_candidates", {
+        "module_path": "loop_engine.orch_adapters.propose_equation_candidates_adapter",
+        "class_name": "ProposeEquationCandidatesAdapter",
+        "validator_scripts": [],
+        "required_inputs": [],
+        "allowed_actions": ["propose_candidate_claims"],
+        "forbidden_actions": ["verify_results", "self_verify", "promote_canonical",
+                              "score_candidates", "execute_generated_code"],
+        "claim_authority": "proposal",
+    })
 
 
 def route_geometric_basis_verify(registry: OrchRegistry, raw: str) -> tuple[dict, int]:
@@ -176,6 +188,27 @@ def route_symbolic_identity_verify(registry: OrchRegistry, raw: str) -> tuple[di
     return result, exit_code
 
 
+def route_propose_equation_candidates(registry: OrchRegistry, raw: str) -> tuple[dict, int]:
+    """Pure routing seam for the proposer organ (same shape as the other seams)."""
+    try:
+        req = json.loads(raw)
+    except Exception as exc:
+        return {"orch_error": "INVALID_JSON_REQUEST", "detail": str(exc)[:120]}, 1
+    op = req.get("operation")
+    if registry.get_adapter(op) is None:
+        return {"orch_error": "CAPABILITY_NOT_REGISTERED", "operation": op}, 1
+    try:
+        adapter = registry.load_adapter_instance(op)
+    except Exception as exc:
+        return {"orch_error": "ADAPTER_LOAD_FAILED", "operation": op, "detail": str(exc)[:160]}, 1
+    try:
+        result, exit_code = adapter.run(req)
+    except Exception as exc:
+        code = getattr(exc, "code", None) or exc.__class__.__name__
+        return {"orch_error": code, "operation": op}, 1
+    return result, exit_code
+
+
 def build_registry() -> OrchRegistry:
     """Construct the production registry exactly as the CLI does (no fault adapters)."""
     registry = OrchRegistry()
@@ -207,6 +240,8 @@ def main() -> None:
                           help="Route a geometric_basis_verify request (JSON on stdin) through the registry")
     subparsers.add_parser("symbolic-identity-verify",
                           help="Route a symbolic_identity_verify request (JSON on stdin) through the registry")
+    subparsers.add_parser("propose-equation-candidates",
+                          help="Route a propose_equation_candidates request (JSON on stdin) through the registry")
 
     args = parser.parse_args()
 
@@ -260,6 +295,11 @@ def main() -> None:
 
     elif args.command == "symbolic-identity-verify":
         result, exit_code = route_symbolic_identity_verify(registry, sys.stdin.read())
+        print(json.dumps(result))
+        sys.exit(exit_code)
+
+    elif args.command == "propose-equation-candidates":
+        result, exit_code = route_propose_equation_candidates(registry, sys.stdin.read())
         print(json.dumps(result))
         sys.exit(exit_code)
 
