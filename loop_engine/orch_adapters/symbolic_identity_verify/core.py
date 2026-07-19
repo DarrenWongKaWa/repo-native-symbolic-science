@@ -100,6 +100,42 @@ def _validate_and_parse(expr_str: str, declared_symbols: list[str]):
     return expr
 
 
+def _numeric_probe(residual, symbols, timeout):
+    """Sound disproof probe: evaluate the residual at deterministic sample points.
+
+    Returns (witness_point | None, tolerance, points_probed). A witness is a point where
+    |residual| exceeds tolerance -> a genuine reproducible counterexample. If the residual
+    is ~0 at every point that evaluated, returns (None, tol, n>0) -> numerically consistent
+    but NOT proven. Deterministic points (no RNG) so the verdict is replayable.
+    """
+    tol = 1e-9
+    syms = [sympy.Symbol(s) for s in symbols]
+    # fixed rational-ish sample values; varied per symbol index and trial (kept small, real)
+    base = [0.4142, -0.7321, 1.2361, -0.3178, 0.9051, -1.1731, 0.5237, 2.0187]
+    n_ok = 0
+    try:
+        def _run():
+            nonlocal n_ok
+            for t in range(6):
+                subs = {syms[i]: sympy.Float(base[(i + t) % len(base)] + 0.017 * t)
+                        for i in range(len(syms))}
+                try:
+                    val = complex(sympy.N(residual.subs(subs), 20))
+                except (TypeError, ValueError):
+                    continue  # point outside real domain (e.g. asin range) -> skip
+                if val != val:  # NaN
+                    continue
+                n_ok += 1
+                if abs(val) > tol:
+                    return {s: float(base[(i + t) % len(base)] + 0.017 * t)
+                            for i, s in enumerate(symbols)}
+            return None
+        witness = _with_timeout(_run, max(1, timeout))
+    except _Timeout:
+        return None, tol, n_ok
+    return witness, tol, n_ok
+
+
 def handle(req):
     # 1. forbidden-field check (no gold leak) — before anything else
     blob = json.dumps(req)
@@ -134,27 +170,49 @@ def handle(req):
     except _Timeout:
         raise AdapterError("SIMPLIFY_TIMEOUT")
 
-    is_zero = residual == 0
-    if is_zero:
+    # ASYMMETRIC EVIDENCE (the load-bearing correctness rule): a symbolic zero is a proof;
+    # a NON-zero simplified residual is NOT a disproof, because simplify is incomplete — it
+    # may fail to crush an expression that is in fact identically zero. So:
+    #   residual == 0                          -> VERIFIED_SYMBOLIC_IDENTITY        (L3, certificate)
+    #   residual != 0, numeric counterexample  -> DISPROVED_BY_REPRODUCIBLE_NUMERICAL_COUNTEREXAMPLE (L2)
+    #   residual != 0, numerically ~0 anywhere -> NUMERICALLY_CONSISTENT_SYMBOLIC_UNPROVEN (L1)
+    #   residual != 0, could not evaluate      -> INCONCLUSIVE_INSUFFICIENT_EVIDENCE (L0)
+    # Never label "simplify didn't reach 0" as a disproof.
+    numerical = None
+    unresolved = []
+    if residual == 0:
         cert = {"type": "canonical_zero_residual",
                 "artifact_hash": sha({"lhs": str(lhs), "rhs": str(rhs), "claim": "simplify(expand(lhs-rhs))=0"})}
         symbolic = {"verdict": "VERIFIED_SYMBOLIC_IDENTITY", "evidence_level": 3,
                     "canonical_residual": "0", "certificate": cert}
-        combined, level = "VERIFIED_SYMBOLIC_IDENTITY", 3
+        combined, level, relation = "VERIFIED_SYMBOLIC_IDENTITY", 3, "SYMBOLIC_DECISIVE"
     else:
-        symbolic = {"verdict": "DISPROVED_BY_SYMBOLIC_NONZERO_RESIDUAL", "evidence_level": 2,
+        symbolic = {"verdict": "SYMBOLIC_CANONICALIZATION_INCONCLUSIVE", "evidence_level": 0,
                     "canonical_residual": str(residual)[:400], "certificate": None}
-        combined, level = "DISPROVED_BY_SYMBOLIC_NONZERO_RESIDUAL", 2
+        witness, tol, probed = _numeric_probe(residual, symbols, timeout)
+        numerical = {"witness_point": witness, "tolerance": tol, "points_probed": probed}
+        if witness is not None:  # a real counterexample -> genuine disproof
+            numerical["verdict"] = "DISPROVED_BY_REPRODUCIBLE_NUMERICAL_COUNTEREXAMPLE"
+            combined, level, relation = "DISPROVED_BY_REPRODUCIBLE_NUMERICAL_COUNTEREXAMPLE", 2, "NUMERICAL_DECISIVE_SYMBOLIC_UNSUPPORTED"
+        elif probed > 0:  # numerically ~0 everywhere probed but not symbolically proven
+            numerical["verdict"] = "NUMERICALLY_CONSISTENT_WITHIN_TOLERANCE"
+            combined, level, relation = "NUMERICALLY_CONSISTENT_SYMBOLIC_UNPROVEN", 1, "SYMBOLIC_UNSUPPORTED_NUMERICAL_CONSISTENT"
+            unresolved = ["numerically consistent but no symbolic certificate; a stronger "
+                          "canonicalizer or a proof is required to reach level 3"]
+        else:  # could not evaluate at any point
+            numerical["verdict"] = "NUMERICAL_EVALUATION_FAILED"
+            combined, level, relation = "INCONCLUSIVE_INSUFFICIENT_EVIDENCE", 0, "BOTH_INCONCLUSIVE"
+            unresolved = ["symbolic canonicalization inconclusive and numeric probe could not evaluate"]
 
     result = {
         "operation": "symbolic_identity_verify", "contract_version": "1.0",
         "request_hash": sha(req),
         "symbolic_claim_verifier": symbolic,
-        "numerical_geobasis_verifier": None,   # symbolic-only oracle by construction
-        "oracle_relation": "SYMBOLIC_DECISIVE_NUMERICAL_NOT_APPLICABLE",
+        "numerical_geobasis_verifier": numerical,   # a lightweight numeric disproof/consistency probe
+        "oracle_relation": relation,
         "combined_verdict": combined, "combined_evidence_level": level,
         "scope": scope,
-        "unresolved_obligations": [],
+        "unresolved_obligations": unresolved,
         "provenance": {
             "repository_commit": _git(), "adapter_version": ADAPTER_VERSION,
             "symbolic_verifier": "sympy simplify(expand(lhs-rhs))",

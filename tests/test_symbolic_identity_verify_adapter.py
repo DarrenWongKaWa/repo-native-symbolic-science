@@ -44,17 +44,31 @@ def test_trig_identity_certified():
     out, _ = _cli(["symbolic-identity-verify"], _req("sin(x)**2+cos(x)**2", "1", symbols=("x",)))
     assert out["combined_verdict"] == "VERIFIED_SYMBOLIC_IDENTITY"
 
-def test_false_identity_disproved_with_residual():
+def test_false_identity_disproved_by_real_counterexample():
+    # a genuinely false identity must be DISPROVED via a real numeric witness, not merely
+    # "simplify didn't reach 0"
     out, rc = _cli(["symbolic-identity-verify"], _req("(x+y)**2", "x**2+y**2"))
-    assert out["combined_verdict"] == "DISPROVED_BY_SYMBOLIC_NONZERO_RESIDUAL"
+    assert out["combined_verdict"] == "DISPROVED_BY_REPRODUCIBLE_NUMERICAL_COUNTEREXAMPLE"
     assert out["combined_evidence_level"] == 2
     assert out["symbolic_claim_verifier"]["certificate"] is None
-    assert "x*y" in out["symbolic_claim_verifier"]["canonical_residual"]
+    assert out["numerical_geobasis_verifier"]["witness_point"] is not None
     assert rc == 0
 
-def test_numerical_arm_is_never_populated():
+def test_true_but_hard_identity_is_not_falsely_disproved():
+    # atan(x) == asin(x/sqrt(1+x^2)) is TRUE for all real x, but sympy.simplify cannot
+    # crush it. The judge must NOT call this DISPROVED — only numerically-consistent (L1).
+    out, rc = _cli(["symbolic-identity-verify"], _req("atan(x)", "asin(x/sqrt(1+x**2))", symbols=("x",)))
+    assert out["combined_verdict"] == "NUMERICALLY_CONSISTENT_SYMBOLIC_UNPROVEN"
+    assert out["combined_evidence_level"] == 1
+    assert out["symbolic_claim_verifier"]["certificate"] is None
+    assert out["numerical_geobasis_verifier"]["witness_point"] is None
+    assert out["unresolved_obligations"]  # a real open obligation, honestly recorded
+    assert rc == 0
+
+def test_certified_identity_needs_no_numeric_probe():
     out, _ = _cli(["symbolic-identity-verify"], _req("x", "x", symbols=("x",)))
-    assert out["numerical_geobasis_verifier"] is None  # symbolic-only oracle
+    assert out["combined_verdict"] == "VERIFIED_SYMBOLIC_IDENTITY"
+    assert out["numerical_geobasis_verifier"] is None  # a proof needs no probe
 
 def test_code_injection_rejected():
     out, rc = _cli(["symbolic-identity-verify"],
