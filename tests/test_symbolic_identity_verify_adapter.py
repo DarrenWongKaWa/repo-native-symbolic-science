@@ -65,10 +65,15 @@ def test_true_but_hard_identity_is_not_falsely_disproved():
     assert out["unresolved_obligations"]  # a real open obligation, honestly recorded
     assert rc == 0
 
-def test_certified_identity_needs_no_numeric_probe():
-    out, _ = _cli(["symbolic-identity-verify"], _req("x", "x", symbols=("x",)))
+def test_certificate_is_cross_checked_by_independent_numerics():
+    # audit-the-auditor: a level-3 certificate must be backed by an INDEPENDENT numeric
+    # confirmation, not simplify() alone
+    out, _ = _cli(["symbolic-identity-verify"], _req("(x+y)**2", "x**2+2*x*y+y**2"))
     assert out["combined_verdict"] == "VERIFIED_SYMBOLIC_IDENTITY"
-    assert out["numerical_geobasis_verifier"] is None  # a proof needs no probe
+    assert out["oracle_relation"] == "SYMBOLIC_AND_NUMERICAL_AGREE"
+    cc = out["symbolic_claim_verifier"]["certificate"]["cross_check"]
+    assert cc["method"] == "independent_numeric_evalf" and cc["points_probed"] > 0
+    assert out["numerical_geobasis_verifier"]["witness_point"] is None
 
 def test_code_injection_rejected():
     out, rc = _cli(["symbolic-identity-verify"],
