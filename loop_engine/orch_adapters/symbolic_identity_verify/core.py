@@ -29,6 +29,7 @@ from pathlib import Path
 import sympy
 from loop_engine.orch_adapters._symbolic_safe_parse import (
     AdapterError, FORBIDDEN, PARSE_POLICY, validate_and_parse, sha, git_head, _SYMBOL_RE)
+from loop_engine.orch_adapters.symbolic_identity_verify import recheck as _recheck
 
 HERE = Path(__file__).resolve().parent
 ADAPTER_VERSION = "symbolic-identity-verify-1.0"
@@ -160,14 +161,24 @@ def handle(req):
             unresolved = ["symbolic canonicalizer returned 0 but an independent numeric probe "
                           "found a counterexample; certificate withheld pending review"]
         else:
+            # AUDIT-THE-AUDITOR #3: for a POLYNOMIAL identity, build a certificate a third
+            # party can re-verify by exact pointwise evaluation, trusting no simplify at all.
+            try:
+                poly_cert = _with_timeout(lambda: _recheck.build_polynomial_certificate(lhs, rhs, symbols), timeout)
+            except _Timeout:
+                poly_cert = None
             cert = {"type": "canonical_zero_residual",
                     "cross_check": {"method": "independent_numeric_evalf", "points_probed": probed, "tolerance": tol},
+                    "independently_recheckable": poly_cert is not None,
+                    "recheckable_certificate": poly_cert,   # None for transcendental / oversized
                     "artifact_hash": sha({"lhs": str(lhs), "rhs": str(rhs), "claim": "simplify(expand(lhs-rhs))=0"})}
             symbolic = {"verdict": "VERIFIED_SYMBOLIC_IDENTITY", "evidence_level": 3,
                         "canonical_residual": "0", "certificate": cert}
             numerical = {"verdict": "NUMERICALLY_CONFIRMS_SYMBOLIC_ZERO", "witness_point": None,
                          "tolerance": tol, "points_probed": probed}
-            combined, level, relation = "VERIFIED_SYMBOLIC_IDENTITY", 3, "SYMBOLIC_AND_NUMERICAL_AGREE"
+            relation = ("SYMBOLIC_NUMERICAL_AGREE_POLYNOMIAL_RECHECKABLE" if poly_cert
+                        else "SYMBOLIC_AND_NUMERICAL_AGREE")
+            combined, level = "VERIFIED_SYMBOLIC_IDENTITY", 3
     else:
         symbolic = {"verdict": "SYMBOLIC_CANONICALIZATION_INCONCLUSIVE", "evidence_level": 0,
                     "canonical_residual": str(residual)[:400], "certificate": None}

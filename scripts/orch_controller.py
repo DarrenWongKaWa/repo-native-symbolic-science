@@ -226,6 +226,25 @@ REGISTRY_PROFILES = {
 }
 
 
+def route_recheck_symbolic_certificate(raw: str) -> tuple[dict, int]:
+    """Independently re-verify a {claim, certificate} WITHOUT the judge or simplify.
+
+    A third-party audit surface: it re-runs the certificate's exact pointwise check. Not
+    tied to any registry profile — anyone can re-verify a certificate they were handed."""
+    from loop_engine.orch_adapters.symbolic_identity_verify import recheck as _rc
+    try:
+        payload = json.loads(raw)
+    except Exception as exc:
+        return {"orch_error": "INVALID_JSON_REQUEST", "detail": str(exc)[:120]}, 1
+    claim = payload.get("claim") or {}
+    cert = payload.get("certificate") or {}
+    try:
+        out = _rc.recheck(claim, cert)
+    except Exception as exc:
+        return {"recheck_ok": False, "detail": f"recheck error: {exc.__class__.__name__}"}, 1
+    return {"recheck_ok": out["ok"], "detail": out["detail"]}, (0 if out["ok"] else 1)
+
+
 def build_registry(profile: str = "full") -> OrchRegistry:
     """Construct a registry scoped to a profile (no fault adapters).
 
@@ -273,6 +292,8 @@ def main() -> None:
                           help="Route a symbolic_identity_verify request (JSON on stdin) through the registry")
     subparsers.add_parser("propose-equation-candidates",
                           help="Route a propose_equation_candidates request (JSON on stdin) through the registry")
+    subparsers.add_parser("recheck-symbolic-certificate",
+                          help="Independently re-verify a {claim, certificate} (JSON on stdin); no simplify, no registry")
 
     args = parser.parse_args()
 
@@ -330,6 +351,11 @@ def main() -> None:
 
     elif args.command == "propose-equation-candidates":
         result, exit_code = route_propose_equation_candidates(registry, sys.stdin.read())
+        print(json.dumps(result))
+        sys.exit(exit_code)
+
+    elif args.command == "recheck-symbolic-certificate":
+        result, exit_code = route_recheck_symbolic_certificate(sys.stdin.read())
         print(json.dumps(result))
         sys.exit(exit_code)
 

@@ -70,7 +70,8 @@ def test_certificate_is_cross_checked_by_independent_numerics():
     # confirmation, not simplify() alone
     out, _ = _cli(["symbolic-identity-verify"], _req("(x+y)**2", "x**2+2*x*y+y**2"))
     assert out["combined_verdict"] == "VERIFIED_SYMBOLIC_IDENTITY"
-    assert out["oracle_relation"] == "SYMBOLIC_AND_NUMERICAL_AGREE"
+    assert out["oracle_relation"] in ("SYMBOLIC_AND_NUMERICAL_AGREE",
+                                      "SYMBOLIC_NUMERICAL_AGREE_POLYNOMIAL_RECHECKABLE")
     cc = out["symbolic_claim_verifier"]["certificate"]["cross_check"]
     assert cc["method"] == "independent_numeric_evalf" and cc["points_probed"] > 0
     assert out["numerical_geobasis_verifier"]["witness_point"] is None
