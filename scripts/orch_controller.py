@@ -98,6 +98,20 @@ def _register_synthetic_adapters(registry: OrchRegistry) -> None:
                               "upgrade_numerical_to_symbolic"],
         "claim_authority": "verification",
     })
+    # Fusion Stage 1: GENERAL symbolic identity judge (arbitrary caller expression).
+    # Same verification authority + fail-closed governance; forbidden from self-verifying
+    # or accepting any proposer's self-scored result as evidence.
+    registry.register_adapter("symbolic_identity_verify", {
+        "module_path": "loop_engine.orch_adapters.symbolic_identity_verify_adapter",
+        "class_name": "SymbolicIdentityVerifyAdapter",
+        "validator_scripts": [],
+        "required_inputs": [],
+        "allowed_actions": ["adjudicate_symbolic_identity_claim"],
+        "forbidden_actions": ["promote_canonical", "reinterpret_scope",
+                              "upgrade_numerical_to_symbolic", "self_verify",
+                              "accept_proposer_self_score"],
+        "claim_authority": "verification",
+    })
 
 
 def route_geometric_basis_verify(registry: OrchRegistry, raw: str) -> tuple[dict, int]:
@@ -135,6 +149,33 @@ def route_geometric_basis_verify(registry: OrchRegistry, raw: str) -> tuple[dict
     return result, exit_code
 
 
+def route_symbolic_identity_verify(registry: OrchRegistry, raw: str) -> tuple[dict, int]:
+    """Pure routing seam for the general symbolic identity judge.
+
+    Same contract as route_geometric_basis_verify: capability lookup -> real importlib
+    adapter load -> verbatim exit-code propagation. Emits the contract error taxonomy at
+    the boundary (AdapterError.code) rather than a library class name."""
+    try:
+        req = json.loads(raw)
+    except Exception as exc:
+        return {"orch_error": "INVALID_JSON_REQUEST", "detail": str(exc)[:120]}, 1
+    op = req.get("operation")
+    if registry.get_adapter(op) is None:
+        return {"orch_error": "CAPABILITY_NOT_REGISTERED", "operation": op,
+                "attempted_registry": "loop_engine.orch_registry"}, 1
+    try:
+        adapter = registry.load_adapter_instance(op)
+    except Exception as exc:
+        return {"orch_error": "ADAPTER_LOAD_FAILED", "operation": op, "detail": str(exc)[:160]}, 1
+    try:
+        result, exit_code = adapter.run(req)
+    except Exception as exc:
+        code = getattr(exc, "code", None) or (
+            "SCHEMA_VALIDATION_FAILED" if exc.__class__.__name__ == "ValidationError" else exc.__class__.__name__)
+        return {"orch_error": code, "operation": op}, 1
+    return result, exit_code
+
+
 def build_registry() -> OrchRegistry:
     """Construct the production registry exactly as the CLI does (no fault adapters)."""
     registry = OrchRegistry()
@@ -164,6 +205,8 @@ def main() -> None:
 
     subparsers.add_parser("geometric-basis-verify",
                           help="Route a geometric_basis_verify request (JSON on stdin) through the registry")
+    subparsers.add_parser("symbolic-identity-verify",
+                          help="Route a symbolic_identity_verify request (JSON on stdin) through the registry")
 
     args = parser.parse_args()
 
@@ -212,6 +255,11 @@ def main() -> None:
     elif args.command == "geometric-basis-verify":
         # CLI request -> shared routing seam -> ORCH registry -> adapter -> ORCH response.
         result, exit_code = route_geometric_basis_verify(registry, sys.stdin.read())
+        print(json.dumps(result))
+        sys.exit(exit_code)
+
+    elif args.command == "symbolic-identity-verify":
+        result, exit_code = route_symbolic_identity_verify(registry, sys.stdin.read())
         print(json.dumps(result))
         sys.exit(exit_code)
 
