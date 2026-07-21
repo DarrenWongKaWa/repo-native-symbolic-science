@@ -97,12 +97,12 @@ def test_T2_cert_on_a_false_hyperbolic_claim_fails():
 
 
 # ---- scope honesty ----------------------------------------------------------------
-def test_inverse_trig_still_not_recheckable_and_not_overclaimed():
-    # atan == asin(x/sqrt(1+x^2)) is TRUE but needs tier T3 (derivative + base point);
-    # it must not be silently claimed re-checkable, and must not be disproved.
+def test_inverse_trig_proven_by_T3_without_claiming_recheckability():
+    # proven by tier T3, but the certificate is a proof STRUCTURE, not a simplify-free one
     out, cert = _cert("atan(x)", "asin(x/sqrt(1+x**2))")
-    assert out["combined_verdict"] == "NUMERICALLY_CONSISTENT_SYMBOLIC_UNPROVEN"
-    assert cert == {} or cert.get("independently_recheckable") in (None, False)
+    assert out["combined_verdict"] == "VERIFIED_BY_DERIVATIVE_AND_BASE_POINT"
+    assert cert.get("independently_recheckable") is False
+    assert cert.get("derivative_proved_zero_by")
 
 def test_rechecker_still_free_of_simplify():
     src = (REPO / "loop_engine/orch_adapters/symbolic_identity_verify/recheck.py").read_text()

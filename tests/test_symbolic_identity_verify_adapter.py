@@ -55,14 +55,12 @@ def test_false_identity_disproved_by_real_counterexample():
     assert rc == 0
 
 def test_true_but_hard_identity_is_not_falsely_disproved():
-    # atan(x) == asin(x/sqrt(1+x^2)) is TRUE for all real x, but sympy.simplify cannot
-    # crush it. The judge must NOT call this DISPROVED — only numerically-consistent (L1).
+    # atan(x) == asin(x/sqrt(1+x^2)) is TRUE for all real x but no canonicalizer crushes it.
+    # It must never be DISPROVED; tier T3 now proves it via derivative + base point.
     out, rc = _cli(["symbolic-identity-verify"], _req("atan(x)", "asin(x/sqrt(1+x**2))", symbols=("x",)))
-    assert out["combined_verdict"] == "NUMERICALLY_CONSISTENT_SYMBOLIC_UNPROVEN"
-    assert out["combined_evidence_level"] == 1
-    assert out["symbolic_claim_verifier"]["certificate"] is None
-    assert out["numerical_geobasis_verifier"]["witness_point"] is None
-    assert out["unresolved_obligations"]  # a real open obligation, honestly recorded
+    assert "DISPROVED" not in out["combined_verdict"]
+    assert out["combined_verdict"] == "VERIFIED_BY_DERIVATIVE_AND_BASE_POINT"
+    assert out["unresolved_obligations"]      # domain scope recorded, honestly
     assert rc == 0
 
 def test_certificate_is_cross_checked_by_independent_numerics():

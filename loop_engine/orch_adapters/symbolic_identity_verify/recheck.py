@@ -19,7 +19,7 @@ independently re-verifies a claim+certificate and returns PASS/FAIL.
 """
 from __future__ import annotations
 import sympy
-from loop_engine.orch_adapters._symbolic_safe_parse import validate_and_parse, sha
+from loop_engine.orch_adapters._symbolic_safe_parse import validate_and_parse, sha, syms_like
 
 MAX_GRID_POINTS = 20000   # cap: (d+1)^n must not exceed this to be "cheaply re-checkable"
 
@@ -73,7 +73,7 @@ def _claim_degree(lhs, rhs, syms):
 
 def build_polynomial_certificate(lhs, rhs, symbols):
     """Return a re-checkable polynomial certificate, or None if not applicable/too large."""
-    syms = [sympy.Symbol(s) for s in symbols]
+    syms = syms_like(lhs - rhs, symbols)
     if not syms:
         return None
     d = _claim_degree(lhs, rhs, syms)
@@ -87,6 +87,8 @@ def build_polynomial_certificate(lhs, rhs, symbols):
         return None
     return {
         "kind": "polynomial_pointwise_nullstellensatz",
+        "real_domain": bool(getattr(lhs, "free_symbols", set()) and
+                            all(getattr(t, "is_real", None) for t in (lhs - rhs).free_symbols)),
         "total_degree": int(d), "symbols": list(symbols),
         "per_variable_values": values, "grid_points": len(values) ** len(syms),
         "all_residuals_exactly_zero": True,
@@ -107,9 +109,10 @@ def recheck(claim, certificate):
     kind = certificate.get("kind")
     symbols = (claim.get("symbols") or certificate.get("symbols")
                or certificate.get("base_symbols") or [])
+    _real = bool(certificate.get("real_domain"))
     try:
-        lhs = validate_and_parse(claim["lhs"], symbols)
-        rhs = validate_and_parse(claim["rhs"], symbols)
+        lhs = validate_and_parse(claim["lhs"], symbols, real=_real)
+        rhs = validate_and_parse(claim["rhs"], symbols, real=_real)
     except Exception as e:
         return {"ok": False, "detail": f"parse failed: {getattr(e, 'code', e)}"}
     # dispatch: T1 trig-ideal cofactor / T2 exp-rational numerator / polynomial grid
@@ -119,7 +122,7 @@ def recheck(claim, certificate):
         return _recheck_exp(lhs, rhs, symbols, certificate)
     if kind != "polynomial_pointwise_nullstellensatz":
         return {"ok": False, "detail": "unsupported or missing certificate kind"}
-    syms = [sympy.Symbol(s) for s in symbols]
+    syms = syms_like(lhs - rhs, symbols)
     values = certificate.get("per_variable_values")
     if not isinstance(values, list) or not values or len(set(values)) != len(values):
         return {"ok": False, "detail": "invalid or non-distinct grid values"}
@@ -167,7 +170,7 @@ def _trig_reduce(lhs, rhs, symbols):
     Deterministic structural steps only. Returns None if the claim does not reduce to a
     polynomial in the sin/cos atoms of the declared base symbols.
     """
-    syms = [sympy.Symbol(s) for s in symbols]
+    syms = syms_like(lhs - rhs, symbols)
     d = _expand_tanlike(sympy.expand_trig(lhs - rhs))
     num, den = sympy.fraction(sympy.together(d))
     amap, ideal, gens, readable = {}, [], [], {}
@@ -198,6 +201,8 @@ def build_trig_cofactor_certificate(lhs, rhs, symbols):
         return None
     return {
         "kind": "trig_ideal_cofactor",
+        "real_domain": bool(getattr(lhs, "free_symbols", set()) and
+                            all(getattr(t, "is_real", None) for t in (lhs - rhs).free_symbols)),
         "base_symbols": list(symbols),
         "atom_encoding": readable,
         "constraint_polynomials": [str(p) for p in ideal],
@@ -214,7 +219,7 @@ def build_trig_cofactor_certificate(lhs, rhs, symbols):
 
 def _exp_reduce(lhs, rhs, symbols):
     """T2 reduction: exp/hyperbolic claim -> (numerator N, denominator D, gens, encoding)."""
-    syms = [sympy.Symbol(s) for s in symbols]
+    syms = syms_like(lhs - rhs, symbols)
     d = sympy.together(sympy.expand((lhs - rhs).rewrite(sympy.exp)))
     num, den = sympy.fraction(d)
     emap, gens, readable = {}, [], {}
@@ -240,6 +245,8 @@ def build_exp_polynomial_certificate(lhs, rhs, symbols):
         return None
     return {
         "kind": "exp_rational_numerator",
+        "real_domain": bool(getattr(lhs, "free_symbols", set()) and
+                            all(getattr(t, "is_real", None) for t in (lhs - rhs).free_symbols)),
         "base_symbols": list(symbols),
         "exp_encoding": readable,
         "numerator_polynomial": str(N),

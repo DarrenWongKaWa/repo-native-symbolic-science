@@ -35,8 +35,10 @@ import json, hashlib, os, platform, re, signal, tempfile, subprocess
 from pathlib import Path
 import sympy
 from loop_engine.orch_adapters._symbolic_safe_parse import (
-    AdapterError, FORBIDDEN, PARSE_POLICY, validate_and_parse, sha, git_head, _SYMBOL_RE)
+    AdapterError, FORBIDDEN, PARSE_POLICY, validate_and_parse, sha, git_head, _SYMBOL_RE,
+    syms_like)
 from loop_engine.orch_adapters.symbolic_identity_verify import recheck as _recheck
+from loop_engine.orch_adapters.symbolic_identity_verify import domain_guard as _domain
 
 HERE = Path(__file__).resolve().parent
 ADAPTER_VERSION = "symbolic-identity-verify-1.0"
@@ -55,6 +57,10 @@ POLICY_HASH = hashlib.sha256(json.dumps(POLICY, sort_keys=True).encode()).hexdig
 
 
 class _Timeout(Exception):
+    pass
+
+
+class _SecondEngineConflict(Exception):
     pass
 
 
@@ -81,7 +87,7 @@ def _numeric_probe(residual, symbols, timeout):
     but NOT proven. Deterministic points (no RNG) so the verdict is replayable.
     """
     tol = 1e-9
-    syms = [sympy.Symbol(s) for s in symbols]
+    syms = syms_like(residual, symbols)
     # fixed rational-ish sample values; varied per symbol index and trial (kept small, real)
     base = [0.4142, -0.7321, 1.2361, -0.3178, 0.9051, -1.1731, 0.5237, 2.0187]
     n_ok = 0
@@ -142,6 +148,69 @@ def _differential_canonicalize(diff, timeout):
     return votes, display
 
 
+
+# AUDIT-THE-AUDITOR / tier T3 — derivative + base point.
+# For analytic f, g on a CONNECTED domain: if f' == g' everywhere on it and f(a) == g(a) at
+# one point a in it, then f == g on it. This proves the class no canonicalizer can crush
+# directly, e.g. atan(x) == asin(x/sqrt(1+x^2)): the derivative collapses to 0 and both
+# sides agree at x = 0. The domain is REQUIRED and recorded — the conclusion is only valid
+# on a connected domain where both sides are differentiable.
+def _derivative_base_point_certificate(lhs, rhs, symbols, domain, timeout):
+    if len(symbols) != 1:
+        return None                      # single-variable form only
+    x = syms_like(lhs - rhs, symbols)[0]
+    try:
+        d = _with_timeout(lambda: sympy.diff(lhs - rhs, x), max(2, timeout // 3))
+    except (_Timeout, Exception):
+        return None
+    dvotes, _ = _differential_canonicalize(d, max(3, timeout // 2))
+    proved_by = sorted([k for k, v in dvotes.items() if v is True])
+    if not proved_by:
+        return None                      # derivative not shown to vanish -> no T3 proof
+    # exact agreement at a base point inside the domain
+    for a in (0, 1, -1, sympy.Rational(1, 2)):
+        try:
+            val = _with_timeout(lambda aa=a: sympy.simplify((lhs - rhs).subs(x, aa)), max(2, timeout // 4))
+        except (_Timeout, Exception):
+            continue
+        if val == 0:
+            return {"kind": "derivative_base_point",
+                    "domain": domain,
+                    "base_point": {symbols[0]: str(a)},
+                    "base_point_residual": "0",
+                    "derivative_expression": str(d)[:300],
+                    "derivative_proved_zero_by": proved_by,
+                    "soundness": "on a CONNECTED domain where both sides are differentiable, "
+                                 "f'==g' together with f(a)==g(a) at one interior point implies f==g",
+                    "independently_recheckable": False,
+                    "recheck_note": "the base-point check is exact; the derivative step rests on "
+                                    f"{len(proved_by)} independent canonicalizer route(s), not on a "
+                                    "simplify-free certificate — so this is a proof STRUCTURE, not a "
+                                    "fully re-checkable certificate",
+                    "artifact_hash": sha({"lhs": str(lhs), "rhs": str(rhs), "d": str(d)})}
+    return None
+
+
+# AUDIT-THE-AUDITOR #5 — a SECOND, INDEPENDENT engine.
+# Every other safeguard still runs inside sympy, so a bug shared across sympy's routines is
+# invisible to all of them. This calls a separate engine in a separate process (config-driven,
+# no hardcoded path). A rigorous NONZERO from it while we certified ZERO is a governance stop.
+def _second_opinion(lhs_s, rhs_s, symbols, timeout):
+    cmd = os.environ.get("VIPER_SECOND_CAS_CMD")
+    if not cmd:
+        return {"status": "not_configured",
+                "note": "no independent second engine configured (VIPER_SECOND_CAS_CMD); "
+                        "all remaining safeguards share the sympy implementation"}
+    import shlex
+    try:
+        p = subprocess.run(shlex.split(cmd),
+                           input=json.dumps({"lhs": lhs_s, "rhs": rhs_s, "symbols": symbols}),
+                           capture_output=True, text=True, timeout=max(5, timeout))
+        return {"status": "ok", **json.loads(p.stdout)}
+    except Exception as exc:
+        return {"status": "unavailable", "note": f"second engine failed: {type(exc).__name__}"}
+
+
 def handle(req):
     # 1. forbidden-field check (no gold leak) — before anything else
     blob = json.dumps(req)
@@ -159,6 +228,8 @@ def handle(req):
         raise AdapterError("INVALID_SYMBOL_NAME")
     lhs_s, rhs_s = claim.get("lhs"), claim.get("rhs")
     scope = claim.get("scope")
+    # T3 needs an explicit CONNECTED domain; default to the reals and record it
+    domain = claim.get("domain") or "connected: all real x"
     if not scope or not claim.get("assumptions"):
         raise AdapterError("SCHEMA_VALIDATION_FAILED")
 
@@ -169,8 +240,9 @@ def handle(req):
     timeout = min(caller_to, POLICY["simplify_timeout_seconds"])
 
     # 3. parse (restricted) then adjudicate (timeout-guarded)
-    lhs = validate_and_parse(lhs_s, symbols)
-    rhs = validate_and_parse(rhs_s, symbols)
+    _is_real = ("real" in str(scope).lower()) or ("real" in str(domain).lower())
+    lhs = validate_and_parse(lhs_s, symbols, real=_is_real)
+    rhs = validate_and_parse(rhs_s, symbols, real=_is_real)
     # #4: adjudicate with SEVERAL independent canonicalizers, not one.
     votes, residual = _differential_canonicalize(lhs - rhs, timeout)
     zero_by = sorted([k for k, v in votes.items() if v is True])
@@ -192,6 +264,7 @@ def handle(req):
     # Never label "simplify didn't reach 0" as a disproof.
     numerical = None
     unresolved = []
+    _conflict = None
     if symbolic_zero:
         # AUDIT THE AUDITOR (defense in depth): simplify() is the engine we are trusting, so
         # a level-3 certificate requires an INDEPENDENT confirmation. Numerically evaluate the
@@ -228,13 +301,42 @@ def handle(req):
                     "independently_recheckable": poly_cert is not None,
                     "recheckable_certificate": poly_cert,   # None for transcendental / oversized
                     "artifact_hash": sha({"lhs": str(lhs), "rhs": str(rhs), "claim": "simplify(expand(lhs-rhs))=0"})}
-            symbolic = {"verdict": "VERIFIED_SYMBOLIC_IDENTITY", "evidence_level": 3,
+            # GATE 5 FIX — domain guard. Expressions can be equal as algebraic objects while
+            # the claim (equality of FUNCTIONS on the declared domain) is false where they are
+            # undefined: (x^2-1)/(x-1)==x+1 at x=1, x/x==1 at x=0, sqrt(x)*sqrt(x)==x for x<0.
+            # If a definedness obligation can fail on the declared domain, we must NOT issue an
+            # unconditional identity certificate.
+            try:
+                side_conditions, excluded = _with_timeout(
+                    lambda: _domain.analyse(lhs, rhs, symbols, scope, lhs_s, rhs_s), timeout)
+            except (_Timeout, Exception):
+                side_conditions, excluded = [], None
+            cert["side_conditions"] = side_conditions
+            # #5: independent second engine. A rigorous NONZERO here contradicts our ZERO.
+            second = _second_opinion(lhs_s, rhs_s, symbols, timeout)
+            cert["second_engine"] = second
+            if second.get("verdict") == "NONZERO":
+                symbolic = {"verdict": "SECOND_ENGINE_CONTRADICTS_CERTIFICATE",
+                            "evidence_level": 0, "canonical_residual": "0", "certificate": None}
+                numerical = {"verdict": "SECOND_ENGINE_NONZERO", "witness_point": None,
+                             "tolerance": tol, "points_probed": probed, "second_engine": second}
+                combined, level, relation = ("DISPUTED_SECOND_ENGINE_CONFLICT", 0,
+                                             "CONFLICT_FAIL_CLOSED")
+                unresolved = ["an independent second engine rigorously reports a non-zero "
+                              "difference while our canonicalizers reported zero; certificate "
+                              "withheld pending review"]
+                _conflict = (symbolic, numerical, combined, level, relation, unresolved)
+            verdict_name = ("VERIFIED_SYMBOLIC_IDENTITY_WITH_SIDE_CONDITIONS" if side_conditions
+                            else "VERIFIED_SYMBOLIC_IDENTITY")
+            symbolic = {"verdict": verdict_name, "evidence_level": 3,
                         "canonical_residual": "0", "certificate": cert}
             numerical = {"verdict": "NUMERICALLY_CONFIRMS_SYMBOLIC_ZERO", "witness_point": None,
                          "tolerance": tol, "points_probed": probed}
             relation = ("SYMBOLIC_NUMERICAL_AGREE_POLYNOMIAL_RECHECKABLE" if poly_cert
                         else "SYMBOLIC_AND_NUMERICAL_AGREE")
-            combined, level = "VERIFIED_SYMBOLIC_IDENTITY", 3
+            combined, level = verdict_name, 3
+            if side_conditions:
+                unresolved = [excluded] + [f"side condition: {c}" for c in side_conditions]
     else:
         symbolic = {"verdict": "SYMBOLIC_CANONICALIZATION_INCONCLUSIVE", "evidence_level": 0,
                     "canonical_residual": str(residual)[:400], "certificate": None,
@@ -246,13 +348,38 @@ def handle(req):
             combined, level, relation = "DISPROVED_BY_REPRODUCIBLE_NUMERICAL_COUNTEREXAMPLE", 2, "NUMERICAL_DECISIVE_SYMBOLIC_UNSUPPORTED"
         elif probed > 0:  # numerically ~0 everywhere probed but not symbolically proven
             numerical["verdict"] = "NUMERICALLY_CONSISTENT_WITHIN_TOLERANCE"
-            combined, level, relation = "NUMERICALLY_CONSISTENT_SYMBOLIC_UNPROVEN", 1, "SYMBOLIC_UNSUPPORTED_NUMERICAL_CONSISTENT"
-            unresolved = ["numerically consistent but no symbolic certificate; a stronger "
-                          "canonicalizer or a proof is required to reach level 3"]
+            # tier T3: try derivative + base point before settling for level 1
+            try:
+                t3_cert = _derivative_base_point_certificate(lhs, rhs, symbols, domain, timeout)
+            except Exception:
+                t3_cert = None
+            if t3_cert:
+                sc, excl = [], None
+                try:
+                    sc, excl = _with_timeout(
+                        lambda: _domain.analyse(lhs, rhs, symbols, scope, lhs_s, rhs_s), timeout)
+                except (_Timeout, Exception):
+                    pass
+                t3_cert["side_conditions"] = sc
+                vname = ("VERIFIED_BY_DERIVATIVE_AND_BASE_POINT_WITH_SIDE_CONDITIONS" if sc
+                         else "VERIFIED_BY_DERIVATIVE_AND_BASE_POINT")
+                symbolic = {"verdict": vname, "evidence_level": 3,
+                            "canonical_residual": str(residual)[:400], "certificate": t3_cert,
+                            "differential_canonicalization": differential}
+                combined, level, relation = vname, 3, "DERIVATIVE_AND_BASE_POINT_DECISIVE"
+                unresolved = ([excl] if excl else []) + [f"side condition: {c}" for c in sc]
+                unresolved += [f"valid on the declared connected domain: {domain}"]
+            else:
+                combined, level, relation = "NUMERICALLY_CONSISTENT_SYMBOLIC_UNPROVEN", 1, "SYMBOLIC_UNSUPPORTED_NUMERICAL_CONSISTENT"
+                unresolved = ["numerically consistent but no symbolic certificate; a stronger "
+                              "canonicalizer or a proof is required to reach level 3"]
         else:  # could not evaluate at any point
             numerical["verdict"] = "NUMERICAL_EVALUATION_FAILED"
             combined, level, relation = "INCONCLUSIVE_INSUFFICIENT_EVIDENCE", 0, "BOTH_INCONCLUSIVE"
             unresolved = ["symbolic canonicalization inconclusive and numeric probe could not evaluate"]
+
+    if _conflict is not None:
+        symbolic, numerical, combined, level, relation, unresolved = _conflict
 
     result = {
         "operation": "symbolic_identity_verify", "contract_version": "1.0",

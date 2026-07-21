@@ -52,13 +52,16 @@ def test_trig_identity_is_now_recheckable_via_T1():
     assert cert["recheckable_certificate"]["kind"] == "trig_ideal_cofactor"
 
 
-def test_a_class_still_outside_recheckability_is_not_overclaimed():
-    # inverse-trig needs tier T3 (derivative + base point), which is not built: it must stay
-    # honestly unproven rather than be handed a certificate it hasn't earned.
+def test_T3_proves_inverse_trig_but_does_not_claim_recheckability():
+    # tier T3 (derivative + base point) proves it, but the derivative step rests on
+    # canonicalizer agreement, so the certificate must NOT claim to be independently
+    # re-checkable. Proven, without overclaiming how.
     out = _certify("atan(x)", "asin(x/sqrt(1+x**2))", symbols=("x",))
-    assert out["combined_verdict"] == "NUMERICALLY_CONSISTENT_SYMBOLIC_UNPROVEN"
-    assert (out["symbolic_claim_verifier"].get("certificate") or {}) == {} or \
-           out["symbolic_claim_verifier"]["certificate"] is None
+    cert = out["symbolic_claim_verifier"]["certificate"]
+    assert out["combined_verdict"] == "VERIFIED_BY_DERIVATIVE_AND_BASE_POINT"
+    assert cert["kind"] == "derivative_base_point"
+    assert cert["independently_recheckable"] is False
+    assert cert["domain"] and cert["base_point"]
 
 
 # ---- independent re-check (the third-party surface) -------------------------------

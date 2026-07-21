@@ -45,7 +45,18 @@ def git_head(cwd: Path) -> str:
         return "unknown"
 
 
-def validate_and_parse(expr_str, declared_symbols):
+def syms_like(expr, names):
+    """Return symbol objects for `names` MATCHING the assumptions carried by `expr`.
+
+    Reconstructing sympy.Symbol(n) by name silently fails to substitute into an expression
+    parsed with real=True (different object, different assumptions), so every downstream
+    subs/probe/reduction must take its symbols from the parsed expression itself.
+    """
+    by_name = {str(s): s for s in getattr(expr, "free_symbols", set())}
+    return [by_name.get(n, sympy.Symbol(n)) for n in names]
+
+
+def validate_and_parse(expr_str, declared_symbols, real=False):
     """Reject before parsing; parse only with a restricted, whitelisted locals map.
 
     Blocks code-injection (character class), undeclared/disallowed names, oversized input.
@@ -61,7 +72,9 @@ def validate_and_parse(expr_str, declared_symbols):
     allowed = set(declared_symbols) | set(PARSE_POLICY["allowed_functions"]) | {"pi", "E", "I", "oo"}
     if names - allowed:
         raise AdapterError("UNDECLARED_OR_DISALLOWED_NAME")
-    local = {s: sympy.Symbol(s) for s in declared_symbols}
+    # honour the claim's declared domain: a real-scope claim must be adjudicated over the
+    # reals, not over the complex numbers (otherwise the judge answers a different question)
+    local = {s: sympy.Symbol(s, real=True) if real else sympy.Symbol(s) for s in declared_symbols}
     for f in PARSE_POLICY["allowed_functions"]:
         local[f] = getattr(sympy, f, None)
     local.update({"pi": sympy.pi, "E": sympy.E, "I": sympy.I, "oo": sympy.oo})

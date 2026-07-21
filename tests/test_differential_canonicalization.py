@@ -51,12 +51,12 @@ def test_differential_raises_recall_beyond_plain_simplify():
     assert sympy.simplify(sympy.expand(diff)) != 0          # single route fails
     assert _judge("tanh(x)", "(exp(2*x)-1)/(exp(2*x)+1)")["combined_evidence_level"] == 3
 
-def test_no_route_proving_it_stays_honestly_unproven():
+def test_no_canonicalizer_route_proves_the_inverse_trig_case():
+    # no canonicalizer can crush this one — that remains true. It is now proven by tier T3
+    # (derivative + base point) instead, which is a different mechanism.
     out = _judge("atan(x)", "asin(x/sqrt(1+x**2))")
-    d = _differential(out)
-    assert d["proved_zero_by"] == []
-    assert out["combined_verdict"] == "NUMERICALLY_CONSISTENT_SYMBOLIC_UNPROVEN"
-    assert out["combined_evidence_level"] == 1
+    assert _differential(out)["proved_zero_by"] == []
+    assert out["combined_verdict"] == "VERIFIED_BY_DERIVATIVE_AND_BASE_POINT"
 
 def test_false_identity_still_disproved_under_differential():
     out = _judge("(x+y)**2", "x**2+y**2", symbols=("x", "y"))
