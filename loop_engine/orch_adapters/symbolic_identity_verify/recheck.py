@@ -186,7 +186,16 @@ def _trig_reduce(lhs, rhs, symbols):
 
 
 def build_trig_cofactor_certificate(lhs, rhs, symbols):
-    """T1 certificate: cofactors g_i with P = sum(g_i * p_i) over the Pythagorean ideal."""
+    """T1 certificate: cofactors g_i with P = sum(g_i * p_i) over the Pythagorean ideal.
+
+    Only applies to claims that ACTUALLY contain circular-trig atoms. Without this guard the
+    reduction degenerates (a difference that cancels to 0 before the substitution yields a
+    vacuous P=0 with empty cofactors) and a polynomial or exp claim would be handed a
+    certificate labelled "trig_ideal_cofactor" — a valid proof, but a misdescribed one.
+    """
+    if not any((lhs - rhs).atoms(f) for f in (sympy.sin, sympy.cos, sympy.tan,
+                                              sympy.cot, sympy.sec, sympy.csc)):
+        return None
     r = _trig_reduce(lhs, rhs, symbols)
     if r is None:
         return None
@@ -236,7 +245,13 @@ def _exp_reduce(lhs, rhs, symbols):
 
 
 def build_exp_polynomial_certificate(lhs, rhs, symbols):
-    """T2 certificate: after E = e^x substitution and clearing denominators, N is identically 0."""
+    """T2 certificate: after E = e^x substitution and clearing denominators, N is identically 0.
+
+    Same guard as T1: require actual exponential/hyperbolic content, so a claim of another
+    kind is never handed a certificate that misdescribes how it was proved.
+    """
+    if not any((lhs - rhs).atoms(f) for f in (sympy.exp, sympy.sinh, sympy.cosh, sympy.tanh)):
+        return None
     r = _exp_reduce(lhs, rhs, symbols)
     if r is None:
         return None
