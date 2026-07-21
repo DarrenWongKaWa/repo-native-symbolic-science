@@ -210,10 +210,18 @@ def handle(req):
         else:
             # AUDIT-THE-AUDITOR #3: for a POLYNOMIAL identity, build a certificate a third
             # party can re-verify by exact pointwise evaluation, trusting no simplify at all.
-            try:
-                poly_cert = _with_timeout(lambda: _recheck.build_polynomial_certificate(lhs, rhs, symbols), timeout)
-            except _Timeout:
-                poly_cert = None
+            # Try each re-checkable form in turn: plain polynomial, then T1 (trig -> ideal
+            # cofactor), then T2 (exp -> rational numerator). First that succeeds wins.
+            poly_cert = None
+            for _builder in (_recheck.build_polynomial_certificate,
+                             _recheck.build_trig_cofactor_certificate,
+                             _recheck.build_exp_polynomial_certificate):
+                try:
+                    poly_cert = _with_timeout(lambda b=_builder: b(lhs, rhs, symbols), timeout)
+                except (_Timeout, Exception):
+                    poly_cert = None
+                if poly_cert:
+                    break
             cert = {"type": "canonical_zero_residual",
                     "cross_check": {"method": "independent_numeric_evalf", "points_probed": probed, "tolerance": tol},
                     "differential_canonicalization": differential,

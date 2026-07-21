@@ -42,12 +42,23 @@ def test_polynomial_identity_gets_recheckable_certificate():
     assert rc["kind"] == "polynomial_pointwise_nullstellensatz"
     assert rc["total_degree"] == 3 and len(rc["per_variable_values"]) == 4  # sized by CLAIM degree
 
-def test_transcendental_identity_is_honestly_not_recheckable():
+def test_trig_identity_is_now_recheckable_via_T1():
+    # superseded by tier T1 (trig -> Pythagorean-ideal cofactor certificate): this used to be
+    # "certified but not independently re-checkable"; it now carries a real certificate.
     out = _certify("sin(x)**2+cos(x)**2", "1", symbols=("x",))
     cert = out["symbolic_claim_verifier"]["certificate"]
     assert out["combined_verdict"] == "VERIFIED_SYMBOLIC_IDENTITY"
-    assert cert["independently_recheckable"] is False
-    assert cert["recheckable_certificate"] is None
+    assert cert["independently_recheckable"] is True
+    assert cert["recheckable_certificate"]["kind"] == "trig_ideal_cofactor"
+
+
+def test_a_class_still_outside_recheckability_is_not_overclaimed():
+    # inverse-trig needs tier T3 (derivative + base point), which is not built: it must stay
+    # honestly unproven rather than be handed a certificate it hasn't earned.
+    out = _certify("atan(x)", "asin(x/sqrt(1+x**2))", symbols=("x",))
+    assert out["combined_verdict"] == "NUMERICALLY_CONSISTENT_SYMBOLIC_UNPROVEN"
+    assert (out["symbolic_claim_verifier"].get("certificate") or {}) == {} or \
+           out["symbolic_claim_verifier"]["certificate"] is None
 
 
 # ---- independent re-check (the third-party surface) -------------------------------
