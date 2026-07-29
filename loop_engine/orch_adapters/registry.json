@@ -40,6 +40,40 @@
       "can_verify_self": false,
       "can_repair": false,
       "requires_independent_verifier": false
+    },
+    "symbolic_identity_verify": {
+      "module_path": "loop_engine.orch_adapters.symbolic_identity_verify_adapter",
+      "class_name": "SymbolicIdentityVerifyAdapter",
+      "validator_scripts": [],
+      "required_inputs": [],
+      "allowed_actions": [
+        "adjudicate_symbolic_identity_claim"
+      ],
+      "forbidden_actions": [
+        "promote_canonical",
+        "reinterpret_scope",
+        "upgrade_numerical_to_symbolic",
+        "self_verify",
+        "accept_proposer_self_score"
+      ],
+      "claim_authority": "verification"
+    },
+    "propose_equation_candidates": {
+      "module_path": "loop_engine.orch_adapters.propose_equation_candidates_adapter",
+      "class_name": "ProposeEquationCandidatesAdapter",
+      "validator_scripts": [],
+      "required_inputs": [],
+      "allowed_actions": [
+        "propose_candidate_claims"
+      ],
+      "forbidden_actions": [
+        "verify_results",
+        "self_verify",
+        "promote_canonical",
+        "score_candidates",
+        "execute_generated_code"
+      ],
+      "claim_authority": "proposal"
     }
   },
   "adapters": {

@@ -98,6 +98,32 @@ def _register_synthetic_adapters(registry: OrchRegistry) -> None:
                               "upgrade_numerical_to_symbolic"],
         "claim_authority": "verification",
     })
+    # Fusion Stage 1: GENERAL symbolic identity judge (arbitrary caller expression).
+    # Same verification authority + fail-closed governance; forbidden from self-verifying
+    # or accepting any proposer's self-scored result as evidence.
+    registry.register_adapter("symbolic_identity_verify", {
+        "module_path": "loop_engine.orch_adapters.symbolic_identity_verify_adapter",
+        "class_name": "SymbolicIdentityVerifyAdapter",
+        "validator_scripts": [],
+        "required_inputs": [],
+        "allowed_actions": ["adjudicate_symbolic_identity_claim"],
+        "forbidden_actions": ["promote_canonical", "reinterpret_scope",
+                              "upgrade_numerical_to_symbolic", "self_verify",
+                              "accept_proposer_self_score"],
+        "claim_authority": "verification",
+    })
+    # Fusion Stage 2: the PROPOSER organ. Emits UNVERIFIED candidate claims only; it may
+    # never verify, score, promote, or execute generated code. proposal authority.
+    registry.register_adapter("propose_equation_candidates", {
+        "module_path": "loop_engine.orch_adapters.propose_equation_candidates_adapter",
+        "class_name": "ProposeEquationCandidatesAdapter",
+        "validator_scripts": [],
+        "required_inputs": [],
+        "allowed_actions": ["propose_candidate_claims"],
+        "forbidden_actions": ["verify_results", "self_verify", "promote_canonical",
+                              "score_candidates", "execute_generated_code"],
+        "claim_authority": "proposal",
+    })
 
 
 def route_geometric_basis_verify(registry: OrchRegistry, raw: str) -> tuple[dict, int]:
@@ -135,10 +161,106 @@ def route_geometric_basis_verify(registry: OrchRegistry, raw: str) -> tuple[dict
     return result, exit_code
 
 
-def build_registry() -> OrchRegistry:
-    """Construct the production registry exactly as the CLI does (no fault adapters)."""
+def route_symbolic_identity_verify(registry: OrchRegistry, raw: str) -> tuple[dict, int]:
+    """Pure routing seam for the general symbolic identity judge.
+
+    Same contract as route_geometric_basis_verify: capability lookup -> real importlib
+    adapter load -> verbatim exit-code propagation. Emits the contract error taxonomy at
+    the boundary (AdapterError.code) rather than a library class name."""
+    try:
+        req = json.loads(raw)
+    except Exception as exc:
+        return {"orch_error": "INVALID_JSON_REQUEST", "detail": str(exc)[:120]}, 1
+    op = req.get("operation")
+    if registry.get_adapter(op) is None:
+        return {"orch_error": "CAPABILITY_NOT_REGISTERED", "operation": op,
+                "attempted_registry": "loop_engine.orch_registry"}, 1
+    try:
+        adapter = registry.load_adapter_instance(op)
+    except Exception as exc:
+        return {"orch_error": "ADAPTER_LOAD_FAILED", "operation": op, "detail": str(exc)[:160]}, 1
+    try:
+        result, exit_code = adapter.run(req)
+    except Exception as exc:
+        code = getattr(exc, "code", None) or (
+            "SCHEMA_VALIDATION_FAILED" if exc.__class__.__name__ == "ValidationError" else exc.__class__.__name__)
+        return {"orch_error": code, "operation": op}, 1
+    return result, exit_code
+
+
+def route_propose_equation_candidates(registry: OrchRegistry, raw: str) -> tuple[dict, int]:
+    """Pure routing seam for the proposer organ (same shape as the other seams)."""
+    try:
+        req = json.loads(raw)
+    except Exception as exc:
+        return {"orch_error": "INVALID_JSON_REQUEST", "detail": str(exc)[:120]}, 1
+    op = req.get("operation")
+    if registry.get_adapter(op) is None:
+        return {"orch_error": "CAPABILITY_NOT_REGISTERED", "operation": op}, 1
+    try:
+        adapter = registry.load_adapter_instance(op)
+    except Exception as exc:
+        return {"orch_error": "ADAPTER_LOAD_FAILED", "operation": op, "detail": str(exc)[:160]}, 1
+    try:
+        result, exit_code = adapter.run(req)
+    except Exception as exc:
+        code = getattr(exc, "code", None) or exc.__class__.__name__
+        return {"orch_error": code, "operation": op}, 1
+    return result, exit_code
+
+
+# Fusion Stage 3 — registry PROFILES enforce "the searcher cannot reach the judge".
+# A profile scopes which capabilities exist in a given context's registry. The proposer/
+# searcher profile physically OMITS the judge, so even an attempt to route a proposal to
+# the judge from a searcher context fails CAPABILITY_NOT_REGISTERED. This makes the
+# no-self-scoring rule STRUCTURAL, not a convention — the generalisation of
+# tests/test_release_bundle_isolation.py from "runtime can't reach gold" to
+# "searcher can't reach judge". (Deployment assumption: a searcher process is launched
+# only with the 'proposer' profile; it has no way to obtain the 'full' surface.)
+_JUDGE_CAPABILITIES = {"symbolic_identity_verify", "geometric_basis_verify"}
+_PROPOSER_CAPABILITIES = {"propose_equation_candidates"}
+REGISTRY_PROFILES = {
+    "full": None,                                  # everything (orchestrator / human-gate context)
+    "proposer": _PROPOSER_CAPABILITIES,            # search/propose only — NO judge
+    "judge": _JUDGE_CAPABILITIES,                  # adjudication only — NO proposer
+}
+
+
+def route_recheck_symbolic_certificate(raw: str) -> tuple[dict, int]:
+    """Independently re-verify a {claim, certificate} WITHOUT the judge or simplify.
+
+    A third-party audit surface: it re-runs the certificate's exact pointwise check. Not
+    tied to any registry profile — anyone can re-verify a certificate they were handed."""
+    from loop_engine.orch_adapters.symbolic_identity_verify import recheck as _rc
+    try:
+        payload = json.loads(raw)
+    except Exception as exc:
+        return {"orch_error": "INVALID_JSON_REQUEST", "detail": str(exc)[:120]}, 1
+    claim = payload.get("claim") or {}
+    cert = payload.get("certificate") or {}
+    try:
+        out = _rc.recheck(claim, cert)
+    except Exception as exc:
+        return {"recheck_ok": False, "detail": f"recheck error: {exc.__class__.__name__}"}, 1
+    return {"recheck_ok": out["ok"], "detail": out["detail"]}, (0 if out["ok"] else 1)
+
+
+def build_registry(profile: str = "full") -> OrchRegistry:
+    """Construct a registry scoped to a profile (no fault adapters).
+
+    profile='full' registers everything (default, current CLI behaviour). 'proposer' and
+    'judge' scope the registry so the two sides cannot reach each other's capabilities.
+    """
+    if profile not in REGISTRY_PROFILES:
+        raise ValueError(f"unknown registry profile: {profile}")
     registry = OrchRegistry()
     _register_synthetic_adapters(registry)
+    allow = REGISTRY_PROFILES[profile]
+    if allow is not None:
+        for cap in list(registry._adapters.keys()):
+            # keep the profile's own capabilities; drop the other side's judge/proposer caps
+            if cap in (_JUDGE_CAPABILITIES | _PROPOSER_CAPABILITIES) and cap not in allow:
+                del registry._adapters[cap]
     return registry
 
 
@@ -147,6 +269,8 @@ def main() -> None:
         description="Orchestration Controller CLI",
     )
     parser.add_argument("--verbose", action="store_true", help="Print extra info to stderr")
+    parser.add_argument("--profile", default="full", choices=sorted(REGISTRY_PROFILES),
+                        help="Registry scope: full (default), proposer (no judge), judge (no proposer)")
     subparsers = parser.add_subparsers(dest="command")
 
     p = subparsers.add_parser("validate-task", help="Validate a task contract JSON file")
@@ -164,12 +288,17 @@ def main() -> None:
 
     subparsers.add_parser("geometric-basis-verify",
                           help="Route a geometric_basis_verify request (JSON on stdin) through the registry")
+    subparsers.add_parser("symbolic-identity-verify",
+                          help="Route a symbolic_identity_verify request (JSON on stdin) through the registry")
+    subparsers.add_parser("propose-equation-candidates",
+                          help="Route a propose_equation_candidates request (JSON on stdin) through the registry")
+    subparsers.add_parser("recheck-symbolic-certificate",
+                          help="Independently re-verify a {claim, certificate} (JSON on stdin); no simplify, no registry")
 
     args = parser.parse_args()
 
     verbose = args.verbose
-    registry = OrchRegistry()
-    _register_synthetic_adapters(registry)
+    registry = build_registry(getattr(args, "profile", "full"))  # Stage 3: profile-scoped
     dispatcher = ControllerDispatcher(registry=registry)
 
     if args.command == "validate-task":
@@ -212,6 +341,21 @@ def main() -> None:
     elif args.command == "geometric-basis-verify":
         # CLI request -> shared routing seam -> ORCH registry -> adapter -> ORCH response.
         result, exit_code = route_geometric_basis_verify(registry, sys.stdin.read())
+        print(json.dumps(result))
+        sys.exit(exit_code)
+
+    elif args.command == "symbolic-identity-verify":
+        result, exit_code = route_symbolic_identity_verify(registry, sys.stdin.read())
+        print(json.dumps(result))
+        sys.exit(exit_code)
+
+    elif args.command == "propose-equation-candidates":
+        result, exit_code = route_propose_equation_candidates(registry, sys.stdin.read())
+        print(json.dumps(result))
+        sys.exit(exit_code)
+
+    elif args.command == "recheck-symbolic-certificate":
+        result, exit_code = route_recheck_symbolic_certificate(sys.stdin.read())
         print(json.dumps(result))
         sys.exit(exit_code)
 
