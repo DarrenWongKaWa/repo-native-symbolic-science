@@ -4,23 +4,28 @@
   "track": "B4",
   "supersedes_packet_commit": "6f888df2756e1526ad4e63e464ff6ceaac84218f",
   "starting_commit_sha": "b48b344981f06c9668fdc0863c2b4d29d48ea26f",
-  "ending_commit_sha": "45bc5231f3a4c410de2cbd9f0e7c6468d85064f8",
+  "ending_commit_sha": "2414a996973d733597b3b89197e1c39a6bc238ec",
   "commit_list": [
     "8634135676a08579cf1f278a94120f64f7bfef9c",
     "6f888df2756e1526ad4e63e464ff6ceaac84218f",
-    "45bc5231f3a4c410de2cbd9f0e7c6468d85064f8"
+    "45bc5231f3a4c410de2cbd9f0e7c6468d85064f8",
+    "2414a996973d733597b3b89197e1c39a6bc238ec"
   ],
   "changed_file_paths": [
     "loop_engine/orch_adapters/symbolic_identity_verify/domain_obligations.py",
     "loop_engine/orch_adapters/symbolic_identity_verify/connected_subdomain.py",
     "loop_engine/orch_adapters/symbolic_identity_verify/core.py",
+    "loop_engine/orch_adapters/symbolic_identity_verify/recheck.py",
+    "tests/test_b1_composite_t3_certificates.py",
     "tests/test_b4_domain_obligations.py",
     "tests/test_b4_recovery_attack_matrix.py"
   ],
   "changed_file_sha256": {
     "loop_engine/orch_adapters/symbolic_identity_verify/domain_obligations.py": "6cacc7d9df4843d36e15f28ba34e95f312c90092522bf9388e037535c26e9a21",
     "loop_engine/orch_adapters/symbolic_identity_verify/connected_subdomain.py": "8bf6faae16a95dabaedc7e60a3245702a65f333d5fa86a1158e2221691b27e70",
-    "loop_engine/orch_adapters/symbolic_identity_verify/core.py": "29e2e500a7d1bc2252c0032d67b24518e15b246c9333260fe7f59c4ee1233ed6",
+    "loop_engine/orch_adapters/symbolic_identity_verify/core.py": "124faa557840bc85cbe88a4446d4e0c518263e6aa99cfa85f39dd448cce9473c",
+    "loop_engine/orch_adapters/symbolic_identity_verify/recheck.py": "db796eb5eea66dd74c3256e97c226c27a7372cee3cc154473b9f18511633c4d6",
+    "tests/test_b1_composite_t3_certificates.py": "4f808931b26ca824c5d30f25e6ad9308ee6a3f88e9087e49436c47456e9a6c66",
     "tests/test_b4_domain_obligations.py": "40209bea61e38072eef268cc3ab2d1548dabcee2b8f809fdfa958269a0e65c90",
     "tests/test_b4_recovery_attack_matrix.py": "b05df775fea21e73e793c58363bb5770ed5ee23206029a3d81a874a0531f0677"
   },
@@ -34,7 +39,7 @@
   "domain_policy_sha256": {
     "loop_engine/orch_adapters/symbolic_identity_verify/domain_obligations.py": "6cacc7d9df4843d36e15f28ba34e95f312c90092522bf9388e037535c26e9a21",
     "loop_engine/orch_adapters/symbolic_identity_verify/connected_subdomain.py": "8bf6faae16a95dabaedc7e60a3245702a65f333d5fa86a1158e2221691b27e70",
-    "loop_engine/orch_adapters/symbolic_identity_verify/recheck.py": "06da80a78ebc8b5fd97d3e3463144ce51e6c4141bc9d02ab98320af59e66ee72"
+    "loop_engine/orch_adapters/symbolic_identity_verify/recheck.py": "db796eb5eea66dd74c3256e97c226c27a7372cee3cc154473b9f18511633c4d6"
   },
   "failure_code_source_paths": ["loop_engine/orch_adapters/symbolic_identity_verify/domain_obligations.py"],
   "failure_code_source_sha256": "6cacc7d9df4843d36e15f28ba34e95f312c90092522bf9388e037535c26e9a21",
@@ -46,7 +51,7 @@
   "rechecker_sha256": {
     "loop_engine/orch_adapters/symbolic_identity_verify/domain_obligations.py": "6cacc7d9df4843d36e15f28ba34e95f312c90092522bf9388e037535c26e9a21",
     "loop_engine/orch_adapters/symbolic_identity_verify/connected_subdomain.py": "8bf6faae16a95dabaedc7e60a3245702a65f333d5fa86a1158e2221691b27e70",
-    "loop_engine/orch_adapters/symbolic_identity_verify/recheck.py": "06da80a78ebc8b5fd97d3e3463144ce51e6c4141bc9d02ab98320af59e66ee72"
+    "loop_engine/orch_adapters/symbolic_identity_verify/recheck.py": "db796eb5eea66dd74c3256e97c226c27a7372cee3cc154473b9f18511633c4d6"
   },
   "attack_test_paths": ["tests/test_b4_domain_obligations.py", "tests/test_b4_recovery_attack_matrix.py"],
   "attack_test_sha256": {
@@ -65,7 +70,7 @@
   "root_pytest_count": "365 passed, 13 pre-existing PytestReturnNotNone warnings",
   "release_command": "python verification/viper/run_release_verification.py",
   "release_exit_code": 0,
-  "release_artifact_sha256": "4bd8dede88ff2fb2221dbb3705a2cb1f47ffe754eae8ad13b3a3352c3315048c",
+  "release_artifact_sha256": "c9eeb52e4bd44f2f5d1ec3075655f7b9650764fbb075206e5d04f8403b958d4a",
   "release_artifact_description": "SHA-256 of the complete stdout emitted by the stated release command at ending_commit_sha; the verifier intentionally writes no persistent report.",
   "public_benchmark_command": "python -m pytest -q benchmarks/sigma_xxx_finite_gamma_replay/tests -p no:cacheprovider",
   "public_benchmark_exit_code": 0,
@@ -86,5 +91,5 @@
   "review_protocol": "Read-only reviewer rebuilds source-sensitive inventory, node predicates, semantic dependencies, graph hash, B1/B2 bindings, and all ATK-B4 cases; it must issue one canonical verdict.",
   "reviewer_environment": "macOS; Python 3.13; repository-local pytest and SymPy environment",
   "review_timestamp": "2026-07-30",
-  "review_packet_hash": "fd6440f5f9cadafd2583cb4da1656f2e3d502ca3c10550778fea40e78efad035"
+  "review_packet_hash": "152a5bd6e93bc5863bef6f4bc2361511d57ce893d20cf4a150d5b1c0f1c1905d"
 }
