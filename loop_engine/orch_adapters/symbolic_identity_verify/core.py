@@ -507,8 +507,20 @@ def handle(req):
                     pass
                 t3_cert["side_conditions"] = sc
                 if t3_cert.get("kind") == "derivative_base_point_composite":
-                    # The runtime records the domain-guard result after construction, so bind
-                    # that additive evidence into the composite artifact as well.
+                    # B4 is additive: legacy B1 certificates retain their original schema,
+                    # while every newly issued structured composite carries the independently
+                    # replayable source-obligation graph used for its domain argument.
+                    from loop_engine.orch_adapters.symbolic_identity_verify import domain_obligations as _b4
+                    graph = _b4.build_obligation_graph(
+                        {"lhs": lhs_s, "rhs": rhs_s, "symbols": list(symbols), "scope": scope},
+                        domain, None)
+                    t3_cert["domain_obligation_graph"] = graph
+                    t3_cert["domain_obligation_graph_hash"] = graph["graph_hash"]
+                    t3_cert["domain_obligation_graph_version"] = graph["graph_version"]
+                    t3_cert["domain_obligation_summary"] = {
+                        "graph_hash": graph["graph_hash"], "status": graph["obligations"][-1]["status"]}
+                    # The runtime records the domain-guard and B4 extensions after
+                    # construction, so bind those additive evidence fields into the artifact.
                     t3_cert["artifact_hash"] = _recheck._artifact_hash(t3_cert)
                 vname = ("VERIFIED_BY_DERIVATIVE_AND_BASE_POINT_WITH_SIDE_CONDITIONS" if sc
                          else "VERIFIED_BY_DERIVATIVE_AND_BASE_POINT")

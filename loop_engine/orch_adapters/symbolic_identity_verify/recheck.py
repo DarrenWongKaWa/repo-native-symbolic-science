@@ -460,6 +460,22 @@ def _recheck_derivative_base_point_composite(claim, lhs, rhs, symbols, cert):
     expected_domain = _structured_real_line_domain(lhs, rhs, symbols, child.get("certificate"))
     if expected_domain is None or domain != expected_domain:
         return {"ok": False, "detail": "definedness, differentiability, or connected-domain obligations fail"}
+    extension_keys = {"domain_obligation_graph", "domain_obligation_graph_hash",
+                      "domain_obligation_graph_version", "domain_obligation_summary"}
+    extension = {k: cert.get(k) for k in extension_keys if k in cert}
+    if extension:
+        if set(extension) != extension_keys or extension["domain_obligation_graph_version"] != "1.0" or \
+                extension["domain_obligation_graph_hash"] != extension["domain_obligation_graph"].get("graph_hash"):
+            return {"ok": False, "detail": "B4 graph binding is invalid"}
+        from loop_engine.orch_adapters.symbolic_identity_verify import domain_obligations as _b4
+        graph_result = _b4.recheck_obligation_graph(
+            {"lhs": claim.get("lhs"), "rhs": claim.get("rhs"), "symbols": list(symbols),
+             "scope": claim.get("scope", "real_scalars")},
+            {"kind": "real_line", "variable": symbols[0]}, claim.get("assumptions"),
+            extension["domain_obligation_graph"])
+        if not graph_result.get("ok") or extension["domain_obligation_summary"] != {
+                "graph_hash": extension["domain_obligation_graph_hash"], "status": "PROVED"}:
+            return {"ok": False, "detail": "B4 graph replay or summary failed"}
     if cert.get("artifact_hash") != _artifact_hash(cert):
         return {"ok": False, "detail": "composite certificate artifact hash mismatch"}
     return {"ok": True, "detail": "re-verified derivative/base-point composite on the connected real line"}

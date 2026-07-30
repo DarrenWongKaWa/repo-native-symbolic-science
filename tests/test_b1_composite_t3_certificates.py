@@ -120,6 +120,7 @@ def test_structured_real_line_parent_gets_and_rechecks_composite():
     assert certificate["independently_recheckable"] is True
     assert certificate["base_point_certificate"]["point"] == {"x": "0"}
     assert certificate["domain_certificate"]["kind"] == "real_line"
+    assert certificate["domain_obligation_summary"]["status"] == "PROVED"
     result, rc = _recheck({"lhs": PARENT_LHS, "rhs": PARENT_RHS, "symbols": ["x"]}, certificate)
     assert rc == 0 and result["recheck_ok"] is True
 
