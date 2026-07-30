@@ -39,6 +39,7 @@ from loop_engine.orch_adapters._symbolic_safe_parse import (
     syms_like)
 from loop_engine.orch_adapters.symbolic_identity_verify import recheck as _recheck
 from loop_engine.orch_adapters.symbolic_identity_verify import domain_guard as _domain
+from loop_engine.orch_adapters.symbolic_identity_verify import connected_subdomain as _subdomain
 
 HERE = Path(__file__).resolve().parent
 ADAPTER_VERSION = "symbolic-identity-verify-1.0"
@@ -271,6 +272,45 @@ def _second_zero_confirmed(second, payload):
             second.get("input_hash") == sha(payload) and second.get("process_exit_status") == 0)
 
 
+def _connected_subdomain_result(req, claim, timeout):
+    """B2's only conditional L3 route; it cannot emit a global-identity verdict."""
+    context = _subdomain.prepare_log_product_claim(claim)
+    body, domain = context["body"], context["subdomain"]
+    payload = _second_engine_payload(body["lhs"], body["rhs"], body["symbols"], body["scope"], domain,
+                                     claim.get("assumptions"))
+    second = _second_opinion(body["lhs"], body["rhs"], body["symbols"], body["scope"], domain,
+                             claim.get("assumptions"), timeout)
+    if _second_zero_confirmed(second, payload):
+        cert = _subdomain.build_certificate(context, second)
+        symbolic = {"verdict": "VERIFIED_ON_EXPLICIT_SUBDOMAIN", "evidence_level": 3,
+                    "canonical_residual": None, "certificate": cert}
+        numerical = {"verdict": "SECOND_ENGINE_CONFIRMS_CONDITIONAL_ZERO", "second_engine": second}
+        combined, level, relation, unresolved = ("VERIFIED_ON_EXPLICIT_SUBDOMAIN", 3,
+            "CONDITIONAL_CONNECTED_SUBDOMAIN_CERTIFICATE", [f"side condition: {x}" for x in cert["side_conditions"]])
+    else:
+        symbolic = {"verdict": "CONDITIONAL_SYMBOLIC_ZERO_PENDING_SECOND_ENGINE", "evidence_level": 1,
+                    "canonical_residual": None, "certificate": None}
+        numerical = {"verdict": "SECOND_ENGINE_ZERO_REQUIRED", "second_engine": second}
+        combined, level, relation = "CONDITIONAL_ZERO_PENDING_SECOND_ENGINE", 1, "SECOND_ENGINE_ZERO_REQUIRED"
+        unresolved = ["conditional subdomain proof is not independently confirmed by the pinned B3 profile"]
+    result = {"operation": "symbolic_identity_verify", "contract_version": "1.0", "request_hash": sha(req),
+              "symbolic_claim_verifier": symbolic, "numerical_geobasis_verifier": numerical,
+              "oracle_relation": relation, "combined_verdict": combined, "combined_evidence_level": level,
+              "scope": body["scope"], "unresolved_obligations": unresolved,
+              "provenance": {"repository_commit": git_head(HERE.parents[2]), "adapter_version": ADAPTER_VERSION,
+                             "input_contract_version": "1.0", "output_contract_version": "1.0",
+                             "policy_hash": POLICY_HASH, "subresult_hashes": {"symbolic": sha(symbolic)},
+                             "runtime_environment": {"python": platform.python_version(), "sympy": sympy.__version__, "platform": platform.platform()},
+                             "replay_classification": "VERDICT_REPRODUCIBLE (conditional real-log proof kernel)"}}
+    out_dir = Path(os.environ.get("VIPER_OUTPUT_DIR", tempfile.gettempdir())) / "viper_symbolic_identity_runtime"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    tmp = tempfile.NamedTemporaryFile("w", delete=False, dir=str(out_dir), suffix=".tmp")
+    json.dump(result, tmp); tmp.close()
+    art_hash = sha(Path(tmp.name).read_bytes()); final = out_dir / "last_result.json"; os.replace(tmp.name, final)
+    result["replay_artifact"] = {"path": str(final), "sha256": art_hash}
+    return result, 0
+
+
 def handle(req):
     # 1. forbidden-field check (no gold leak) — before anything else
     blob = json.dumps(req)
@@ -298,6 +338,10 @@ def handle(req):
     if caller_to > POLICY["simplify_timeout_seconds"]:
         raise AdapterError("POLICY_VIOLATION")
     timeout = min(caller_to, POLICY["simplify_timeout_seconds"])
+
+    # B2 is opt-in and deliberately does not reinterpret legacy free-text domains.
+    if "subdomain" in claim:
+        return _connected_subdomain_result(req, claim, timeout)
 
     # 3. parse (restricted) then adjudicate (timeout-guarded)
     _is_real = ("real" in str(scope).lower()) or ("real" in str(domain).lower())

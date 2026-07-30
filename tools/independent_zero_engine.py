@@ -18,6 +18,7 @@ import os
 import re
 import subprocess
 import sys
+from fractions import Fraction
 
 ENGINE_IDENTITY = "WOLFRAM_INDEPENDENT_ZERO"
 IMPLEMENTATION_VERSION = "1.0"
@@ -111,7 +112,40 @@ def run(payload):
     if payload.get("scope") not in {"real_scalars", "reals", "real", "R", "s"}:
         return _response(payload, status="unsupported", verdict="UNKNOWN", detail="only approved scalar scopes are supported")
     domain = payload.get("domain")
-    if isinstance(domain, dict) and (domain.get("kind") != "real_line" or domain.get("variable") not in symbols):
+    assumptions = []
+    if isinstance(domain, dict) and domain.get("schema") == "viper.connected_subdomain.v1":
+        predicate = domain.get("predicate")
+        terms = predicate.get("terms") if isinstance(predicate, dict) and predicate.get("kind") == "intersection" else [predicate]
+        if not isinstance(terms, list) or not terms:
+            return _response(payload, status="unsupported", verdict="UNKNOWN", detail="invalid connected-subdomain predicate")
+        for term in terms:
+            if not isinstance(term, dict):
+                return _response(payload, status="unsupported", verdict="UNKNOWN", detail="invalid connected-subdomain term")
+            if term.get("kind") == "real_line" and term.get("variable") in symbols:
+                continue
+            if term.get("kind") != "interval" or term.get("variable") not in symbols:
+                return _response(payload, status="unsupported", verdict="UNKNOWN", detail="unsupported connected-subdomain term")
+            variable, lower, upper = term["variable"], term.get("lower"), term.get("upper")
+            if set(term) != {"kind", "variable", "lower", "upper", "lower_closed", "upper_closed"} or \
+                    not isinstance(lower, str) or not isinstance(upper, str) or \
+                    not isinstance(term.get("lower_closed"), bool) or not isinstance(term.get("upper_closed"), bool):
+                return _response(payload, status="unsupported", verdict="UNKNOWN", detail="malformed interval")
+            if lower == "+inf" or upper == "-inf" or (lower == "-inf" and term.get("lower_closed")) or \
+                    (upper == "+inf" and term.get("upper_closed")):
+                return _response(payload, status="unsupported", verdict="UNKNOWN", detail="invalid interval endpoint")
+            if lower not in {"-inf", "+inf"}:
+                try: Fraction(lower)
+                except Exception: return _response(payload, status="unsupported", verdict="UNKNOWN", detail="non-exact lower bound")
+                if "." in lower or "e" in lower.lower():
+                    return _response(payload, status="unsupported", verdict="UNKNOWN", detail="non-exact lower bound")
+                assumptions.append(f"{variable}{'>=' if term.get('lower_closed') else '>'}{lower}")
+            if upper not in {"-inf", "+inf"}:
+                try: Fraction(upper)
+                except Exception: return _response(payload, status="unsupported", verdict="UNKNOWN", detail="non-exact upper bound")
+                if "." in upper or "e" in upper.lower():
+                    return _response(payload, status="unsupported", verdict="UNKNOWN", detail="non-exact upper bound")
+                assumptions.append(f"{variable}{'<=' if term.get('upper_closed') else '<'}{upper}")
+    elif isinstance(domain, dict) and (domain.get("kind") != "real_line" or domain.get("variable") not in symbols):
         return _response(payload, status="unsupported", verdict="UNKNOWN", detail="unsupported structured domain")
     if domain is not None and not isinstance(domain, (dict, str)):
         return _response(payload, status="malformed", verdict="UNKNOWN", detail="invalid domain")
@@ -121,7 +155,10 @@ def run(payload):
     except ParseError as exc:
         return _response(payload, status="unsupported", verdict="UNKNOWN", detail=str(exc))
     variables = "{" + ",".join(symbols) + "}"
-    code = "FullSimplify[" + lhs + "==" + rhs + ",Element[" + variables + ",Reals]]"
+    real_assumption = "Element[" + variables + ",Reals]"
+    if assumptions:
+        real_assumption += "&&" + "&&".join(assumptions)
+    code = "FullSimplify[" + lhs + "==" + rhs + "," + real_assumption + "]"
     command = os.environ.get("VIPER_WOLFRAM_CMD", "wolframscript")
     try:
         process = subprocess.run([command, "-code", code], text=True, capture_output=True,

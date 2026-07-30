@@ -21,6 +21,7 @@ from __future__ import annotations
 import copy
 import sympy
 from loop_engine.orch_adapters._symbolic_safe_parse import validate_and_parse, sha, syms_like
+from loop_engine.orch_adapters.symbolic_identity_verify import connected_subdomain as _subdomain
 
 MAX_GRID_POINTS = 20000   # cap: (d+1)^n must not exceed this to be "cheaply re-checkable"
 MAX_POSITIVE_SQRT_OPS = 120
@@ -547,6 +548,8 @@ def recheck(claim, certificate):
     if not isinstance(certificate, dict):
         return {"ok": False, "detail": "unsupported or missing certificate kind"}
     kind = certificate.get("kind")
+    if kind == _subdomain.CERTIFICATE_KIND:
+        return _subdomain.recheck(claim, certificate)
     symbols = (claim.get("symbols") or certificate.get("symbols")
                or certificate.get("base_symbols") or [])
     _real = bool(certificate.get("real_domain"))
