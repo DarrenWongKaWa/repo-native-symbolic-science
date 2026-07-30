@@ -319,21 +319,24 @@ def recheck(claim, cert):
         context = prepare_log_product_claim(claim)
     except AdapterError as exc:
         return {"ok": False, "detail": f"B2 claim/domain validation failed: {exc.code}"}
-    extension = {k: cert.get(k) for k in ("domain_obligation_graph", "domain_obligation_graph_hash") if k in cert}
-    base = {k: copy.deepcopy(v) for k, v in cert.items() if k not in {"domain_obligation_graph", "domain_obligation_graph_hash", "artifact_hash"}}
+    extension_keys = {"domain_obligation_graph", "domain_obligation_graph_hash", "domain_obligation_graph_version", "domain_obligation_summary"}
+    extension = {k: cert.get(k) for k in extension_keys if k in cert}
+    base = {k: copy.deepcopy(v) for k, v in cert.items() if k not in extension_keys | {"artifact_hash"}}
     base["artifact_hash"] = sha({k: v for k, v in base.items() if k != "artifact_hash"})
     expected = build_certificate(context, cert.get("second_engine_confirmation"))
     if base != expected:
         return {"ok": False, "detail": "B2 certificate hash-bound metadata does not re-derive"}
     if extension:
-        if set(extension) != {"domain_obligation_graph", "domain_obligation_graph_hash"} or \
+        if set(extension) != extension_keys or extension["domain_obligation_graph_version"] != "1.0" or \
                 extension["domain_obligation_graph_hash"] != extension["domain_obligation_graph"].get("graph_hash"):
             return {"ok": False, "detail": "B4 obligation graph hash does not bind the B2 certificate"}
         from loop_engine.orch_adapters.symbolic_identity_verify import domain_obligations as _b4
-        replay = _b4.recheck_obligation_graph(context["body"], {"predicate": context["subdomain"]["predicate"]},
+        replay = _b4.recheck_obligation_graph(claim, {"predicate": context["subdomain"]["predicate"]},
                                                claim.get("assumptions"), extension["domain_obligation_graph"])
         if not replay.get("ok"):
             return {"ok": False, "detail": f"B4 obligation graph failed: {replay.get('detail')}"}
+        if extension["domain_obligation_summary"] != {"graph_hash": extension["domain_obligation_graph_hash"], "status": "PROVED"}:
+            return {"ok": False, "detail": "B4 obligation summary does not match graph"}
     if cert.get("artifact_hash") != sha({k: v for k, v in cert.items() if k != "artifact_hash"}):
         return {"ok": False, "detail": "B2 certificate artifact hash mismatch"}
     second = cert["second_engine_confirmation"]

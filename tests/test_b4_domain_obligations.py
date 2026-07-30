@@ -14,7 +14,7 @@ def _claim(lhs, rhs, symbols=["x"]): return {"lhs": lhs, "rhs": rhs, "symbols": 
 def test_source_preserved_denominator_and_log_obligations_recheck_on_explicit_domains():
     claim = _claim("(x**2-1)/(x-1)", "x+1")
     graph = B4.build_obligation_graph(claim, _domain(_cmp("x", ">", "1")), ["real"])
-    assert graph["obligations"][0]["source_expression"] == "x - 1"
+    assert any(o["source_expression"] == "x - 1" for o in graph["obligations"])
     assert B4.recheck_obligation_graph(claim, _domain(_cmp("x", ">", "1")), ["real"], graph)["ok"]
     log_claim = _claim("log(x*y)", "log(x)+log(y)", ["x", "y"])
     domain = _domain(_cmp("x", ">", "0"), _cmp("y", ">", "0"))

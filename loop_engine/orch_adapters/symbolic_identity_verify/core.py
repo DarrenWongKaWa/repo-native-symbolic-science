@@ -282,6 +282,15 @@ def _connected_subdomain_result(req, claim, timeout):
                              claim.get("assumptions"), timeout)
     if _second_zero_confirmed(second, payload):
         cert = _subdomain.build_certificate(context, second)
+        # B4 additive issuance rule.  Historical B2 certificates remain readable without
+        # this extension; every newly issued conditional certificate binds its replayable
+        # obligation graph to the same normalized restricted domain.
+        from loop_engine.orch_adapters.symbolic_identity_verify import domain_obligations as _b4
+        graph = _b4.build_obligation_graph(claim, {"predicate": domain["predicate"]}, claim.get("assumptions"))
+        cert = _b4.attach_to_b2_certificate(cert, claim, claim.get("assumptions"), graph)
+        cert["domain_obligation_graph_version"] = graph["graph_version"]
+        cert["domain_obligation_summary"] = {"graph_hash": graph["graph_hash"], "status": graph["obligations"][-1]["status"]}
+        cert["artifact_hash"] = sha({k: v for k, v in cert.items() if k != "artifact_hash"})
         symbolic = {"verdict": "VERIFIED_ON_EXPLICIT_SUBDOMAIN", "evidence_level": 3,
                     "canonical_residual": None, "certificate": cert}
         numerical = {"verdict": "SECOND_ENGINE_CONFIRMS_CONDITIONAL_ZERO", "second_engine": second}
