@@ -336,9 +336,15 @@ def _b1_composite_obligations(claim, unique, symbols, domain_hash, assumption_ha
                               "PROVED", "atan_real_line_derivative", "atan(x) differentiable", [connected["obligation_id"]], {"b1_certificate_hash": cert_hash})
     o16 = _derived_obligation("BASE_POINT_MEMBERSHIP", "x = 0", "b1.base_point", symbols, domain_hash, assumption_hash, intervals,
                               "PROVED", "real_line_contains_zero", "x=0 belongs to declared domain", [connected["obligation_id"]], {"b1_certificate_hash": cert_hash})
+    child_equality = _derived_obligation("EXACT_RATIONAL_EQUALITY", "derivative child equality", "b1.derivative_child_equality", symbols, domain_hash, assumption_hash, intervals,
+                                         "PROVED", "b1_positive_root_child_replay", "derivative child equality certificate rechecked", [o14["obligation_id"], o15["obligation_id"]],
+                                         {"b1_certificate_hash": cert_hash, "derivative_child_hash": cert["derivative_child"]["claim_hash"]})
+    base_equality = _derived_obligation("EXACT_RATIONAL_EQUALITY", "base point equality", "b1.base_point_equality", symbols, domain_hash, assumption_hash, intervals,
+                                        "PROVED", "b1_base_point_exact_replay", "base-point equality certificate rechecked", [o16["obligation_id"]],
+                                        {"b1_certificate_hash": cert_hash, "base_point_hash": cert["base_point_certificate"]["claim_hash"]})
     o17 = _derived_obligation("COMPOSITE_PROOF_ELIGIBILITY", "derivative_base_point_composite", "b1.composite.eligibility", symbols, domain_hash, assumption_hash, intervals,
-                              "PROVED", "b1_composite_certificate_replay", "derivative/base-point composite eligible", [o14["obligation_id"], o15["obligation_id"], o16["obligation_id"]], {"b1_certificate_hash": cert_hash})
-    return [o2, o4, o6, o7, o8, o9, o10, o12, o13, o14, o15, o16, o17]
+                              "PROVED", "b1_composite_certificate_replay", "derivative/base-point composite eligible", [o14["obligation_id"], o15["obligation_id"], o16["obligation_id"], child_equality["obligation_id"], base_equality["obligation_id"]], {"b1_certificate_hash": cert_hash})
+    return [o2, o4, o6, o7, o8, o9, o10, o12, o13, o14, o15, o16, child_equality, base_equality, o17]
 
 
 def _b2_transformation_obligations(claim, unique, symbols, domain_hash, assumption_hash, intervals):
