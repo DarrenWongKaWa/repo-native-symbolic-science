@@ -1,0 +1,36 @@
+{
+  "packet_schema": "viper.independent_review_packet.v1",
+  "immutable": true,
+  "track": "B2",
+  "branch": "feat/viper-b2-connected-subdomains",
+  "implementation_commit": "923e6c5ea71da76aae4cd32a4e4fa3d4d42f92c9",
+  "followup_fix_commits": [
+    "71fb8a48e62b0a622a3eae3b4d574325f61376d2",
+    "a73fae7bb4eb314eccdc2bb720f14d91d09869c4"
+  ],
+  "approved_predecessors": {
+    "B1": "16dbb836de5a60d88fec9e22ec91f44caf5ba790",
+    "B3": "f774f1694aac203a6da0fbc9c46d595338117675"
+  },
+  "review_scope": [
+    "domain grammar and canonicalization",
+    "connectedness and empty-domain detection",
+    "parent-child hash immutability",
+    "real-log positivity proof route",
+    "positive-exp transformation image, inverse, exact substitution, and scope binding",
+    "B3 independent-engine structured-subdomain binding",
+    "scope non-escalation and ATK-B2 coverage",
+    "B1/B3 compatibility and clean-worktree replay"
+  ],
+  "evidence": {
+    "b2_targeted": "30 passed",
+    "b1_b3_gate5_regression": "57 passed",
+    "real_engine_log_and_exp_paths": "PASS",
+    "root_pytest": "336 passed, 13 pre-existing PytestReturnNotNone warnings",
+    "release_verification": "full_viper_repository_workflow: true; 336/336; Gates 1-4 PASS; locks MATCH; runtime isolation PASS; secret scan CLEAN",
+    "independent_reviewer": "REVIEW_APPROVED at a73fae7bb4eb314eccdc2bb720f14d91d09869c4"
+  },
+  "verdict": "REVIEW_APPROVED",
+  "claim_boundary": "VERIFIED_ON_EXPLICIT_SUBDOMAIN only; strict subdomain certificates never establish VERIFIED_GLOBAL_IDENTITY.",
+  "reviewer_constraints": "read-only independent review; no implementation edits, staging, or commits"
+}

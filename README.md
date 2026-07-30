@@ -32,6 +32,20 @@ This project provides a repo-native framework for auditable human-agent symbolic
 - Numerical agreement does not establish symbolic equality
 - Automatic canonical promotion is forbidden
 
+### Connected-subdomain identity boundary
+
+The `symbolic_identity_verify` capability can issue a conditional certificate only through
+the versioned `viper.connected_subdomain.v1` kernel.  Its v1 grammar is deliberately
+limited to real lines, exact rational intervals/comparisons, and finite intersections of
+independent variable intervals.  Free-text domains, Boolean unions, floats, general
+semialgebraic predicates, and unrecognized transformations fail closed.
+
+The supported conditional route is `log(x*y) == log(x) + log(y)` with both variables
+strictly positive.  It returns `VERIFIED_ON_EXPLICIT_SUBDOMAIN`, hash-binds immutable
+parent and child claims, records its side conditions, and requires the B3 independent
+engine to confirm the same raw child claim and structured subdomain.  It must never be
+read or promoted as `VERIFIED_GLOBAL_IDENTITY`.
+
 ## End-to-End Case Boundary
 
 - A public finite-Gamma `sigma_xxx` replay benchmark is included at `benchmarks/sigma_xxx_finite_gamma_replay/`

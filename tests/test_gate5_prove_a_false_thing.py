@@ -115,9 +115,12 @@ def test_second_engine_command_with_path_spaces_fails_closed(tmp_path):
     assert out["symbolic_claim_verifier"]["certificate"] is None
     assert process.returncode != 0
 
-def test_absent_second_engine_is_recorded_not_silently_passed():
+def test_shipped_second_engine_is_recorded_not_silently_passed():
     out = _judge("(x+y)**2", "x**2+2*x*y+y**2", symbols=("x", "y"))
-    assert _cert(out)["second_engine"]["status"] == "not_configured"
+    second = _cert(out)["second_engine"]
+    assert second["status"] == "complete"
+    assert second["verdict"] == "ZERO"
+    assert second["engine_identity"] == "WOLFRAM_INDEPENDENT_ZERO"
 
 # ---- F. genuine identities must still certify cleanly -----------------------------
 def test_true_identities_still_certify_unconditionally():

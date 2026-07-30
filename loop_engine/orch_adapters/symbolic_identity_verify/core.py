@@ -31,7 +31,7 @@ The geobasis numerical arm is not used (no reconstruction exists for an arbitrar
 expression); the numeric field carries the lightweight disproof/consistency probe instead.
 """
 from __future__ import annotations
-import json, hashlib, os, platform, re, signal, tempfile, subprocess
+import json, hashlib, os, platform, re, signal, tempfile, subprocess, sys
 from pathlib import Path
 import sympy
 from loop_engine.orch_adapters._symbolic_safe_parse import (
@@ -39,6 +39,7 @@ from loop_engine.orch_adapters._symbolic_safe_parse import (
     syms_like)
 from loop_engine.orch_adapters.symbolic_identity_verify import recheck as _recheck
 from loop_engine.orch_adapters.symbolic_identity_verify import domain_guard as _domain
+from loop_engine.orch_adapters.symbolic_identity_verify import connected_subdomain as _subdomain
 
 HERE = Path(__file__).resolve().parent
 ADAPTER_VERSION = "symbolic-identity-verify-1.0"
@@ -49,6 +50,14 @@ POLICY = {"max_expr_chars": PARSE_POLICY["max_expr_chars"], "max_nodes": PARSE_P
           "max_symbols": PARSE_POLICY["max_symbols"], "simplify_timeout_seconds": 20,
           "allowed_functions": PARSE_POLICY["allowed_functions"]}
 POLICY_HASH = hashlib.sha256(json.dumps(POLICY, sort_keys=True).encode()).hexdigest()
+SECOND_ENGINE_CONFIG = {
+    "engine_identity": "WOLFRAM_INDEPENDENT_ZERO",
+    "implementation_version": "1.0",
+    "parser_version": "python_ast_to_wolfram_1",
+    "semantic_profile": "real_identity_zero_v1",
+    "wolfram_command": os.environ.get("VIPER_WOLFRAM_CMD", "wolframscript"),
+}
+SECOND_ENGINE_CONFIG_HASH = sha(SECOND_ENGINE_CONFIG)
 
 
 
@@ -158,6 +167,17 @@ def _differential_canonicalize(diff, timeout):
 def _derivative_base_point_certificate(lhs, rhs, symbols, domain, timeout):
     if len(symbols) != 1:
         return None                      # single-variable form only
+    # B1: a structured real-line domain may earn the stronger composite certificate,
+    # but only when the child proof and every domain obligation independently replay.
+    # A free-form legacy domain deliberately remains on the old, non-recheckable path.
+    if isinstance(domain, dict):
+        try:
+            composite = _recheck.build_derivative_base_point_composite_certificate(
+                lhs, rhs, symbols, domain)
+        except Exception:
+            composite = None
+        if composite is not None:
+            return composite
     x = syms_like(lhs - rhs, symbols)[0]
     try:
         d = _with_timeout(lambda: sympy.diff(lhs - rhs, x), max(2, timeout // 3))
@@ -195,20 +215,109 @@ def _derivative_base_point_certificate(lhs, rhs, symbols, domain, timeout):
 # Every other safeguard still runs inside sympy, so a bug shared across sympy's routines is
 # invisible to all of them. This calls a separate engine in a separate process (config-driven,
 # no hardcoded path). A rigorous NONZERO from it while we certified ZERO is a governance stop.
-def _second_opinion(lhs_s, rhs_s, symbols, timeout):
+def _second_engine_payload(lhs_s, rhs_s, symbols, scope, domain, assumptions):
+    """The only material shared with the second engine: raw claim plus declared semantics."""
+    return {"lhs": lhs_s, "rhs": rhs_s, "symbols": list(symbols), "scope": scope,
+            "domain": domain, "assumptions": list(assumptions or [])}
+
+
+def _second_opinion(lhs_s, rhs_s, symbols, scope, domain, assumptions, timeout):
+    """Run the isolated B3 engine and retain raw process evidence for replay.
+
+    The default route is the shipped Python-AST-to-Wolfram executable.  An environment
+    command remains available only for fault injection and external engine experiments;
+    it can never earn a confirming ZERO unless it identifies itself as the pinned profile.
+    """
+    payload = _second_engine_payload(lhs_s, rhs_s, symbols, scope, domain, assumptions)
     cmd = os.environ.get("VIPER_SECOND_CAS_CMD")
-    if not cmd:
-        return {"status": "not_configured",
-                "note": "no independent second engine configured (VIPER_SECOND_CAS_CMD); "
-                        "all remaining safeguards share the sympy implementation"}
+    if cmd:
+        import shlex
+        command = shlex.split(cmd)
+        route = "external_override"
+    else:
+        command = [sys.executable, str(HERE.parents[2] / "tools" / "independent_zero_engine.py")]
+        route = "shipped_wolfram_engine"
     import shlex
     try:
-        p = subprocess.run(shlex.split(cmd),
-                           input=json.dumps({"lhs": lhs_s, "rhs": rhs_s, "symbols": symbols}),
+        p = subprocess.run(command, input=json.dumps(payload),
                            capture_output=True, text=True, timeout=max(5, timeout))
-        return {"status": "ok", **json.loads(p.stdout)}
+        try:
+            parsed = json.loads(p.stdout)
+        except Exception:
+            return {"status": "malformed_output", "route": route, "input_hash": sha(payload),
+                    "stdout": p.stdout, "stderr": p.stderr, "exit_status": p.returncode}
+        if not isinstance(parsed, dict):
+            return {"status": "malformed_output", "route": route, "input_hash": sha(payload),
+                    "stdout": p.stdout, "stderr": p.stderr, "exit_status": p.returncode}
+        parsed.setdefault("status", "ok")
+        return {"route": route, "process_stdout": p.stdout, "process_stderr": p.stderr,
+                "process_exit_status": p.returncode, **parsed}
+    except subprocess.TimeoutExpired:
+        return {"status": "timeout", "route": route, "input_hash": sha(payload),
+                "stdout": "", "stderr": "", "exit_status": None}
     except Exception as exc:
-        return {"status": "unavailable", "note": f"second engine failed: {type(exc).__name__}"}
+        return {"status": "process_failure", "route": route, "input_hash": sha(payload),
+                "detail": type(exc).__name__, "stdout": "", "stderr": "", "exit_status": None}
+
+
+def _second_zero_confirmed(second, payload):
+    """Fail closed unless the pinned independent profile fully binds this raw request."""
+    return (isinstance(second, dict) and second.get("route") == "shipped_wolfram_engine" and
+            second.get("status") == "complete" and second.get("verdict") == "ZERO" and
+            second.get("engine_identity") == SECOND_ENGINE_CONFIG["engine_identity"] and
+            second.get("implementation_version") == SECOND_ENGINE_CONFIG["implementation_version"] and
+            second.get("parser_version") == SECOND_ENGINE_CONFIG["parser_version"] and
+            second.get("semantic_profile") == SECOND_ENGINE_CONFIG["semantic_profile"] and
+            second.get("configuration_hash") == SECOND_ENGINE_CONFIG_HASH and
+            second.get("input_hash") == sha(payload) and second.get("process_exit_status") == 0)
+
+
+def _connected_subdomain_result(req, claim, timeout):
+    """B2's only conditional L3 route; it cannot emit a global-identity verdict."""
+    context = _subdomain.prepare_log_product_claim(claim)
+    body, domain = context["body"], context["subdomain"]
+    payload = _second_engine_payload(body["lhs"], body["rhs"], body["symbols"], body["scope"], domain,
+                                     claim.get("assumptions"))
+    second = _second_opinion(body["lhs"], body["rhs"], body["symbols"], body["scope"], domain,
+                             claim.get("assumptions"), timeout)
+    if _second_zero_confirmed(second, payload):
+        cert = _subdomain.build_certificate(context, second)
+        # B4 additive issuance rule.  Historical B2 certificates remain readable without
+        # this extension; every newly issued conditional certificate binds its replayable
+        # obligation graph to the same normalized restricted domain.
+        from loop_engine.orch_adapters.symbolic_identity_verify import domain_obligations as _b4
+        graph = _b4.build_obligation_graph(claim, {"predicate": domain["predicate"]}, claim.get("assumptions"))
+        cert = _b4.attach_to_b2_certificate(cert, claim, claim.get("assumptions"), graph)
+        cert["domain_obligation_graph_version"] = graph["graph_version"]
+        cert["domain_obligation_summary"] = {"graph_hash": graph["graph_hash"], "status": graph["obligations"][-1]["status"]}
+        cert["artifact_hash"] = sha({k: v for k, v in cert.items() if k != "artifact_hash"})
+        symbolic = {"verdict": "VERIFIED_ON_EXPLICIT_SUBDOMAIN", "evidence_level": 3,
+                    "canonical_residual": None, "certificate": cert}
+        numerical = {"verdict": "SECOND_ENGINE_CONFIRMS_CONDITIONAL_ZERO", "second_engine": second}
+        combined, level, relation, unresolved = ("VERIFIED_ON_EXPLICIT_SUBDOMAIN", 3,
+            "CONDITIONAL_CONNECTED_SUBDOMAIN_CERTIFICATE", [f"side condition: {x}" for x in cert["side_conditions"]])
+    else:
+        symbolic = {"verdict": "CONDITIONAL_SYMBOLIC_ZERO_PENDING_SECOND_ENGINE", "evidence_level": 1,
+                    "canonical_residual": None, "certificate": None}
+        numerical = {"verdict": "SECOND_ENGINE_ZERO_REQUIRED", "second_engine": second}
+        combined, level, relation = "CONDITIONAL_ZERO_PENDING_SECOND_ENGINE", 1, "SECOND_ENGINE_ZERO_REQUIRED"
+        unresolved = ["conditional subdomain proof is not independently confirmed by the pinned B3 profile"]
+    result = {"operation": "symbolic_identity_verify", "contract_version": "1.0", "request_hash": sha(req),
+              "symbolic_claim_verifier": symbolic, "numerical_geobasis_verifier": numerical,
+              "oracle_relation": relation, "combined_verdict": combined, "combined_evidence_level": level,
+              "scope": body["scope"], "unresolved_obligations": unresolved,
+              "provenance": {"repository_commit": git_head(HERE.parents[2]), "adapter_version": ADAPTER_VERSION,
+                             "input_contract_version": "1.0", "output_contract_version": "1.0",
+                             "policy_hash": POLICY_HASH, "subresult_hashes": {"symbolic": sha(symbolic)},
+                             "runtime_environment": {"python": platform.python_version(), "sympy": sympy.__version__, "platform": platform.platform()},
+                             "replay_classification": "VERDICT_REPRODUCIBLE (conditional real-log proof kernel)"}}
+    out_dir = Path(os.environ.get("VIPER_OUTPUT_DIR", tempfile.gettempdir())) / "viper_symbolic_identity_runtime"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    tmp = tempfile.NamedTemporaryFile("w", delete=False, dir=str(out_dir), suffix=".tmp")
+    json.dump(result, tmp); tmp.close()
+    art_hash = sha(Path(tmp.name).read_bytes()); final = out_dir / "last_result.json"; os.replace(tmp.name, final)
+    result["replay_artifact"] = {"path": str(final), "sha256": art_hash}
+    return result, 0
 
 
 def handle(req):
@@ -238,6 +347,10 @@ def handle(req):
     if caller_to > POLICY["simplify_timeout_seconds"]:
         raise AdapterError("POLICY_VIOLATION")
     timeout = min(caller_to, POLICY["simplify_timeout_seconds"])
+
+    # B2 is opt-in and deliberately does not reinterpret legacy free-text domains.
+    if "subdomain" in claim:
+        return _connected_subdomain_result(req, claim, timeout)
 
     # 3. parse (restricted) then adjudicate (timeout-guarded)
     _is_real = ("real" in str(scope).lower()) or ("real" in str(domain).lower())
@@ -313,8 +426,15 @@ def handle(req):
                 side_conditions, excluded = [], None
             cert["side_conditions"] = side_conditions
             # #5: independent second engine. A rigorous NONZERO here contradicts our ZERO.
-            second = _second_opinion(lhs_s, rhs_s, symbols, timeout)
+            second_payload = _second_engine_payload(lhs_s, rhs_s, symbols, scope, domain,
+                                                    claim.get("assumptions"))
+            second = _second_opinion(lhs_s, rhs_s, symbols, scope, domain,
+                                     claim.get("assumptions"), timeout)
             cert["second_engine"] = second
+            cert["artifact_hash"] = sha({"type": cert["type"],
+                                         "recheckable_certificate": cert["recheckable_certificate"],
+                                         "side_conditions": cert["side_conditions"],
+                                         "second_engine": second})
             if second.get("verdict") == "NONZERO":
                 symbolic = {"verdict": "SECOND_ENGINE_CONTRADICTS_CERTIFICATE",
                             "evidence_level": 0, "canonical_residual": "0", "certificate": None}
@@ -325,6 +445,16 @@ def handle(req):
                 unresolved = ["an independent second engine rigorously reports a non-zero "
                               "difference while our canonicalizers reported zero; certificate "
                               "withheld pending review"]
+                _conflict = (symbolic, numerical, combined, level, relation, unresolved)
+            elif not _second_zero_confirmed(second, second_payload):
+                symbolic = {"verdict": "SYMBOLIC_ZERO_PENDING_SECOND_ENGINE", "evidence_level": 1,
+                            "canonical_residual": "0", "certificate": None}
+                numerical = {"verdict": "NUMERICALLY_CONFIRMS_SYMBOLIC_ZERO", "witness_point": None,
+                             "tolerance": tol, "points_probed": probed, "second_engine": second}
+                combined, level, relation = ("SYMBOLIC_ZERO_PENDING_SECOND_ENGINE", 1,
+                                             "SECOND_ENGINE_ZERO_REQUIRED")
+                unresolved = ["primary symbolic ZERO is not independently confirmed by the "
+                              "pinned second-engine profile"]
                 _conflict = (symbolic, numerical, combined, level, relation, unresolved)
             verdict_name = ("VERIFIED_SYMBOLIC_IDENTITY_WITH_SIDE_CONDITIONS" if side_conditions
                             else "VERIFIED_SYMBOLIC_IDENTITY")
@@ -349,10 +479,25 @@ def handle(req):
         elif probed > 0:  # numerically ~0 everywhere probed but not symbolically proven
             numerical["verdict"] = "NUMERICALLY_CONSISTENT_WITHIN_TOLERANCE"
             # tier T3: try derivative + base point before settling for level 1
+            t3_second_note = None
             try:
                 t3_cert = _derivative_base_point_certificate(lhs, rhs, symbols, domain, timeout)
             except Exception:
                 t3_cert = None
+            if t3_cert and t3_cert.get("kind") == "derivative_base_point_composite":
+                child = t3_cert.get("derivative_child") or {}
+                child_payload = _second_engine_payload(
+                    child.get("lhs"), child.get("rhs"), child.get("symbols") or [], scope,
+                    t3_cert.get("domain_certificate"), claim.get("assumptions"))
+                second = _second_opinion(child.get("lhs"), child.get("rhs"), child.get("symbols") or [],
+                                         scope, t3_cert.get("domain_certificate"),
+                                         claim.get("assumptions"), timeout)
+                if _second_zero_confirmed(second, child_payload):
+                    t3_cert["second_engine"] = second
+                else:
+                    t3_second_note = ("B1 composite derivative child lacks a confirming pinned "
+                                      f"second-engine ZERO: {second.get('status')}/{second.get('verdict')}")
+                    t3_cert = None
             if t3_cert:
                 sc, excl = [], None
                 try:
@@ -361,6 +506,22 @@ def handle(req):
                 except (_Timeout, Exception):
                     pass
                 t3_cert["side_conditions"] = sc
+                if t3_cert.get("kind") == "derivative_base_point_composite":
+                    # B4 is additive: legacy B1 certificates retain their original schema,
+                    # while every newly issued structured composite carries the independently
+                    # replayable source-obligation graph used for its domain argument.
+                    from loop_engine.orch_adapters.symbolic_identity_verify import domain_obligations as _b4
+                    graph = _b4.build_obligation_graph(
+                        {"lhs": lhs_s, "rhs": rhs_s, "symbols": list(symbols), "scope": scope},
+                        domain, None)
+                    t3_cert["domain_obligation_graph"] = graph
+                    t3_cert["domain_obligation_graph_hash"] = graph["graph_hash"]
+                    t3_cert["domain_obligation_graph_version"] = graph["graph_version"]
+                    t3_cert["domain_obligation_summary"] = {
+                        "graph_hash": graph["graph_hash"], "status": graph["obligations"][-1]["status"]}
+                    # The runtime records the domain-guard and B4 extensions after
+                    # construction, so bind those additive evidence fields into the artifact.
+                    t3_cert["artifact_hash"] = _recheck._artifact_hash(t3_cert)
                 vname = ("VERIFIED_BY_DERIVATIVE_AND_BASE_POINT_WITH_SIDE_CONDITIONS" if sc
                          else "VERIFIED_BY_DERIVATIVE_AND_BASE_POINT")
                 symbolic = {"verdict": vname, "evidence_level": 3,
@@ -371,8 +532,9 @@ def handle(req):
                 unresolved += [f"valid on the declared connected domain: {domain}"]
             else:
                 combined, level, relation = "NUMERICALLY_CONSISTENT_SYMBOLIC_UNPROVEN", 1, "SYMBOLIC_UNSUPPORTED_NUMERICAL_CONSISTENT"
-                unresolved = ["numerically consistent but no symbolic certificate; a stronger "
-                              "canonicalizer or a proof is required to reach level 3"]
+                unresolved = ([t3_second_note] if t3_second_note else
+                              ["numerically consistent but no symbolic certificate; a stronger "
+                               "canonicalizer or a proof is required to reach level 3"])
         else:  # could not evaluate at any point
             numerical["verdict"] = "NUMERICAL_EVALUATION_FAILED"
             combined, level, relation = "INCONCLUSIVE_INSUFFICIENT_EVIDENCE", 0, "BOTH_INCONCLUSIVE"
