@@ -31,7 +31,7 @@ The geobasis numerical arm is not used (no reconstruction exists for an arbitrar
 expression); the numeric field carries the lightweight disproof/consistency probe instead.
 """
 from __future__ import annotations
-import json, hashlib, os, platform, re, signal, tempfile, subprocess
+import json, hashlib, os, platform, re, signal, tempfile, subprocess, sys
 from pathlib import Path
 import sympy
 from loop_engine.orch_adapters._symbolic_safe_parse import (
@@ -49,6 +49,14 @@ POLICY = {"max_expr_chars": PARSE_POLICY["max_expr_chars"], "max_nodes": PARSE_P
           "max_symbols": PARSE_POLICY["max_symbols"], "simplify_timeout_seconds": 20,
           "allowed_functions": PARSE_POLICY["allowed_functions"]}
 POLICY_HASH = hashlib.sha256(json.dumps(POLICY, sort_keys=True).encode()).hexdigest()
+SECOND_ENGINE_CONFIG = {
+    "engine_identity": "WOLFRAM_INDEPENDENT_ZERO",
+    "implementation_version": "1.0",
+    "parser_version": "python_ast_to_wolfram_1",
+    "semantic_profile": "real_identity_zero_v1",
+    "wolfram_command": os.environ.get("VIPER_WOLFRAM_CMD", "wolframscript"),
+}
+SECOND_ENGINE_CONFIG_HASH = sha(SECOND_ENGINE_CONFIG)
 
 
 
@@ -206,20 +214,61 @@ def _derivative_base_point_certificate(lhs, rhs, symbols, domain, timeout):
 # Every other safeguard still runs inside sympy, so a bug shared across sympy's routines is
 # invisible to all of them. This calls a separate engine in a separate process (config-driven,
 # no hardcoded path). A rigorous NONZERO from it while we certified ZERO is a governance stop.
-def _second_opinion(lhs_s, rhs_s, symbols, timeout):
+def _second_engine_payload(lhs_s, rhs_s, symbols, scope, domain, assumptions):
+    """The only material shared with the second engine: raw claim plus declared semantics."""
+    return {"lhs": lhs_s, "rhs": rhs_s, "symbols": list(symbols), "scope": scope,
+            "domain": domain, "assumptions": list(assumptions or [])}
+
+
+def _second_opinion(lhs_s, rhs_s, symbols, scope, domain, assumptions, timeout):
+    """Run the isolated B3 engine and retain raw process evidence for replay.
+
+    The default route is the shipped Python-AST-to-Wolfram executable.  An environment
+    command remains available only for fault injection and external engine experiments;
+    it can never earn a confirming ZERO unless it identifies itself as the pinned profile.
+    """
+    payload = _second_engine_payload(lhs_s, rhs_s, symbols, scope, domain, assumptions)
     cmd = os.environ.get("VIPER_SECOND_CAS_CMD")
-    if not cmd:
-        return {"status": "not_configured",
-                "note": "no independent second engine configured (VIPER_SECOND_CAS_CMD); "
-                        "all remaining safeguards share the sympy implementation"}
+    if cmd:
+        import shlex
+        command = shlex.split(cmd)
+        route = "external_override"
+    else:
+        command = [sys.executable, str(HERE.parents[2] / "tools" / "independent_zero_engine.py")]
+        route = "shipped_wolfram_engine"
     import shlex
     try:
-        p = subprocess.run(shlex.split(cmd),
-                           input=json.dumps({"lhs": lhs_s, "rhs": rhs_s, "symbols": symbols}),
+        p = subprocess.run(command, input=json.dumps(payload),
                            capture_output=True, text=True, timeout=max(5, timeout))
-        return {"status": "ok", **json.loads(p.stdout)}
+        try:
+            parsed = json.loads(p.stdout)
+        except Exception:
+            return {"status": "malformed_output", "route": route, "input_hash": sha(payload),
+                    "stdout": p.stdout, "stderr": p.stderr, "exit_status": p.returncode}
+        if not isinstance(parsed, dict):
+            return {"status": "malformed_output", "route": route, "input_hash": sha(payload),
+                    "stdout": p.stdout, "stderr": p.stderr, "exit_status": p.returncode}
+        parsed.setdefault("status", "ok")
+        return {"route": route, "process_stdout": p.stdout, "process_stderr": p.stderr,
+                "process_exit_status": p.returncode, **parsed}
+    except subprocess.TimeoutExpired:
+        return {"status": "timeout", "route": route, "input_hash": sha(payload),
+                "stdout": "", "stderr": "", "exit_status": None}
     except Exception as exc:
-        return {"status": "unavailable", "note": f"second engine failed: {type(exc).__name__}"}
+        return {"status": "process_failure", "route": route, "input_hash": sha(payload),
+                "detail": type(exc).__name__, "stdout": "", "stderr": "", "exit_status": None}
+
+
+def _second_zero_confirmed(second, payload):
+    """Fail closed unless the pinned independent profile fully binds this raw request."""
+    return (isinstance(second, dict) and second.get("route") == "shipped_wolfram_engine" and
+            second.get("status") == "complete" and second.get("verdict") == "ZERO" and
+            second.get("engine_identity") == SECOND_ENGINE_CONFIG["engine_identity"] and
+            second.get("implementation_version") == SECOND_ENGINE_CONFIG["implementation_version"] and
+            second.get("parser_version") == SECOND_ENGINE_CONFIG["parser_version"] and
+            second.get("semantic_profile") == SECOND_ENGINE_CONFIG["semantic_profile"] and
+            second.get("configuration_hash") == SECOND_ENGINE_CONFIG_HASH and
+            second.get("input_hash") == sha(payload) and second.get("process_exit_status") == 0)
 
 
 def handle(req):
@@ -324,8 +373,15 @@ def handle(req):
                 side_conditions, excluded = [], None
             cert["side_conditions"] = side_conditions
             # #5: independent second engine. A rigorous NONZERO here contradicts our ZERO.
-            second = _second_opinion(lhs_s, rhs_s, symbols, timeout)
+            second_payload = _second_engine_payload(lhs_s, rhs_s, symbols, scope, domain,
+                                                    claim.get("assumptions"))
+            second = _second_opinion(lhs_s, rhs_s, symbols, scope, domain,
+                                     claim.get("assumptions"), timeout)
             cert["second_engine"] = second
+            cert["artifact_hash"] = sha({"type": cert["type"],
+                                         "recheckable_certificate": cert["recheckable_certificate"],
+                                         "side_conditions": cert["side_conditions"],
+                                         "second_engine": second})
             if second.get("verdict") == "NONZERO":
                 symbolic = {"verdict": "SECOND_ENGINE_CONTRADICTS_CERTIFICATE",
                             "evidence_level": 0, "canonical_residual": "0", "certificate": None}
@@ -336,6 +392,16 @@ def handle(req):
                 unresolved = ["an independent second engine rigorously reports a non-zero "
                               "difference while our canonicalizers reported zero; certificate "
                               "withheld pending review"]
+                _conflict = (symbolic, numerical, combined, level, relation, unresolved)
+            elif not _second_zero_confirmed(second, second_payload):
+                symbolic = {"verdict": "SYMBOLIC_ZERO_PENDING_SECOND_ENGINE", "evidence_level": 1,
+                            "canonical_residual": "0", "certificate": None}
+                numerical = {"verdict": "NUMERICALLY_CONFIRMS_SYMBOLIC_ZERO", "witness_point": None,
+                             "tolerance": tol, "points_probed": probed, "second_engine": second}
+                combined, level, relation = ("SYMBOLIC_ZERO_PENDING_SECOND_ENGINE", 1,
+                                             "SECOND_ENGINE_ZERO_REQUIRED")
+                unresolved = ["primary symbolic ZERO is not independently confirmed by the "
+                              "pinned second-engine profile"]
                 _conflict = (symbolic, numerical, combined, level, relation, unresolved)
             verdict_name = ("VERIFIED_SYMBOLIC_IDENTITY_WITH_SIDE_CONDITIONS" if side_conditions
                             else "VERIFIED_SYMBOLIC_IDENTITY")
@@ -360,10 +426,25 @@ def handle(req):
         elif probed > 0:  # numerically ~0 everywhere probed but not symbolically proven
             numerical["verdict"] = "NUMERICALLY_CONSISTENT_WITHIN_TOLERANCE"
             # tier T3: try derivative + base point before settling for level 1
+            t3_second_note = None
             try:
                 t3_cert = _derivative_base_point_certificate(lhs, rhs, symbols, domain, timeout)
             except Exception:
                 t3_cert = None
+            if t3_cert and t3_cert.get("kind") == "derivative_base_point_composite":
+                child = t3_cert.get("derivative_child") or {}
+                child_payload = _second_engine_payload(
+                    child.get("lhs"), child.get("rhs"), child.get("symbols") or [], scope,
+                    t3_cert.get("domain_certificate"), claim.get("assumptions"))
+                second = _second_opinion(child.get("lhs"), child.get("rhs"), child.get("symbols") or [],
+                                         scope, t3_cert.get("domain_certificate"),
+                                         claim.get("assumptions"), timeout)
+                if _second_zero_confirmed(second, child_payload):
+                    t3_cert["second_engine"] = second
+                else:
+                    t3_second_note = ("B1 composite derivative child lacks a confirming pinned "
+                                      f"second-engine ZERO: {second.get('status')}/{second.get('verdict')}")
+                    t3_cert = None
             if t3_cert:
                 sc, excl = [], None
                 try:
@@ -386,8 +467,9 @@ def handle(req):
                 unresolved += [f"valid on the declared connected domain: {domain}"]
             else:
                 combined, level, relation = "NUMERICALLY_CONSISTENT_SYMBOLIC_UNPROVEN", 1, "SYMBOLIC_UNSUPPORTED_NUMERICAL_CONSISTENT"
-                unresolved = ["numerically consistent but no symbolic certificate; a stronger "
-                              "canonicalizer or a proof is required to reach level 3"]
+                unresolved = ([t3_second_note] if t3_second_note else
+                              ["numerically consistent but no symbolic certificate; a stronger "
+                               "canonicalizer or a proof is required to reach level 3"])
         else:  # could not evaluate at any point
             numerical["verdict"] = "NUMERICAL_EVALUATION_FAILED"
             combined, level, relation = "INCONCLUSIVE_INSUFFICIENT_EVIDENCE", 0, "BOTH_INCONCLUSIVE"
