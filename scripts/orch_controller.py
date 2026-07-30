@@ -239,7 +239,11 @@ def route_recheck_symbolic_certificate(raw: str) -> tuple[dict, int]:
     claim = payload.get("claim") or {}
     cert = payload.get("certificate") or {}
     try:
-        out = _rc.recheck(claim, cert)
+        if cert.get("kind") == "multivariable_gradient_base_point_composite":
+            from loop_engine.orch_adapters.symbolic_identity_verify import multivariable_t3 as _b5
+            out = _b5.recheck(claim, cert)
+        else:
+            out = _rc.recheck(claim, cert)
     except Exception as exc:
         return {"recheck_ok": False, "detail": f"recheck error: {exc.__class__.__name__}"}, 1
     return {"recheck_ok": out["ok"], "detail": out["detail"]}, (0 if out["ok"] else 1)
