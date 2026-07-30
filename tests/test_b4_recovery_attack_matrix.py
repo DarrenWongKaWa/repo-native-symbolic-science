@@ -144,7 +144,43 @@ def test_atk_b4_026_to_027_open_asin_and_b1_intermediates_are_independent_load_b
     assert open_node["dependencies"] and open_node["status"] == "PROVED"
     bad = copy.deepcopy(graph); bad["obligations"] = [n for n in bad["obligations"] if n["kind"] != "DIFFERENTIABILITY"]
     bad["obligations"][-1]["dependencies"] = [n["obligation_id"] for n in bad["obligations"][:-1]]; _rehash(bad)
-    _assert_blocks(claim, _real_line(), bad, B4.FAILURE["source"])
+    _assert_blocks(claim, _real_line(), bad, B4.FAILURE["dependency"])
+
+
+def test_b4_final_b1_o1_to_o17_semantic_dag_and_intermediate_tampering():
+    claim = _claim("atan(x)", "asin(x/sqrt(1+x**2))")
+    graph = B4.build_obligation_graph(claim, _real_line(), [])
+    paths = {node["source_node_path"]: node for node in graph["obligations"]}
+    required = {"b1.P.nonzero", "b1.sqrtP.positive", "b1.sqrtP.relation", "b1.g.square",
+                "b1.interior.identity", "b1.reciprocal.positive", "b1.interior.positive",
+                "b1.asin_derivative_root.positive", "b1.asin_derivative_denominator",
+                "b1.asin.differentiability", "b1.atan.differentiability", "b1.base_point",
+                "b1.composite.eligibility"}
+    assert required <= set(paths)
+    assert B4.recheck_obligation_graph(claim, _real_line(), [], graph)["ok"]
+    for path in ("b1.P.nonzero", "b1.sqrtP.positive", "b1.interior.identity",
+                 "b1.reciprocal.positive", "b1.asin_derivative_root.positive", "b1.asin_derivative_denominator"):
+        bad = copy.deepcopy(graph); bad["obligations"] = [n for n in bad["obligations"] if n["source_node_path"] != path]
+        bad["obligations"][-1]["dependencies"] = [n["obligation_id"] for n in bad["obligations"][:-1]]; _rehash(bad)
+        _assert_blocks(claim, _real_line(), bad, B4.FAILURE["dependency"])
+
+
+def test_b4_final_componentwise_positive_orthant_graph_and_attacks():
+    claim = b2_claim(); context = B2.prepare_log_product_claim(claim)
+    transformation = B2.build_componentwise_exp_transformation(
+        context["parent_claim_hash"], context["body"], ["u", "v"],
+        {"lhs": "log(exp(u)*exp(v))", "rhs": "log(exp(u))+log(exp(v))", "symbols": ["u", "v"], "scope": "real_scalars"})
+    claim["subdomain"]["transformation"] = transformation
+    graph = B4.build_obligation_graph(claim, claim["subdomain"], claim["assumptions"])
+    paths = {n["source_node_path"] for n in graph["obligations"]}
+    assert {"subdomain.transformation.components[0].image", "subdomain.transformation.components[1].image",
+            "subdomain.transformation.product_image", "subdomain.transformation.parent_scope"} <= paths
+    assert B4.recheck_obligation_graph(claim, claim["subdomain"], claim["assumptions"], graph)["ok"]
+    for mutate in (lambda t: t["components"].pop(), lambda t: t["components"].reverse(),
+                   lambda t: t["components"][1].update(source="u", forward="exp(u)"),
+                   lambda t: t["components"][1].update(inverse="log(x)")):
+        bad = copy.deepcopy(claim); mutate(bad["subdomain"]["transformation"])
+        with pytest.raises(Exception): B2.prepare_log_product_claim(bad)
 
 
 def test_atk_b4_028_to_030_new_b2_binds_graph_legacy_is_legacy_and_inventory_cannot_lie():

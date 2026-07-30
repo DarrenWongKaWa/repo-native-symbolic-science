@@ -225,6 +225,46 @@ def _validate_positive_exp_transformation(raw, parent_claim_hash, source_body):
     return cert
 
 
+def _validate_componentwise_exp_transformation(raw, parent_claim_hash, source_body):
+    """Exact ordered positive-orthant parameterization x_i=exp(u_i)."""
+    required = {"kind", "version", "source_variables", "target_variables", "components",
+                "parent_claim_hash", "transformed_claim", "transformed_claim_hash"}
+    if not isinstance(raw, dict) or (set(raw) != required and set(raw) != required | {"artifact_hash"}) or \
+            raw.get("kind") != "componentwise_transformation" or raw.get("version") != "1.0" or \
+            raw.get("parent_claim_hash") != parent_claim_hash or \
+            ("artifact_hash" in raw and raw["artifact_hash"] != sha({k: v for k, v in raw.items() if k != "artifact_hash"})):
+        _fail("UNSUPPORTED_TRANSFORMATION")
+    targets, sources, components = raw.get("target_variables"), raw.get("source_variables"), raw.get("components")
+    if targets != source_body["symbols"] or not isinstance(sources, list) or len(sources) != len(targets) or \
+            len(set(sources)) != len(sources) or any(not isinstance(v, str) or not v for v in sources) or \
+            not isinstance(components, list) or len(components) != len(targets):
+        _fail("UNSUPPORTED_TRANSFORMATION")
+    expected_components = [{"target": t, "source": s, "forward": f"exp({s})", "inverse": f"log({t})"}
+                           for t, s in zip(targets, sources)]
+    if components != expected_components:
+        _fail("UNSUPPORTED_TRANSFORMATION")
+    transformed = _claim_body(raw.get("transformed_claim"))
+    if transformed["symbols"] != sources or transformed["scope"] != source_body["scope"]:
+        _fail("UNSUPPORTED_TRANSFORMATION")
+    try:
+        original_lhs = validate_and_parse(source_body["lhs"], targets, real=True)
+        original_rhs = validate_and_parse(source_body["rhs"], targets, real=True)
+        actual_lhs = validate_and_parse(transformed["lhs"], sources, real=True)
+        actual_rhs = validate_and_parse(transformed["rhs"], sources, real=True)
+        mapping = {sympy.Symbol(t, real=True): sympy.exp(sympy.Symbol(s, real=True)) for t, s in zip(targets, sources)}
+        if original_lhs.xreplace(mapping) != actual_lhs or original_rhs.xreplace(mapping) != actual_rhs:
+            _fail("PARENT_CHILD_SEMANTICS_MISMATCH")
+    except AdapterError:
+        _fail("UNSUPPORTED_TRANSFORMATION")
+    expected_hash = sha({"kind": "componentwise_positive_exp_parameterization", "parent_claim_hash": parent_claim_hash,
+                         "source_claim_body_hash": sha(source_body), "source_variables": sources,
+                         "target_variables": targets, "components": components, "transformed_claim": transformed})
+    if raw.get("transformed_claim_hash") != expected_hash:
+        _fail("CHILD_CLAIM_HASH_MISMATCH")
+    cert = {k: copy.deepcopy(v) for k, v in raw.items() if k != "artifact_hash"}; cert["artifact_hash"] = sha(cert)
+    return cert
+
+
 def prepare_log_product_claim(claim):
     """Validate the B2 request and return all hash-bound data except B3 confirmation."""
     if not isinstance(claim, dict) or "subdomain" not in claim or "parent_claim" not in claim:
@@ -276,8 +316,10 @@ def prepare_log_product_claim(claim):
     if not all(_positive_on(child["intervals"][v], v) for v in body["symbols"]):
         _fail("DEFINEDNESS_NOT_PROVED_ON_SUBDOMAIN")
     claim_body_hash = sha(body)
-    transformation_cert = None if transformation in (None, {}) else _validate_positive_exp_transformation(
-        transformation, parent_hash, body)
+    if transformation in (None, {}): transformation_cert = None
+    elif transformation.get("kind") == "componentwise_transformation":
+        transformation_cert = _validate_componentwise_exp_transformation(transformation, parent_hash, body)
+    else: transformation_cert = _validate_positive_exp_transformation(transformation, parent_hash, body)
     normalized = {"schema": SCHEMA, "profile": PROFILE, "parent_claim_hash": parent_hash,
                   "claim_body_hash": claim_body_hash, "variables": body["symbols"],
                   "predicate": child["predicate"], "connected_component": expected_component,
@@ -360,6 +402,19 @@ def build_positive_exp_transformation(parent_claim_hash, source_body, source_var
            "monotone_injective": True, "surjective_onto_image": True, "parent_claim_hash": parent_claim_hash,
            "transformed_claim": transformed_body, "transformed_claim_hash": transformed_hash}
     return _validate_positive_exp_transformation(raw, parent_claim_hash, source_body)
+
+
+def build_componentwise_exp_transformation(parent_claim_hash, source_body, source_variables, transformed_body):
+    targets = list(source_body["symbols"]); sources = list(source_variables)
+    components = [{"target": t, "source": s, "forward": f"exp({s})", "inverse": f"log({t})"}
+                  for t, s in zip(targets, sources)]
+    raw = {"kind": "componentwise_transformation", "version": "1.0", "source_variables": sources,
+           "target_variables": targets, "components": components, "parent_claim_hash": parent_claim_hash,
+           "transformed_claim": transformed_body,
+           "transformed_claim_hash": sha({"kind": "componentwise_positive_exp_parameterization", "parent_claim_hash": parent_claim_hash,
+                                            "source_claim_body_hash": sha(source_body), "source_variables": sources,
+                                            "target_variables": targets, "components": components, "transformed_claim": transformed_body})}
+    return _validate_componentwise_exp_transformation(raw, parent_claim_hash, source_body)
 
 
 def recheck_positive_exp_transformation(cert, source_body):

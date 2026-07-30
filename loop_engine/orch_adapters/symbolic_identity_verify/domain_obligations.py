@@ -33,12 +33,18 @@ SUPPORT_MATRIX = {kind: "EXPLICITLY_UNSUPPORTED" for kind in (
     "ACOS_ARGUMENT_IN_OPEN_RANGE_FOR_DERIVATIVE TAN_COS_NONZERO COT_SIN_NONZERO SEC_COS_NONZERO CSC_SIN_NONZERO "
     "RATIONAL_POWER_BASE_CONDITION FRACTIONAL_POWER_BASE_CONDITION INVERSE_FUNCTION_BRANCH TRANSFORMATION_IMAGE "
     "TRANSFORMATION_INVERSE TRANSFORMATION_INJECTIVITY TRANSFORMATION_MONOTONICITY CONNECTED_DOMAIN NONEMPTY_DOMAIN "
-    "BASE_POINT_MEMBERSHIP DIFFERENTIABILITY OBLIGATION_INTERSECTION").split()}
+    "BASE_POINT_MEMBERSHIP DIFFERENTIABILITY OBLIGATION_INTERSECTION STRICT_POSITIVE_ROOT_VALUE "
+    "POSITIVE_ROOT_RELATION EXACT_RATIONAL_EQUALITY POSITIVE_RECIPROCAL COMPOSITE_PROOF_ELIGIBILITY "
+    "POSITIVE_ORTHANT_IMAGE PRODUCT_DOMAIN_CONNECTED PRODUCT_DOMAIN_NONEMPTY TRANSFORMED_CHILD_SCOPE_VALID "
+    "MAPPED_PARENT_RESTRICTED_SCOPE_VALID").split()}
 for _kind in ("DENOMINATOR_NONZERO", "EVEN_ROOT_RADICAND_NONNEGATIVE", "STRICT_POSITIVE_ROOT_RADICAND",
               "LOG_ARGUMENT_POSITIVE", "RATIONAL_POWER_BASE_CONDITION", "FRACTIONAL_POWER_BASE_CONDITION",
               "CONNECTED_DOMAIN", "NONEMPTY_DOMAIN", "BASE_POINT_MEMBERSHIP", "DIFFERENTIABILITY",
               "TRANSFORMATION_IMAGE", "TRANSFORMATION_INVERSE", "TRANSFORMATION_INJECTIVITY",
-              "TRANSFORMATION_MONOTONICITY", "OBLIGATION_INTERSECTION"):
+              "TRANSFORMATION_MONOTONICITY", "OBLIGATION_INTERSECTION", "STRICT_POSITIVE_ROOT_VALUE",
+              "POSITIVE_ROOT_RELATION", "EXACT_RATIONAL_EQUALITY", "POSITIVE_RECIPROCAL",
+              "COMPOSITE_PROOF_ELIGIBILITY", "POSITIVE_ORTHANT_IMAGE", "PRODUCT_DOMAIN_CONNECTED",
+              "PRODUCT_DOMAIN_NONEMPTY", "TRANSFORMED_CHILD_SCOPE_VALID", "MAPPED_PARENT_RESTRICTED_SCOPE_VALID"):
     SUPPORT_MATRIX[_kind] = "SUPPORTED_AND_RECHECKABLE"
 
 
@@ -288,35 +294,51 @@ def _b1_composite_obligations(claim, unique, symbols, domain_hash, assumption_ha
         cert = None
     if cert is None:
         return []
-    strict = next((o for o in unique if o["kind"] == "STRICT_POSITIVE_ROOT_RADICAND" and
-                   o["status"] == "PROVED"), None)
-    denominator = next((o for o in unique if o["kind"] == "DENOMINATOR_NONZERO" and
-                        o["status"] == "PROVED"), None)
-    if strict is None or denominator is None:
+    strict = next((o for o in unique if o["kind"] == "STRICT_POSITIVE_ROOT_RADICAND" and o["status"] == "PROVED"), None)
+    root_real = next((o for o in unique if o["kind"] == "EVEN_ROOT_RADICAND_NONNEGATIVE" and o["status"] == "PROVED"), None)
+    root_denominator = next((o for o in unique if o["kind"] == "DENOMINATOR_NONZERO" and o["source_expression"].startswith("sqrt(")), None)
+    asin_open = next((o for o in unique if o["kind"] == "ASIN_ARGUMENT_IN_OPEN_RANGE_FOR_DERIVATIVE"), None)
+    asin_closed = next((o for o in unique if o["kind"] == "ASIN_ARGUMENT_IN_CLOSED_RANGE"), None)
+    if None in (strict, root_real, root_denominator, asin_open, asin_closed):
         return []
     cert_hash = cert["artifact_hash"]
-    derived = []
-    for node in unique:
-        if node["kind"] in {"ASIN_ARGUMENT_IN_CLOSED_RANGE", "ASIN_ARGUMENT_IN_OPEN_RANGE_FOR_DERIVATIVE"}:
-            node.update(status="PROVED", proof_route="b1_exact_interior_identity_replay",
-                        proof_artifact={"b1_composite_certificate_hash": cert_hash},
-                        dependencies=[strict["obligation_id"], denominator["obligation_id"]])
-            _refresh(node)
-    open_node = next((o for o in unique if o["kind"] == "ASIN_ARGUMENT_IN_OPEN_RANGE_FOR_DERIVATIVE"), None)
-    if open_node is None:
-        return []
+    # O1 already exists as `strict`; retain it and construct every later fact as a
+    # distinct source-preserving semantic node.  The route is B1's exact positive-root
+    # replay, never a numerical sample or canonicalizer vote.
+    p = strict["source_expression"]
+    o2 = _derived_obligation("DENOMINATOR_NONZERO", p, "b1.P.nonzero", symbols, domain_hash, assumption_hash, intervals,
+                             "PROVED", "positive_implies_nonzero", f"{p} != 0", [strict["obligation_id"]], {"b1_certificate_hash": cert_hash})
+    root_real["dependencies"] = [strict["obligation_id"]]; _refresh(root_real)
+    o4 = _derived_obligation("STRICT_POSITIVE_ROOT_VALUE", f"sqrt({p})", "b1.sqrtP.positive", symbols, domain_hash, assumption_hash, intervals,
+                             "PROVED", "principal_root_of_strictly_positive", f"sqrt({p}) > 0", [strict["obligation_id"], root_real["obligation_id"]], {"b1_certificate_hash": cert_hash})
+    root_denominator.update(status="PROVED", proof_route="positive_root_is_nonzero", normalized_predicate=f"sqrt({p}) != 0", dependencies=[o4["obligation_id"]]); _refresh(root_denominator)
+    o6 = _derived_obligation("POSITIVE_ROOT_RELATION", f"sqrt({p})**2", "b1.sqrtP.relation", symbols, domain_hash, assumption_hash, intervals,
+                             "PROVED", "principal_positive_root_relation", f"sqrt({p})**2 == {p}", [strict["obligation_id"], root_real["obligation_id"], o4["obligation_id"]], {"b1_certificate_hash": cert_hash})
+    g = asin_open["source_expression"]
+    o7 = _derived_obligation("EXACT_RATIONAL_EQUALITY", f"({g})**2", "b1.g.square", symbols, domain_hash, assumption_hash, intervals,
+                             "PROVED", "exact_rational_equality_replay", f"({g})**2 == x**2/({p})", [o2["obligation_id"], root_denominator["obligation_id"], o6["obligation_id"]], {"b1_certificate_hash": cert_hash})
+    o8 = _derived_obligation("EXACT_RATIONAL_EQUALITY", f"1-({g})**2", "b1.interior.identity", symbols, domain_hash, assumption_hash, intervals,
+                             "PROVED", "exact_rational_equality_replay", f"1-({g})**2 == 1/({p})", [o2["obligation_id"], o7["obligation_id"]], {"b1_certificate_hash": cert_hash})
+    o9 = _derived_obligation("POSITIVE_RECIPROCAL", f"1/({p})", "b1.reciprocal.positive", symbols, domain_hash, assumption_hash, intervals,
+                             "PROVED", "positive_reciprocal", f"1/({p}) > 0", [strict["obligation_id"], o2["obligation_id"]], {"b1_certificate_hash": cert_hash})
+    o10 = _derived_obligation("ASIN_ARGUMENT_IN_OPEN_RANGE_FOR_DERIVATIVE", f"1-({g})**2", "b1.interior.positive", symbols, domain_hash, assumption_hash, intervals,
+                              "PROVED", "interior_identity_plus_positive_reciprocal", f"1-({g})**2 > 0", [o8["obligation_id"], o9["obligation_id"]], {"b1_certificate_hash": cert_hash})
+    asin_open.update(status="PROVED", proof_route="real_argument_from_positive_interior", normalized_predicate=f"-1 < {g} < 1", dependencies=[root_real["obligation_id"], root_denominator["obligation_id"], o10["obligation_id"]], proof_artifact={"b1_certificate_hash": cert_hash}); _refresh(asin_open)
+    asin_closed.update(status="PROVED", proof_route="open_range_implies_closed_range", dependencies=[asin_open["obligation_id"]], proof_artifact={"b1_certificate_hash": cert_hash}); _refresh(asin_closed)
+    o12 = _derived_obligation("STRICT_POSITIVE_ROOT_VALUE", f"sqrt(1-({g})**2)", "b1.asin_derivative_root.positive", symbols, domain_hash, assumption_hash, intervals,
+                              "PROVED", "principal_root_of_positive_interior", f"sqrt(1-({g})**2) > 0", [o10["obligation_id"], asin_open["obligation_id"]], {"b1_certificate_hash": cert_hash})
+    o13 = _derived_obligation("DENOMINATOR_NONZERO", f"sqrt(1-({g})**2)", "b1.asin_derivative_denominator", symbols, domain_hash, assumption_hash, intervals,
+                              "PROVED", "positive_root_is_nonzero", f"sqrt(1-({g})**2) != 0", [o12["obligation_id"]], {"b1_certificate_hash": cert_hash})
     connected = next(o for o in unique if o["kind"] == "CONNECTED_DOMAIN")
-    derived.append(_derived_obligation(
-        "DIFFERENTIABILITY", "atan(x) and asin(x/sqrt(1+x**2))", "b1.parent", symbols,
-        domain_hash, assumption_hash, intervals, "PROVED", "b1_structured_real_line_replay",
-        "both parent sides differentiable", [open_node["obligation_id"], denominator["obligation_id"]],
-        {"b1_composite_certificate_hash": cert_hash}))
-    derived.append(_derived_obligation(
-        "BASE_POINT_MEMBERSHIP", f"{symbols[0]} = 0", "b1.base_point", symbols,
-        domain_hash, assumption_hash, intervals, "PROVED", "real_line_contains_zero",
-        f"{symbols[0]}=0 belongs to declared domain", [connected["obligation_id"]],
-        {"b1_composite_certificate_hash": cert_hash}))
-    return derived
+    o14 = _derived_obligation("DIFFERENTIABILITY", f"asin({g})", "b1.asin.differentiability", symbols, domain_hash, assumption_hash, intervals,
+                              "PROVED", "asin_derivative_domain_replay", f"asin({g}) differentiable", [root_denominator["obligation_id"], asin_open["obligation_id"], o12["obligation_id"], o13["obligation_id"]], {"b1_certificate_hash": cert_hash})
+    o15 = _derived_obligation("DIFFERENTIABILITY", "atan(x)", "b1.atan.differentiability", symbols, domain_hash, assumption_hash, intervals,
+                              "PROVED", "atan_real_line_derivative", "atan(x) differentiable", [connected["obligation_id"]], {"b1_certificate_hash": cert_hash})
+    o16 = _derived_obligation("BASE_POINT_MEMBERSHIP", "x = 0", "b1.base_point", symbols, domain_hash, assumption_hash, intervals,
+                              "PROVED", "real_line_contains_zero", "x=0 belongs to declared domain", [connected["obligation_id"]], {"b1_certificate_hash": cert_hash})
+    o17 = _derived_obligation("COMPOSITE_PROOF_ELIGIBILITY", "derivative_base_point_composite", "b1.composite.eligibility", symbols, domain_hash, assumption_hash, intervals,
+                              "PROVED", "b1_composite_certificate_replay", "derivative/base-point composite eligible", [o14["obligation_id"], o15["obligation_id"], o16["obligation_id"]], {"b1_certificate_hash": cert_hash})
+    return [o2, o4, o6, o7, o8, o9, o10, o12, o13, o14, o15, o16, o17]
 
 
 def _b2_transformation_obligations(claim, unique, symbols, domain_hash, assumption_hash, intervals):
@@ -335,6 +357,42 @@ def _b2_transformation_obligations(claim, unique, symbols, domain_hash, assumpti
                                     "b2_transformation_validation_failed", "image domain unavailable", [], None)]
     if transformation is None:
         return []
+    if transformation.get("kind") == "componentwise_transformation":
+        connected = next(o for o in unique if o["kind"] == "CONNECTED_DOMAIN")
+        t_hash = transformation["artifact_hash"]
+        component_nodes = []
+        for index, component in enumerate(transformation["components"]):
+            target, source = component["target"], component["source"]
+            image = _derived_obligation("TRANSFORMATION_IMAGE", f"{target}=exp({source})", f"subdomain.transformation.components[{index}].image",
+                                        symbols, domain_hash, assumption_hash, intervals, "PROVED", "componentwise_exp_exact_replay",
+                                        f"{target} in (0,+inf)", [connected["obligation_id"]], {"transformation_hash": t_hash, "component_index": index})
+            inverse = _derived_obligation("TRANSFORMATION_INVERSE", f"log(exp({source}))", f"subdomain.transformation.components[{index}].inverse",
+                                          symbols, domain_hash, assumption_hash, intervals, "PROVED", "componentwise_exp_exact_replay",
+                                          f"log(exp({source})) = {source}", [image["obligation_id"]], {"transformation_hash": t_hash, "component_index": index})
+            injective = _derived_obligation("TRANSFORMATION_INJECTIVITY", f"exp({source})", f"subdomain.transformation.components[{index}].injectivity",
+                                            symbols, domain_hash, assumption_hash, intervals, "PROVED", "componentwise_exp_exact_replay",
+                                            f"exp({source}) injective", [image["obligation_id"]], {"transformation_hash": t_hash, "component_index": index})
+            monotone = _derived_obligation("TRANSFORMATION_MONOTONICITY", f"exp({source})", f"subdomain.transformation.components[{index}].monotonicity",
+                                           symbols, domain_hash, assumption_hash, intervals, "PROVED", "componentwise_exp_exact_replay",
+                                           f"exp({source}) strictly increasing", [image["obligation_id"]], {"transformation_hash": t_hash, "component_index": index})
+            component_nodes.extend([image, inverse, injective, monotone])
+        images = [n["obligation_id"] for n in component_nodes if n["kind"] == "TRANSFORMATION_IMAGE"]
+        product = _derived_obligation("POSITIVE_ORTHANT_IMAGE", "componentwise exp image", "subdomain.transformation.product_image",
+                                      symbols, domain_hash, assumption_hash, intervals, "PROVED", "component_images_product",
+                                      "product image is positive orthant", images, {"transformation_hash": t_hash})
+        product_connected = _derived_obligation("PRODUCT_DOMAIN_CONNECTED", "positive orthant", "subdomain.transformation.product_connected",
+                                                symbols, domain_hash, assumption_hash, intervals, "PROVED", "product_positive_intervals_connected",
+                                                "positive orthant connected", [product["obligation_id"]], {"transformation_hash": t_hash})
+        product_nonempty = _derived_obligation("PRODUCT_DOMAIN_NONEMPTY", "positive orthant", "subdomain.transformation.product_nonempty",
+                                               symbols, domain_hash, assumption_hash, intervals, "PROVED", "product_positive_intervals_nonempty",
+                                               "positive orthant nonempty", [product["obligation_id"]], {"transformation_hash": t_hash})
+        child_scope = _derived_obligation("TRANSFORMED_CHILD_SCOPE_VALID", "transformed child claim", "subdomain.transformation.child_scope",
+                                          symbols, domain_hash, assumption_hash, intervals, "PROVED", "componentwise_transformed_claim_replay",
+                                          "transformed child scope valid", [product["obligation_id"]], {"transformation_hash": t_hash})
+        parent_scope = _derived_obligation("MAPPED_PARENT_RESTRICTED_SCOPE_VALID", "mapped parent restricted claim", "subdomain.transformation.parent_scope",
+                                           symbols, domain_hash, assumption_hash, intervals, "PROVED", "componentwise_parent_scope_replay",
+                                           "mapped parent scope valid", [child_scope["obligation_id"], product_connected["obligation_id"], product_nonempty["obligation_id"]], {"transformation_hash": t_hash})
+        return component_nodes + [product, product_connected, product_nonempty, child_scope, parent_scope]
     source = transformation["source_variable"]
     parameter = transformation["parameter_variable"]
     t_hash = transformation["artifact_hash"]
