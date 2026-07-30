@@ -11,7 +11,7 @@ import pytest
 from loop_engine.orch_adapters._symbolic_safe_parse import validate_and_parse
 from loop_engine.orch_adapters.symbolic_identity_verify import core
 from loop_engine.orch_adapters.symbolic_identity_verify import multivariable_t3 as B5
-from tests.test_b5_multivariable_t3 import claim, request
+from tests.test_b5_multivariable_t3 import _cli, claim, request
 
 REPO = Path(__file__).resolve().parents[1]
 CTL = REPO / "scripts" / "orch_controller.py"
@@ -19,8 +19,8 @@ CTL = REPO / "scripts" / "orch_controller.py"
 
 @pytest.fixture(scope="module")
 def valid_pair():
-    result, rc = B5.verify_request(request(claim()))
-    assert rc == 0
+    result, rc, process = _cli("multivariable-t3-verify", request(claim()))
+    assert rc == 0 and process.stderr == ""
     return claim(), result["symbolic_claim_verifier"]["certificate"]
 
 
