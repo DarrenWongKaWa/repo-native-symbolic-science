@@ -176,6 +176,55 @@ def _parent_claim(parent):
     return body, analysis
 
 
+def _transformed_claim_hash(parent_claim_hash, source_body, source_variable, parameter_variable, transformed_body):
+    return sha({"kind": "positive_exp_parameterization", "parent_claim_hash": parent_claim_hash,
+                "source_claim_body_hash": sha(source_body), "source_variable": source_variable,
+                "parameter_variable": parameter_variable, "transformed_claim": transformed_body})
+
+
+def _validate_positive_exp_transformation(raw, parent_claim_hash, source_body):
+    """Validate an actual substitution, not merely a descriptive mapping record."""
+    required = {"kind", "certificate_version", "source_variable", "parameter_variable", "forward",
+                "source_domain", "image_domain", "inverse", "monotone_injective", "surjective_onto_image",
+                "parent_claim_hash", "transformed_claim", "transformed_claim_hash"}
+    if not isinstance(raw, dict) or (set(raw) != required and set(raw) != required | {"artifact_hash"}) or \
+            ("artifact_hash" in raw and raw["artifact_hash"] != sha({k: v for k, v in raw.items() if k != "artifact_hash"})) or \
+            raw.get("kind") != "positive_exp_parameterization" or \
+            raw.get("certificate_version") != "1.0" or raw.get("parent_claim_hash") != parent_claim_hash:
+        _fail("UNSUPPORTED_TRANSFORMATION")
+    source, parameter = raw.get("source_variable"), raw.get("parameter_variable")
+    if source not in source_body["symbols"] or not isinstance(parameter, str) or not parameter or parameter in source_body["symbols"]:
+        _fail("UNSUPPORTED_TRANSFORMATION")
+    expected_image = _interval(source, "0", "+inf", False, False)
+    if raw.get("forward") != f"exp({parameter})" or raw.get("inverse") != f"log({source})" or \
+            raw.get("source_domain") != {"kind": "real_line", "variable": parameter} or \
+            raw.get("image_domain") != expected_image or raw.get("monotone_injective") is not True or \
+            raw.get("surjective_onto_image") is not True:
+        _fail("UNSUPPORTED_TRANSFORMATION")
+    transformed = _claim_body(raw.get("transformed_claim"))
+    expected_symbols = [parameter if v == source else v for v in source_body["symbols"]]
+    if transformed["symbols"] != expected_symbols or transformed["scope"] != source_body["scope"]:
+        _fail("PARENT_CHILD_SEMANTICS_MISMATCH")
+    try:
+        source_lhs = validate_and_parse(source_body["lhs"], source_body["symbols"], real=True)
+        source_rhs = validate_and_parse(source_body["rhs"], source_body["symbols"], real=True)
+        target_lhs = validate_and_parse(transformed["lhs"], transformed["symbols"], real=True)
+        target_rhs = validate_and_parse(transformed["rhs"], transformed["symbols"], real=True)
+        source_symbol = next(s for s in source_lhs.free_symbols | source_rhs.free_symbols if str(s) == source)
+        parameter_symbol = next(s for s in target_lhs.free_symbols | target_rhs.free_symbols if str(s) == parameter)
+    except (AdapterError, StopIteration):
+        _fail("UNSUPPORTED_TRANSFORMATION")
+    if source_lhs.xreplace({source_symbol: sympy.exp(parameter_symbol)}) != target_lhs or \
+            source_rhs.xreplace({source_symbol: sympy.exp(parameter_symbol)}) != target_rhs:
+        _fail("PARENT_CHILD_SEMANTICS_MISMATCH")
+    expected_hash = _transformed_claim_hash(parent_claim_hash, source_body, source, parameter, transformed)
+    if raw.get("transformed_claim_hash") != expected_hash:
+        _fail("CHILD_CLAIM_HASH_MISMATCH")
+    cert = copy.deepcopy(raw)
+    cert["artifact_hash"] = sha(cert)
+    return cert
+
+
 def prepare_log_product_claim(claim):
     """Validate the B2 request and return all hash-bound data except B3 confirmation."""
     if not isinstance(claim, dict) or "subdomain" not in claim or "parent_claim" not in claim:
@@ -186,6 +235,10 @@ def prepare_log_product_claim(claim):
         _fail("PARENT_CHILD_SEMANTICS_MISMATCH")
     raw = claim["subdomain"]
     if not isinstance(raw, dict) or raw.get("schema") != SCHEMA or raw.get("variables") != body["symbols"]:
+        _fail("UNSUPPORTED_DOMAIN_PREDICATE")
+    allowed_subdomain_fields = {"schema", "parent_claim_hash", "variables", "predicate", "connected_component",
+                                "definedness_obligations", "side_conditions", "scope_mapping", "transformation"}
+    if set(raw) - allowed_subdomain_fields:
         _fail("UNSUPPORTED_DOMAIN_PREDICATE")
     child = analyze_predicate(raw.get("predicate"), body["symbols"])
     if child["status"] == "EMPTY":
@@ -206,8 +259,6 @@ def prepare_log_product_claim(claim):
     if raw.get("definedness_obligations", []) not in ([], None) or raw.get("side_conditions", []) not in ([], None) or not isinstance(raw.get("scope_mapping", {}), dict):
         _fail("UNSUPPORTED_DOMAIN_PREDICATE")
     transformation = raw.get("transformation")
-    if transformation not in (None, {}):
-        _fail("UNSUPPORTED_TRANSFORMATION")
     try:
         lhs = validate_and_parse(body["lhs"], body["symbols"], real=True)
         rhs = validate_and_parse(body["rhs"], body["symbols"], real=True)
@@ -225,12 +276,14 @@ def prepare_log_product_claim(claim):
     if not all(_positive_on(child["intervals"][v], v) for v in body["symbols"]):
         _fail("DEFINEDNESS_NOT_PROVED_ON_SUBDOMAIN")
     claim_body_hash = sha(body)
+    transformation_cert = None if transformation in (None, {}) else _validate_positive_exp_transformation(
+        transformation, parent_hash, body)
     normalized = {"schema": SCHEMA, "profile": PROFILE, "parent_claim_hash": parent_hash,
                   "claim_body_hash": claim_body_hash, "variables": body["symbols"],
                   "predicate": child["predicate"], "connected_component": expected_component,
                   "definedness_obligations": [{"kind": "strict_positive", "variable": v} for v in body["symbols"]],
                   "side_conditions": [f"{v} > 0" for v in body["symbols"]],
-                  "transformation": None, "scope_mapping": copy.deepcopy(raw.get("scope_mapping", {})),
+                  "transformation": transformation_cert, "scope_mapping": copy.deepcopy(raw.get("scope_mapping", {})),
                   "scope_relation": scope_relation}
     subdomain_hash = sha(normalized)
     child_hash = sha({"schema": SCHEMA, "profile": PROFILE, "claim_body_hash": claim_body_hash,
@@ -281,22 +334,21 @@ def recheck(claim, cert):
     return {"ok": True, "detail": "re-verified conditional real-log identity on its explicit connected subdomain"}
 
 
-def build_positive_exp_transformation(parent_claim_hash, transformed_claim_hash, source_variable, parameter_variable):
-    if not all(isinstance(v, str) and v for v in (parent_claim_hash, transformed_claim_hash, source_variable, parameter_variable)) or source_variable == parameter_variable:
-        _fail("UNSUPPORTED_TRANSFORMATION")
-    cert = {"kind": "positive_exp_parameterization", "certificate_version": "1.0", "source_variable": source_variable,
-            "parameter_variable": parameter_variable, "forward": f"exp({parameter_variable})",
-            "source_domain": {"kind": "real_line", "variable": parameter_variable},
-            "image_domain": _interval(source_variable, "0", "+inf", False, False), "inverse": f"log({source_variable})",
-            "monotone_injective": True, "surjective_onto_image": True, "parent_claim_hash": parent_claim_hash,
-            "transformed_claim_hash": transformed_claim_hash}
-    cert["artifact_hash"] = sha({k: v for k, v in cert.items() if k != "artifact_hash"})
-    return cert
+def build_positive_exp_transformation(parent_claim_hash, source_body, source_variable, parameter_variable, transformed_body):
+    transformed_hash = _transformed_claim_hash(parent_claim_hash, source_body, source_variable, parameter_variable, transformed_body)
+    raw = {"kind": "positive_exp_parameterization", "certificate_version": "1.0", "source_variable": source_variable,
+           "parameter_variable": parameter_variable, "forward": f"exp({parameter_variable})",
+           "source_domain": {"kind": "real_line", "variable": parameter_variable},
+           "image_domain": _interval(source_variable, "0", "+inf", False, False), "inverse": f"log({source_variable})",
+           "monotone_injective": True, "surjective_onto_image": True, "parent_claim_hash": parent_claim_hash,
+           "transformed_claim": transformed_body, "transformed_claim_hash": transformed_hash}
+    return _validate_positive_exp_transformation(raw, parent_claim_hash, source_body)
 
 
-def recheck_positive_exp_transformation(cert):
+def recheck_positive_exp_transformation(cert, source_body):
     try:
-        expected = build_positive_exp_transformation(cert["parent_claim_hash"], cert["transformed_claim_hash"], cert["source_variable"], cert["parameter_variable"])
+        raw = {k: v for k, v in cert.items() if k != "artifact_hash"}
+        expected = _validate_positive_exp_transformation(raw, cert["parent_claim_hash"], source_body)
     except (KeyError, AdapterError):
         return {"ok": False, "detail": "invalid positive-exp transformation"}
     return {"ok": cert == expected, "detail": "positive-exp transformation rechecked" if cert == expected else "positive-exp transformation metadata mismatch"}
