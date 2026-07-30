@@ -1,23 +1,90 @@
 {
-  "packet_schema": "viper.independent_review_packet.v1",
+  "packet_schema": "viper.independent_review_packet.v2",
   "immutable": true,
   "track": "B4",
-  "starting_commit": "b48b344981f06c9668fdc0863c2b4d29d48ea26f",
-  "ending_commit": "8634135676a08579cf1f278a94120f64f7bfef9c",
-  "changed_files": [
+  "supersedes_packet_commit": "6f888df2756e1526ad4e63e464ff6ceaac84218f",
+  "starting_commit_sha": "b48b344981f06c9668fdc0863c2b4d29d48ea26f",
+  "ending_commit_sha": "45bc5231f3a4c410de2cbd9f0e7c6468d85064f8",
+  "commit_list": [
+    "8634135676a08579cf1f278a94120f64f7bfef9c",
+    "6f888df2756e1526ad4e63e464ff6ceaac84218f",
+    "45bc5231f3a4c410de2cbd9f0e7c6468d85064f8"
+  ],
+  "changed_file_paths": [
     "loop_engine/orch_adapters/symbolic_identity_verify/domain_obligations.py",
     "loop_engine/orch_adapters/symbolic_identity_verify/connected_subdomain.py",
-    "tests/test_b4_domain_obligations.py"
+    "loop_engine/orch_adapters/symbolic_identity_verify/core.py",
+    "tests/test_b4_domain_obligations.py",
+    "tests/test_b4_recovery_attack_matrix.py"
   ],
-  "commit_list": ["8634135676a08579cf1f278a94120f64f7bfef9c"],
-  "schemas": {"domain_obligation_graph": "viper.domain_obligation_graph.v1"},
-  "policy_hashes": {"source_preservation": "Python AST paths; no evaluated-expression reconstruction", "replay": "rebuild graph and compare exact hash-bound artifact"},
-  "failure_codes": ["DOMAIN_OBLIGATION_UNRESOLVED", "DOMAIN_OBLIGATION_UNSUPPORTED", "DOMAIN_OBLIGATION_DISPROVED", "DOMAIN_EMPTY", "OBLIGATION_GRAPH_HASH_MISMATCH", "OBLIGATION_SOURCE_MISMATCH", "OBLIGATION_GRAPH_CYCLE", "OBLIGATION_DEPENDENCY_MISSING"],
-  "focused_tests": "B4: 11 passed; B4+B2: 41 passed; B1/B2/B3/Gate5 regression: 57 passed",
-  "full_suite": "347 passed; 13 existing PytestReturnNotNone warnings",
-  "release_verification": "PASS; Gates 1-4 PASS; locks MATCH; runtime isolation PASS; secret scan CLEAN",
-  "public_benchmark": "PASS",
-  "attack_result": "source cancellation, x/x, roots, empty/free-text domains, hash/source/dependency/cycle/status tampering, and B2 graph-copy binding covered",
-  "known_limitations": "The B4 v1 proof kernel is deliberately bounded to exact interval, affine interval, positive-factor product, SOS-plus-positive-constant, and one tan interval lemma. Other obligation forms remain explicit UNRESOLVED or UNSUPPORTED; they never earn unconditional evidence.",
-  "review_protocol": "Read-only reviewer must rebuild graphs from source, replay tampering cases, verify B1/B2/B3 compatibility, and issue one canonical verdict."
+  "changed_file_sha256": {
+    "loop_engine/orch_adapters/symbolic_identity_verify/domain_obligations.py": "6cacc7d9df4843d36e15f28ba34e95f312c90092522bf9388e037535c26e9a21",
+    "loop_engine/orch_adapters/symbolic_identity_verify/connected_subdomain.py": "8bf6faae16a95dabaedc7e60a3245702a65f333d5fa86a1158e2221691b27e70",
+    "loop_engine/orch_adapters/symbolic_identity_verify/core.py": "29e2e500a7d1bc2252c0032d67b24518e15b246c9333260fe7f59c4ee1233ed6",
+    "tests/test_b4_domain_obligations.py": "40209bea61e38072eef268cc3ab2d1548dabcee2b8f809fdfa958269a0e65c90",
+    "tests/test_b4_recovery_attack_matrix.py": "b05df775fea21e73e793c58363bb5770ed5ee23206029a3d81a874a0531f0677"
+  },
+  "obligation_schema_path": "loop_engine/orch_adapters/symbolic_identity_verify/domain_obligations.py",
+  "obligation_schema_sha256": "6cacc7d9df4843d36e15f28ba34e95f312c90092522bf9388e037535c26e9a21",
+  "domain_policy_paths": [
+    "loop_engine/orch_adapters/symbolic_identity_verify/domain_obligations.py",
+    "loop_engine/orch_adapters/symbolic_identity_verify/connected_subdomain.py",
+    "loop_engine/orch_adapters/symbolic_identity_verify/recheck.py"
+  ],
+  "domain_policy_sha256": {
+    "loop_engine/orch_adapters/symbolic_identity_verify/domain_obligations.py": "6cacc7d9df4843d36e15f28ba34e95f312c90092522bf9388e037535c26e9a21",
+    "loop_engine/orch_adapters/symbolic_identity_verify/connected_subdomain.py": "8bf6faae16a95dabaedc7e60a3245702a65f333d5fa86a1158e2221691b27e70",
+    "loop_engine/orch_adapters/symbolic_identity_verify/recheck.py": "06da80a78ebc8b5fd97d3e3463144ce51e6c4141bc9d02ab98320af59e66ee72"
+  },
+  "failure_code_source_paths": ["loop_engine/orch_adapters/symbolic_identity_verify/domain_obligations.py"],
+  "failure_code_source_sha256": "6cacc7d9df4843d36e15f28ba34e95f312c90092522bf9388e037535c26e9a21",
+  "rechecker_paths": [
+    "loop_engine/orch_adapters/symbolic_identity_verify/domain_obligations.py",
+    "loop_engine/orch_adapters/symbolic_identity_verify/connected_subdomain.py",
+    "loop_engine/orch_adapters/symbolic_identity_verify/recheck.py"
+  ],
+  "rechecker_sha256": {
+    "loop_engine/orch_adapters/symbolic_identity_verify/domain_obligations.py": "6cacc7d9df4843d36e15f28ba34e95f312c90092522bf9388e037535c26e9a21",
+    "loop_engine/orch_adapters/symbolic_identity_verify/connected_subdomain.py": "8bf6faae16a95dabaedc7e60a3245702a65f333d5fa86a1158e2221691b27e70",
+    "loop_engine/orch_adapters/symbolic_identity_verify/recheck.py": "06da80a78ebc8b5fd97d3e3463144ce51e6c4141bc9d02ab98320af59e66ee72"
+  },
+  "attack_test_paths": ["tests/test_b4_domain_obligations.py", "tests/test_b4_recovery_attack_matrix.py"],
+  "attack_test_sha256": {
+    "tests/test_b4_domain_obligations.py": "40209bea61e38072eef268cc3ab2d1548dabcee2b8f809fdfa958269a0e65c90",
+    "tests/test_b4_recovery_attack_matrix.py": "b05df775fea21e73e793c58363bb5770ed5ee23206029a3d81a874a0531f0677"
+  },
+  "B1_regression_result": "PASS in root pytest (365 passed); positive-root and derivative/base-point composite coverage retained.",
+  "B2_regression_result": "PASS in root pytest (365 passed); legacy replay and new graph-bound issuance both covered.",
+  "B3_regression_result": "PASS in root pytest (365 passed); second-engine input hash remains domain-bound.",
+  "Gate5_result": "PASS in root pytest (365 passed); no expected verdicts were changed or attacks removed.",
+  "focused_test_command": "python -m pytest -q tests/test_b4_domain_obligations.py tests/test_b4_recovery_attack_matrix.py tests/test_b1_composite_t3_certificates.py tests/test_b2_connected_subdomains.py -p no:cacheprovider",
+  "focused_test_exit_code": 0,
+  "focused_test_count": "69 passed",
+  "root_pytest_command": "python -m pytest -q -p no:cacheprovider",
+  "root_pytest_exit_code": 0,
+  "root_pytest_count": "365 passed, 13 pre-existing PytestReturnNotNone warnings",
+  "release_command": "python verification/viper/run_release_verification.py",
+  "release_exit_code": 0,
+  "release_artifact_sha256": "4bd8dede88ff2fb2221dbb3705a2cb1f47ffe754eae8ad13b3a3352c3315048c",
+  "release_artifact_description": "SHA-256 of the complete stdout emitted by the stated release command at ending_commit_sha; the verifier intentionally writes no persistent report.",
+  "public_benchmark_command": "python -m pytest -q benchmarks/sigma_xxx_finite_gamma_replay/tests -p no:cacheprovider",
+  "public_benchmark_exit_code": 0,
+  "runtime_isolation_result": "PASS",
+  "secret_scan_result": "CLEAN",
+  "lock_paths": [
+    "verification/viper/schemas/SCHEMA_LOCK.sha256.json",
+    "verification/viper/corpus/CORPUS_LOCK.sha256.json",
+    "verification/viper/evidence/EVIDENCE_LOCK.sha256"
+  ],
+  "lock_sha256": {
+    "verification/viper/schemas/SCHEMA_LOCK.sha256.json": "2a1086e72830e369a71f756eff259abad1fe6f4e87d0a33cbdba32863a73102f",
+    "verification/viper/corpus/CORPUS_LOCK.sha256.json": "15a89f4f5c0403169c519dc93e8ccd1ec2ce790db538c5f3db1d03ea653f34ce",
+    "verification/viper/evidence/EVIDENCE_LOCK.sha256": "c3b9ed2fe0cc64e7a7cea36eae93c759c8a557eeb6cfdb2b7d2b9a2884854d17"
+  },
+  "git_diff_check_result": "PASS",
+  "known_limitations": "The bounded kernel proves only exact interval, affine interval, SOS-positive, positive-root, B1 composite, and validated B2 exp-transform routes. Every other recognized kind is retained as UNRESOLVED or explicit UNSUPPORTED and cannot yield a verified graph.",
+  "review_protocol": "Read-only reviewer rebuilds source-sensitive inventory, node predicates, semantic dependencies, graph hash, B1/B2 bindings, and all ATK-B4 cases; it must issue one canonical verdict.",
+  "reviewer_environment": "macOS; Python 3.13; repository-local pytest and SymPy environment",
+  "review_timestamp": "2026-07-30",
+  "review_packet_hash": "fd6440f5f9cadafd2583cb4da1656f2e3d502ca3c10550778fea40e78efad035"
 }
