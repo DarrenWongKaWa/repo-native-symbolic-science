@@ -158,6 +158,17 @@ def _differential_canonicalize(diff, timeout):
 def _derivative_base_point_certificate(lhs, rhs, symbols, domain, timeout):
     if len(symbols) != 1:
         return None                      # single-variable form only
+    # B1: a structured real-line domain may earn the stronger composite certificate,
+    # but only when the child proof and every domain obligation independently replay.
+    # A free-form legacy domain deliberately remains on the old, non-recheckable path.
+    if isinstance(domain, dict):
+        try:
+            composite = _recheck.build_derivative_base_point_composite_certificate(
+                lhs, rhs, symbols, domain)
+        except Exception:
+            composite = None
+        if composite is not None:
+            return composite
     x = syms_like(lhs - rhs, symbols)[0]
     try:
         d = _with_timeout(lambda: sympy.diff(lhs - rhs, x), max(2, timeout // 3))
@@ -361,6 +372,10 @@ def handle(req):
                 except (_Timeout, Exception):
                     pass
                 t3_cert["side_conditions"] = sc
+                if t3_cert.get("kind") == "derivative_base_point_composite":
+                    # The runtime records the domain-guard result after construction, so bind
+                    # that additive evidence into the composite artifact as well.
+                    t3_cert["artifact_hash"] = _recheck._artifact_hash(t3_cert)
                 vname = ("VERIFIED_BY_DERIVATIVE_AND_BASE_POINT_WITH_SIDE_CONDITIONS" if sc
                          else "VERIFIED_BY_DERIVATIVE_AND_BASE_POINT")
                 symbolic = {"verdict": vname, "evidence_level": 3,
