@@ -91,5 +91,5 @@
   "review_protocol": "Read-only reviewer rebuilds source-sensitive inventory, node predicates, semantic dependencies, graph hash, B1/B2 bindings, and all ATK-B4 cases; it must issue one canonical verdict.",
   "reviewer_environment": "macOS; Python 3.13; repository-local pytest and SymPy environment",
   "review_timestamp": "2026-07-30",
-  "review_packet_hash": "152a5bd6e93bc5863bef6f4bc2361511d57ce893d20cf4a150d5b1c0f1c1905d"
+  "review_packet_hash": "ef51fa686f7a65af5c118495638b432a486138a1ac4d88e4344f3921e68f61f6"
 }
