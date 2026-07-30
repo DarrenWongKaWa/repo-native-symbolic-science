@@ -409,6 +409,9 @@ def handle(req):
     art_hash = sha(Path(tmp.name).read_bytes())
     final = out_dir / "last_result.json"; os.replace(tmp.name, final)
     result["replay_artifact"] = {"path": str(final), "sha256": art_hash}
-    # fail-closed exit: a symbolic/numeric conflict is a governance stop, not a result
-    exit_code = 1 if combined == "DISPUTED_SYMBOLIC_NUMERIC_CONFLICT" else 0
+    # Fail-closed exit: either governance conflict withholds a certificate.
+    exit_code = 1 if combined in {
+        "DISPUTED_SYMBOLIC_NUMERIC_CONFLICT",
+        "DISPUTED_SECOND_ENGINE_CONFLICT",
+    } else 0
     return result, exit_code

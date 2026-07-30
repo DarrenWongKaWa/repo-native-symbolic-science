@@ -5,7 +5,7 @@ no LLM dependency and no machine path. The load-bearing assertions are the GOVER
 the proposer emits only UNVERIFIED claims, never executes model code, never scores, and
 drops anything unsafe/malformed.
 """
-import json, os, subprocess, sys, tempfile
+import json, os, shlex, subprocess, sys, tempfile
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
@@ -16,7 +16,7 @@ STUB = REPO / "tests" / "fixtures" / "stub_proposer.py"
 def _cli(args, stdin="", proposer=True):
     env = dict(os.environ); env["VIPER_OUTPUT_DIR"] = tempfile.mkdtemp(); env["PYTHONPATH"] = ""
     if proposer:
-        env["VIPER_PROPOSER_CMD"] = f"{sys.executable} {STUB}"
+        env["VIPER_PROPOSER_CMD"] = f"{shlex.quote(sys.executable)} {shlex.quote(str(STUB))}"
     else:
         env.pop("VIPER_PROPOSER_CMD", None)
     p = subprocess.run([sys.executable, str(CTL)] + args, input=stdin,
