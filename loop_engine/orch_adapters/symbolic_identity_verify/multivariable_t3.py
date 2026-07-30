@@ -9,13 +9,19 @@ for every child.
 from __future__ import annotations
 
 import copy
+import json
 from fractions import Fraction
 
 import sympy
 
 from loop_engine.orch_adapters._symbolic_safe_parse import AdapterError, sha, validate_and_parse
 from loop_engine.orch_adapters.symbolic_identity_verify import connected_subdomain as _b2
+from loop_engine.orch_adapters.symbolic_identity_verify import core as _core
 from loop_engine.orch_adapters.symbolic_identity_verify import domain_obligations as _b4
+
+
+_PINNED_SECOND_ENGINE_PAYLOAD = _core._second_engine_payload
+_PINNED_SECOND_ZERO_CONFIRMED = _core._second_zero_confirmed
 
 
 CERTIFICATE_KIND = "multivariable_gradient_base_point_composite"
@@ -51,7 +57,7 @@ _BASE_FIELDS = {
 }
 _BUNDLE_FIELDS = {
     "schema", "version", "parent_claim_hash", "domain_hash", "assumptions_hash",
-    "child_graphs", "graph_hash",
+    "parent_graph", "child_graphs", "graph_hash",
 }
 
 
@@ -210,76 +216,56 @@ def _differentiability_obligations(context):
 def _exact_child_certificate(lhs, rhs, variables):
     from loop_engine.orch_adapters.symbolic_identity_verify import recheck as _rc
 
-    symbols = {str(symbol): symbol for symbol in (lhs.free_symbols | rhs.free_symbols)}
-    generators = [symbols.get(name, sympy.Symbol(name, real=True)) for name in variables]
-    try:
-        lhs_poly = sympy.Poly(sympy.expand(lhs), *generators)
-        rhs_poly = sympy.Poly(sympy.expand(rhs), *generators)
-        if not ((lhs_poly.free_symbols | rhs_poly.free_symbols) - set(generators)) and \
-                sympy.expand(lhs - rhs) == 0:
-            body = {
-                "kind": "b5_exact_polynomial_difference",
-                "certificate_version": "1.0",
-                "symbols": list(variables),
-                "lhs_polynomial": str(sympy.expand(lhs)),
-                "rhs_polynomial": str(sympy.expand(rhs)),
-                "expanded_residual": "0",
-                "proof_route": "exact_polynomial_expansion_v1",
-            }
-            body["artifact_hash"] = sha(body)
-            return body
-    except Exception:
-        pass
-    try:
-        reduced = _rc._trig_reduce(lhs, rhs, variables)
-        if reduced is not None:
-            numerator, ideal, generators, denominator, encoding = reduced
-            quotients, remainder = sympy.reduced(numerator, ideal, *generators)
-            if denominator != 0 and remainder == 0 and \
-                    sympy.expand(sum(q * p for q, p in zip(quotients, ideal)) -
-                                 numerator) == 0:
-                body = {
-                    "kind": "b5_trig_ideal_cofactor",
-                    "certificate_version": "1.0",
-                    "symbols": list(variables),
-                    "atom_encoding": encoding,
-                    "constraint_polynomials": [str(value) for value in ideal],
-                    "cofactors": [str(value) for value in quotients],
-                    "numerator_polynomial": str(numerator),
-                    "cleared_denominator": str(denominator),
-                    "proof_route": "exact_trig_ideal_reduction_v1",
-                }
-                body["artifact_hash"] = sha(body)
-                return body
-    except Exception:
-        pass
-    for builder in (_rc.build_exp_polynomial_certificate,):
+    claim = {"lhs": str(lhs), "rhs": str(rhs), "symbols": list(variables)}
+    for builder in (
+            _rc.build_polynomial_certificate,
+            _rc.build_trig_cofactor_certificate,
+            _rc.build_exp_polynomial_certificate):
         try:
             certificate = builder(lhs, rhs, variables)
         except Exception:
             certificate = None
-        if certificate is not None:
-            claim = {"lhs": str(lhs), "rhs": str(rhs), "symbols": list(variables)}
-            if _rc.recheck(claim, certificate).get("ok"):
-                return certificate
+        if certificate is None:
+            continue
+        # The frozen T1 builder emits an empty cofactor list for the valid P=0 case,
+        # while its independent rechecker requires one cofactor per ideal generator.
+        # Supplying explicit zero cofactors makes that existing proof object replayable.
+        if certificate.get("kind") == "trig_ideal_cofactor" and \
+                certificate.get("numerator_polynomial") == "0" and \
+                not certificate.get("cofactors"):
+            certificate["cofactors"] = [
+                "0" for _ in certificate.get("constraint_polynomials", [])]
+        if _rc.recheck(claim, certificate).get("ok"):
+            return certificate
     return None
 
 
 def _recheck_exact_child(derivative_claim, certificate):
     if not isinstance(certificate, dict):
         return False
-    variables = derivative_claim.get("symbols")
-    try:
-        lhs = validate_and_parse(derivative_claim["lhs"], variables, real=True)
-        rhs = validate_and_parse(derivative_claim["rhs"], variables, real=True)
-    except Exception:
-        return False
-    kind = certificate.get("kind")
-    if kind in {"b5_exact_polynomial_difference", "b5_trig_ideal_cofactor"}:
-        expected = _exact_child_certificate(lhs, rhs, variables)
-        return expected == certificate
     from loop_engine.orch_adapters.symbolic_identity_verify import recheck as _rc
     return bool(_rc.recheck(derivative_claim, certificate).get("ok"))
+
+
+def _strict_second_zero_confirmed(second, payload, validator=None):
+    """Replay both the pinned semantic profile and the raw process/JSON transport."""
+    checker = validator or _PINNED_SECOND_ZERO_CONFIRMED
+    if not checker(second, payload) or not isinstance(second, dict):
+        return False
+    if second.get("stdout") != "True" or second.get("exit_status") != 0 or \
+            second.get("process_exit_status") != 0:
+        return False
+    raw = second.get("process_stdout")
+    if not isinstance(raw, str):
+        return False
+    try:
+        parsed = json.loads(raw)
+    except Exception:
+        return False
+    transport = {"route", "process_stdout", "process_stderr", "process_exit_status"}
+    return isinstance(parsed, dict) and parsed == {
+        key: value for key, value in second.items() if key not in transport
+    }
 
 
 def _derivative_claim(context, variable):
@@ -343,6 +329,18 @@ def build_certificate(
         children = []
         child_graphs = []
         b4_domain = {"predicate": context["normalized_domain"]["predicate"]}
+        parent_graph_claim = {
+            "lhs": context["parent_claim"]["lhs"],
+            "rhs": context["parent_claim"]["rhs"],
+            "symbols": list(context["variables"]),
+            "scope": context["scope"],
+        }
+        parent_graph = _b4.build_obligation_graph(
+            parent_graph_claim, b4_domain, context["assumptions"])
+        if not _b4.recheck_obligation_graph(
+                parent_graph_claim, b4_domain, context["assumptions"],
+                parent_graph).get("ok"):
+            return None
         for variable in context["variables"]:
             derivative_lhs, derivative_rhs, derivative_claim = _derivative_claim(context, variable)
             exact_certificate = _exact_child_certificate(
@@ -357,7 +355,8 @@ def build_certificate(
             second = second_engine_runner(
                 derivative_claim["lhs"], derivative_claim["rhs"], context["variables"],
                 context["scope"], context["normalized_domain"], context["assumptions"], timeout)
-            if not second_engine_validator(second, payload):
+            if not _strict_second_zero_confirmed(
+                    second, payload, second_engine_validator):
                 return None
             graph_claim = {
                 "lhs": derivative_claim["lhs"],
@@ -401,6 +400,7 @@ def build_certificate(
             "parent_claim_hash": context["parent_claim_hash"],
             "domain_hash": context["domain_hash"],
             "assumptions_hash": context["assumptions_hash"],
+            "parent_graph": parent_graph,
             "child_graphs": child_graphs,
         }
         graph_bundle["graph_hash"] = sha(graph_bundle)
@@ -480,7 +480,6 @@ def recheck(claim, certificate):
     children = certificate.get("derivative_children")
     if not isinstance(children, list) or len(children) != len(context["variables"]):
         return {"ok": False, "detail": "B5 gradient child count is incomplete"}
-    from loop_engine.orch_adapters.symbolic_identity_verify import core
     expected_coverage = []
     b4_domain = {"predicate": context["normalized_domain"]["predicate"]}
     expected_graph_bindings = []
@@ -510,11 +509,11 @@ def recheck(claim, certificate):
             return {"ok": False, "detail": "B5 exact child certificate hash mismatch"}
         if not _recheck_exact_child(derivative_claim, child.get("exact_certificate")):
             return {"ok": False, "detail": "B5 exact derivative child replay failed"}
-        payload = core._second_engine_payload(
+        payload = _PINNED_SECOND_ENGINE_PAYLOAD(
             derivative_claim["lhs"], derivative_claim["rhs"], context["variables"],
             context["scope"], context["normalized_domain"], context["assumptions"])
         if child.get("second_engine_hash") != sha(child.get("second_engine")) or \
-                not core._second_zero_confirmed(child.get("second_engine"), payload):
+                not _strict_second_zero_confirmed(child.get("second_engine"), payload):
             return {"ok": False, "detail": "B5 pinned B3 derivative confirmation failed"}
         if child.get("child_hash") != _body_hash(child, "child_hash"):
             return {"ok": False, "detail": "B5 derivative child hash mismatch"}
@@ -538,6 +537,16 @@ def recheck(claim, certificate):
         if bundle.get(key) != value:
             return {"ok": False, "detail": "B5 B4 graph bundle parent binding mismatch"}
     graph_entries = bundle.get("child_graphs")
+    parent_graph_claim = {
+        "lhs": context["parent_claim"]["lhs"],
+        "rhs": context["parent_claim"]["rhs"],
+        "symbols": list(context["variables"]),
+        "scope": context["scope"],
+    }
+    if not _b4.recheck_obligation_graph(
+            parent_graph_claim, b4_domain, context["assumptions"],
+            bundle.get("parent_graph")).get("ok"):
+        return {"ok": False, "detail": "B5 parent-source B4 graph replay failed"}
     if not isinstance(graph_entries, list) or len(graph_entries) != len(expected_graph_bindings):
         return {"ok": False, "detail": "B5 B4 child graph coverage is incomplete"}
     for entry, (variable, derivative_hash, derivative_claim) in zip(

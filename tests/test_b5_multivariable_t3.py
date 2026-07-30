@@ -23,8 +23,8 @@ OPEN_RECTANGLE = {"kind": "intersection", "terms": [
      "lower_closed": False, "upper_closed": False},
 ]}
 POLYNOMIAL_CLAIM = {
-    "lhs": "(x+y)**2",
-    "rhs": "x**2+2*x*y+y**2",
+    "lhs": "(x+y)**3",
+    "rhs": "x**3+3*x**2*y+3*x*y**2+y**3",
     "symbols": ["x", "y"],
     "scope": "real_scalars",
     "assumptions": ["x real", "y real"],
@@ -101,7 +101,7 @@ def test_two_variable_polynomial_has_complete_exact_gradient(polynomial_certific
 
 
 def test_two_variable_transcendental_identity_uses_existing_t1_children(trig_certificate):
-    assert all(child["exact_certificate"]["kind"] == "b5_trig_ideal_cofactor"
+    assert all(child["exact_certificate"]["kind"] == "trig_ideal_cofactor"
                for child in trig_certificate["derivative_children"])
     assert B5.recheck(TRIG_CLAIM, trig_certificate)["ok"]
 
@@ -132,6 +132,17 @@ def test_additive_adapter_seam_uses_real_b3_route():
     assert B5.recheck(TRIG_CLAIM, certificate)["ok"]
 
 
+@pytest.mark.parametrize("claim", [POLYNOMIAL_CLAIM, TRIG_CLAIM])
+def test_real_adapter_issues_and_replays_b5_certificate(claim):
+    result, exit_code = ADAPTER.SymbolicIdentityVerifyAdapter().run({"claim": claim})
+    certificate = result["symbolic_claim_verifier"]["certificate"]
+    assert exit_code == 0
+    assert result["combined_evidence_level"] == 3
+    assert certificate["kind"] == B5.CERTIFICATE_KIND
+    assert B5.recheck(claim, certificate)["ok"]
+    assert result["replay_artifact"]["sha256"]
+
+
 def test_mutated_primary_module_runner_cannot_replace_pinned_b5_b3_route(monkeypatch):
     monkeypatch.setattr(core, "_second_opinion", lambda *args: {
         "status": "complete", "verdict": "UNKNOWN", "route": "injected"})
@@ -140,6 +151,33 @@ def test_mutated_primary_module_runner_cannot_replace_pinned_b5_b3_route(monkeyp
     assert certificate is not None
     assert all(child["second_engine"]["route"] == "shipped_wolfram_engine"
                for child in certificate["derivative_children"])
+
+
+def test_mutated_primary_module_validator_cannot_replace_pinned_b5_replay(
+        monkeypatch, polynomial_certificate):
+    monkeypatch.setattr(core, "_second_zero_confirmed", lambda *_: True)
+    bad = copy.deepcopy(polynomial_certificate)
+    bad["derivative_children"][0]["second_engine"] = {"attacker": "forged"}
+    _reseal(bad)
+    _assert_rejected(bad)
+
+
+def test_b5_promotion_does_not_depend_on_numerical_agreement(monkeypatch):
+    result = {
+        "combined_evidence_level": 0,
+        "combined_verdict": "INCONCLUSIVE_INSUFFICIENT_EVIDENCE",
+        "symbolic_claim_verifier": {"canonical_residual": "unresolved"},
+        "numerical_geobasis_verifier": {"verdict": "INCONCLUSIVE"},
+        "provenance": {"subresult_hashes": {}},
+    }
+    monkeypatch.setattr(core, "handle", lambda request: (copy.deepcopy(result), 0))
+    upgraded, exit_code = ADAPTER.SymbolicIdentityVerifyAdapter().run({
+        "claim": POLYNOMIAL_CLAIM,
+        "policy_overrides": {"simplify_timeout_seconds": 7},
+    })
+    assert exit_code == 0
+    assert upgraded["combined_evidence_level"] == 3
+    assert upgraded["symbolic_claim_verifier"]["certificate"]["kind"] == B5.CERTIFICATE_KIND
 
 
 @pytest.mark.parametrize("mutation", [
@@ -205,6 +243,16 @@ def test_child_and_base_point_hash_forgery_fails_closed(polynomial_certificate):
     _assert_rejected(base_bad)
 
 
+def test_resealed_exact_child_proof_cannot_understate_required_grid(
+        polynomial_certificate):
+    bad = copy.deepcopy(polynomial_certificate)
+    exact = bad["derivative_children"][0]["exact_certificate"]
+    exact["per_variable_values"] = [0]
+    exact["grid_points"] = 1
+    _reseal(bad)
+    _assert_rejected(bad)
+
+
 def test_coverage_bitmap_and_completeness_fields_cannot_promote_partial_gradient(
         polynomial_certificate):
     bitmap = copy.deepcopy(polynomial_certificate)
@@ -233,8 +281,17 @@ def test_directional_derivative_only_evidence_fails_closed(polynomial_certificat
     lambda evidence: evidence.update(verdict="UNKNOWN"),
     lambda evidence: evidence.update(verdict="NONZERO"),
     lambda evidence: evidence.update(status="malformed_output"),
+    lambda evidence: evidence.update(route="external_override"),
+    lambda evidence: evidence.update(engine_identity="wrong"),
+    lambda evidence: evidence.update(implementation_version="wrong"),
+    lambda evidence: evidence.update(parser_version="wrong"),
+    lambda evidence: evidence.update(semantic_profile="wrong"),
     lambda evidence: evidence.update(configuration_hash="wrong"),
     lambda evidence: evidence.update(input_hash="wrong"),
+    lambda evidence: evidence.update(process_exit_status=9),
+    lambda evidence: evidence.update(exit_status=9),
+    lambda evidence: evidence.update(stdout="False"),
+    lambda evidence: evidence.update(process_stdout="forged"),
 ])
 def test_unknown_nonzero_malformed_or_mismatched_b3_child_blocks_parent(
         polynomial_certificate, mutation):
@@ -263,6 +320,17 @@ def test_empty_union_free_text_and_closed_domains_are_ineligible():
         claim = copy.deepcopy(POLYNOMIAL_CLAIM)
         claim["domain"] = domain
         assert _build(claim) is None
+
+
+@pytest.mark.parametrize("lhs", [
+    "x/x + y",
+    "sqrt(x)**2 + y",
+])
+def test_parent_source_definedness_cannot_be_erased_before_b4(lhs):
+    claim = copy.deepcopy(POLYNOMIAL_CLAIM)
+    claim["lhs"] = lhs
+    claim["rhs"] = "1+y" if lhs.startswith("x/x") else "x+y"
+    assert _build(claim) is None
 
 
 def test_outside_or_boundary_base_point_fails_reconstruction(polynomial_certificate):

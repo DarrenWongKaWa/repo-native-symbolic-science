@@ -18,11 +18,15 @@ _PINNED_SECOND_ENGINE_PAYLOAD = _core._second_engine_payload
 _PINNED_SECOND_ZERO_CONFIRMED = _core._second_zero_confirmed
 
 
-def build_b5_certificate_for_request(request: dict[str, Any], timeout: int = 20):
+def build_b5_certificate_for_request(
+        request: dict[str, Any], timeout: int | None = None):
     """Additive B5 seam kept outside the SHA-locked B1-B4 implementation files."""
     claim = request.get("claim") if isinstance(request, dict) else None
     if not isinstance(claim, dict) or len(claim.get("symbols") or []) < 2:
         return None
+    if timeout is None:
+        timeout = (request.get("policy_overrides") or {}).get(
+            "simplify_timeout_seconds", _core.POLICY["simplify_timeout_seconds"])
     from loop_engine.orch_adapters.symbolic_identity_verify import multivariable_t3 as _b5
     return _b5.build_certificate(
         claim, timeout, _PINNED_SECOND_OPINION, _PINNED_SECOND_ENGINE_PAYLOAD,
@@ -86,10 +90,12 @@ class SymbolicIdentityVerifyAdapter:
 
     def run(self, request: dict[str, Any]) -> tuple[dict[str, Any], int]:
         result, exit_code = _core.handle(request)
-        numerical = result.get("numerical_geobasis_verifier") or {}
+        verdict = str(result.get("combined_verdict") or "")
         if exit_code == 0 and result.get("combined_evidence_level", 0) <= 1 and \
-                numerical.get("verdict") == "NUMERICALLY_CONSISTENT_WITHIN_TOLERANCE":
-            certificate = build_b5_certificate_for_request(request)
+                not verdict.startswith(("DISPROVED_", "DISPUTED_")):
+            timeout = (request.get("policy_overrides") or {}).get(
+                "simplify_timeout_seconds", _core.POLICY["simplify_timeout_seconds"])
+            certificate = build_b5_certificate_for_request(request, timeout)
             if certificate is not None:
                 return _upgrade_with_b5(request, result, certificate), 0
         return result, exit_code
