@@ -220,7 +220,7 @@ def _validate_positive_exp_transformation(raw, parent_claim_hash, source_body):
     expected_hash = _transformed_claim_hash(parent_claim_hash, source_body, source, parameter, transformed)
     if raw.get("transformed_claim_hash") != expected_hash:
         _fail("CHILD_CLAIM_HASH_MISMATCH")
-    cert = copy.deepcopy(raw)
+    cert = {k: copy.deepcopy(v) for k, v in raw.items() if k != "artifact_hash"}
     cert["artifact_hash"] = sha(cert)
     return cert
 

@@ -104,6 +104,7 @@ def test_exp_transformation_is_accepted_by_the_live_b2_route_and_binds_exact_sub
     claim = _claim(); claim["subdomain"]["transformation"] = _exp_transformation()
     context = B2.prepare_log_product_claim(claim)
     assert context["subdomain"]["transformation"]["transformed_claim"]["symbols"] == ["u", "y"]
+    assert B2.recheck_positive_exp_transformation(context["subdomain"]["transformation"], BODY)["ok"]
 
 
 @pytest.mark.parametrize("mutate", [
