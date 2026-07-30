@@ -1,0 +1,23 @@
+{
+  "packet_schema": "viper.independent_review_packet.v1",
+  "immutable": true,
+  "track": "B4",
+  "starting_commit": "b48b344981f06c9668fdc0863c2b4d29d48ea26f",
+  "ending_commit": "8634135676a08579cf1f278a94120f64f7bfef9c",
+  "changed_files": [
+    "loop_engine/orch_adapters/symbolic_identity_verify/domain_obligations.py",
+    "loop_engine/orch_adapters/symbolic_identity_verify/connected_subdomain.py",
+    "tests/test_b4_domain_obligations.py"
+  ],
+  "commit_list": ["8634135676a08579cf1f278a94120f64f7bfef9c"],
+  "schemas": {"domain_obligation_graph": "viper.domain_obligation_graph.v1"},
+  "policy_hashes": {"source_preservation": "Python AST paths; no evaluated-expression reconstruction", "replay": "rebuild graph and compare exact hash-bound artifact"},
+  "failure_codes": ["DOMAIN_OBLIGATION_UNRESOLVED", "DOMAIN_OBLIGATION_UNSUPPORTED", "DOMAIN_OBLIGATION_DISPROVED", "DOMAIN_EMPTY", "OBLIGATION_GRAPH_HASH_MISMATCH", "OBLIGATION_SOURCE_MISMATCH", "OBLIGATION_GRAPH_CYCLE", "OBLIGATION_DEPENDENCY_MISSING"],
+  "focused_tests": "B4: 11 passed; B4+B2: 41 passed; B1/B2/B3/Gate5 regression: 57 passed",
+  "full_suite": "347 passed; 13 existing PytestReturnNotNone warnings",
+  "release_verification": "PASS; Gates 1-4 PASS; locks MATCH; runtime isolation PASS; secret scan CLEAN",
+  "public_benchmark": "PASS",
+  "attack_result": "source cancellation, x/x, roots, empty/free-text domains, hash/source/dependency/cycle/status tampering, and B2 graph-copy binding covered",
+  "known_limitations": "The B4 v1 proof kernel is deliberately bounded to exact interval, affine interval, positive-factor product, SOS-plus-positive-constant, and one tan interval lemma. Other obligation forms remain explicit UNRESOLVED or UNSUPPORTED; they never earn unconditional evidence.",
+  "review_protocol": "Read-only reviewer must rebuild graphs from source, replay tampering cases, verify B1/B2/B3 compatibility, and issue one canonical verdict."
+}
