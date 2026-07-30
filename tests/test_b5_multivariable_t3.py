@@ -41,9 +41,7 @@ TRIG_CLAIM = {
 
 
 def _build(claim):
-    return B5.build_certificate(
-        claim, 20, core._second_opinion, core._second_engine_payload,
-        core._second_zero_confirmed)
+    return ADAPTER.build_b5_certificate_for_request({"claim": claim})
 
 
 @pytest.fixture(scope="module")
@@ -132,6 +130,16 @@ def test_additive_adapter_seam_uses_real_b3_route():
         {"claim": TRIG_CLAIM})
     assert certificate is not None
     assert B5.recheck(TRIG_CLAIM, certificate)["ok"]
+
+
+def test_mutated_primary_module_runner_cannot_replace_pinned_b5_b3_route(monkeypatch):
+    monkeypatch.setattr(core, "_second_opinion", lambda *args: {
+        "status": "complete", "verdict": "UNKNOWN", "route": "injected"})
+    certificate = ADAPTER.build_b5_certificate_for_request(
+        {"claim": POLYNOMIAL_CLAIM})
+    assert certificate is not None
+    assert all(child["second_engine"]["route"] == "shipped_wolfram_engine"
+               for child in certificate["derivative_children"])
 
 
 @pytest.mark.parametrize("mutation", [

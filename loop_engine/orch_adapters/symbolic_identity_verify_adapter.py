@@ -13,6 +13,10 @@ from pathlib import Path
 from typing import Any
 from loop_engine.orch_adapters.symbolic_identity_verify import core as _core
 
+_PINNED_SECOND_OPINION = _core._second_opinion
+_PINNED_SECOND_ENGINE_PAYLOAD = _core._second_engine_payload
+_PINNED_SECOND_ZERO_CONFIRMED = _core._second_zero_confirmed
+
 
 def build_b5_certificate_for_request(request: dict[str, Any], timeout: int = 20):
     """Additive B5 seam kept outside the SHA-locked B1-B4 implementation files."""
@@ -21,8 +25,8 @@ def build_b5_certificate_for_request(request: dict[str, Any], timeout: int = 20)
         return None
     from loop_engine.orch_adapters.symbolic_identity_verify import multivariable_t3 as _b5
     return _b5.build_certificate(
-        claim, timeout, _core._second_opinion, _core._second_engine_payload,
-        _core._second_zero_confirmed)
+        claim, timeout, _PINNED_SECOND_OPINION, _PINNED_SECOND_ENGINE_PAYLOAD,
+        _PINNED_SECOND_ZERO_CONFIRMED)
 
 
 def _upgrade_with_b5(request, result, certificate):
