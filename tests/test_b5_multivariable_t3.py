@@ -410,3 +410,55 @@ def test_legacy_b1_certificate_is_not_reinterpreted_as_b5():
         lhs, rhs, ["x"], {"kind": "real_line", "variable": "x"})
     assert legacy["kind"] == "derivative_base_point_composite"
     assert B5.recheck(POLYNOMIAL_CLAIM, legacy)["ok"] is False
+
+
+def test_b5_rejects_reserved_declared_symbol_shadowing():
+    reserved_names = [
+        "pi", "E", "I", "oo", "zoo", "nan", "Rational", "Integer", "Float",
+        "Symbol", *core.POLICY["allowed_functions"],
+    ]
+    for reserved in sorted(set(reserved_names)):
+        claim = copy.deepcopy(POLYNOMIAL_CLAIM)
+        claim.update(
+            lhs="x",
+            rhs="x",
+            symbols=[reserved, "x"],
+            assumptions=[f"{reserved} real", "x real"],
+            domain={"kind": "intersection", "terms": [
+                {"kind": "real_line", "variable": reserved},
+                {"kind": "real_line", "variable": "x"},
+            ]},
+        )
+        assert _build(claim) is None, reserved
+
+    false_if_pi_is_a_variable = copy.deepcopy(POLYNOMIAL_CLAIM)
+    false_if_pi_is_a_variable.update(
+        lhs="sin(pi)",
+        rhs="0",
+        symbols=["pi", "x"],
+        assumptions=["pi real", "x real"],
+        domain={"kind": "intersection", "terms": [
+            {"kind": "real_line", "variable": "pi"},
+            {"kind": "real_line", "variable": "x"},
+        ]},
+    )
+    assert _build(false_if_pi_is_a_variable) is None
+
+
+def test_b5_rejects_floor_division_source_erased_pole():
+    claim = copy.deepcopy(POLYNOMIAL_CLAIM)
+    claim["lhs"] = "x//x+y"
+    claim["rhs"] = "1+y"
+    assert _build(claim) is None
+
+
+@pytest.mark.parametrize("source", [
+    "x//y",
+    "(x,y)",
+    "sin(x,y)",
+])
+def test_b5_rejects_other_unsupported_source_ast_forms(source):
+    claim = copy.deepcopy(POLYNOMIAL_CLAIM)
+    claim["lhs"] = source
+    claim["rhs"] = source
+    assert _build(claim) is None
