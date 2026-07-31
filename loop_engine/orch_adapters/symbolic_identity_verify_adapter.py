@@ -13,10 +13,6 @@ from pathlib import Path
 from typing import Any
 from loop_engine.orch_adapters.symbolic_identity_verify import core as _core
 
-_PINNED_SECOND_OPINION = _core._second_opinion
-_PINNED_SECOND_ENGINE_PAYLOAD = _core._second_engine_payload
-_PINNED_SECOND_ZERO_CONFIRMED = _core._second_zero_confirmed
-
 
 def build_b5_certificate_for_request(
         request: dict[str, Any], timeout: int | None = None):
@@ -28,9 +24,7 @@ def build_b5_certificate_for_request(
         timeout = (request.get("policy_overrides") or {}).get(
             "simplify_timeout_seconds", _core.POLICY["simplify_timeout_seconds"])
     from loop_engine.orch_adapters.symbolic_identity_verify import multivariable_t3 as _b5
-    return _b5.build_certificate(
-        claim, timeout, _PINNED_SECOND_OPINION, _PINNED_SECOND_ENGINE_PAYLOAD,
-        _PINNED_SECOND_ZERO_CONFIRMED)
+    return _b5.build_certificate(claim, timeout)
 
 
 def _upgrade_with_b5(request, result, certificate):

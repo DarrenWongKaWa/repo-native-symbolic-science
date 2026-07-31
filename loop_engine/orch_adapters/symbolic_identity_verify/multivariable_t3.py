@@ -10,7 +10,10 @@ from __future__ import annotations
 
 import copy
 import json
+import subprocess
+import sys
 from fractions import Fraction
+from pathlib import Path
 
 import sympy
 
@@ -20,14 +23,15 @@ from loop_engine.orch_adapters.symbolic_identity_verify import core as _core
 from loop_engine.orch_adapters.symbolic_identity_verify import domain_obligations as _b4
 
 
-_PINNED_SECOND_ENGINE_PAYLOAD = _core._second_engine_payload
 _PINNED_SECOND_ZERO_CONFIRMED = _core._second_zero_confirmed
 
 
 CERTIFICATE_KIND = "multivariable_gradient_base_point_composite"
-CERTIFICATE_VERSION = "1.0"
+CERTIFICATE_VERSION = "1.1"
 THEOREM_PROFILE = "open_cartesian_gradient_base_point_v1"
 GRAPH_BUNDLE_SCHEMA = "viper.b5_gradient_domain_obligation_bundle.v1"
+CHILD_CONTEXT_SCHEMA = "viper.b5_child_context.v1"
+EXACT_CHILD_SCHEMA = "viper.b5_bound_exact_child.v1"
 RECHECK_PROCEDURE = (
     "re-parse the raw parent, normalize the open Cartesian domain, reconstruct the exact "
     "base point and every ordered partial derivative, replay every exact child certificate "
@@ -47,9 +51,10 @@ _CERTIFICATE_FIELDS = {
     "independently_recheckable", "recheck_procedure", "artifact_hash",
 }
 _CHILD_FIELDS = {
-    "variable", "ordered_variables", "variable_order_hash", "parent_claim_hash", "scope",
-    "scope_hash", "assumptions", "assumptions_hash", "normalized_domain", "domain_hash",
-    "derivative_claim", "derivative_claim_hash", "exact_certificate",
+    "slot_index", "variable", "ordered_variables", "variable_order_hash",
+    "parent_claim_hash", "scope", "scope_hash", "assumptions", "assumptions_hash",
+    "normalized_domain", "domain_hash", "derivative_claim", "derivative_claim_hash",
+    "context_binding", "context_binding_hash", "exact_certificate",
     "exact_certificate_hash", "second_engine", "second_engine_hash", "child_hash",
 }
 _BASE_FIELDS = {
@@ -58,6 +63,21 @@ _BASE_FIELDS = {
 _BUNDLE_FIELDS = {
     "schema", "version", "parent_claim_hash", "domain_hash", "assumptions_hash",
     "parent_graph", "child_graphs", "graph_hash",
+}
+_CONTEXT_FIELDS = {
+    "schema", "version", "parent_claim_hash", "variable_order_hash", "slot_index",
+    "derivative_variable", "domain_hash", "assumptions_hash", "scope", "scope_hash",
+    "derivative_claim_hash",
+}
+_EXACT_CHILD_FIELDS = {
+    "schema", "version", "context_binding", "context_binding_hash", "proof_kind",
+    "proof", "proof_hash", "artifact_hash",
+}
+_B3_EVIDENCE_FIELDS = {
+    "route", "process_stdout", "process_stderr", "process_exit_status",
+    "configuration_hash", "detail", "engine_identity", "exit_status",
+    "implementation_version", "input_hash", "parser_version", "semantic_profile",
+    "status", "stderr", "stdout", "verdict",
 }
 
 
@@ -252,17 +272,96 @@ def _exact_child_certificate(lhs, rhs, variables):
     return None
 
 
-def _recheck_exact_child(derivative_claim, certificate):
-    if not isinstance(certificate, dict):
+def _bound_exact_child_certificate(lhs, rhs, variables, context_binding):
+    proof = _exact_child_certificate(lhs, rhs, variables)
+    if proof is None:
+        return None
+    envelope = {
+        "schema": EXACT_CHILD_SCHEMA,
+        "version": "1.0",
+        "context_binding": copy.deepcopy(context_binding),
+        "context_binding_hash": sha(context_binding),
+        "proof_kind": proof.get("kind"),
+        "proof": proof,
+        "proof_hash": sha(proof),
+    }
+    envelope["artifact_hash"] = _artifact_hash(envelope)
+    return envelope
+
+
+def _recheck_exact_child(
+        derivative_lhs, derivative_rhs, derivative_claim, certificate,
+        context_binding):
+    if not isinstance(certificate, dict) or set(certificate) != _EXACT_CHILD_FIELDS or \
+            certificate.get("schema") != EXACT_CHILD_SCHEMA or \
+            certificate.get("version") != "1.0":
+        return False
+    if certificate.get("context_binding") != context_binding or \
+            certificate.get("context_binding_hash") != sha(context_binding) or \
+            certificate.get("artifact_hash") != _artifact_hash(certificate):
+        return False
+    proof = certificate.get("proof")
+    if not isinstance(proof, dict) or certificate.get("proof_kind") != proof.get("kind") or \
+            certificate.get("proof_hash") != sha(proof):
+        return False
+    expected = _bound_exact_child_certificate(
+        derivative_lhs, derivative_rhs, derivative_claim["symbols"],
+        context_binding)
+    if expected is None or certificate != expected:
         return False
     from loop_engine.orch_adapters.symbolic_identity_verify import recheck as _rc
-    return bool(_rc.recheck(derivative_claim, certificate).get("ok"))
+    return bool(_rc.recheck(derivative_claim, proof).get("ok"))
 
 
-def _strict_second_zero_confirmed(second, payload, validator=None):
-    """Replay both the pinned semantic profile and the raw process/JSON transport."""
-    checker = validator or _PINNED_SECOND_ZERO_CONFIRMED
-    if not checker(second, payload) or not isinstance(second, dict):
+def _run_pinned_b3_payload(payload, timeout):
+    """Run the shipped B3 executable on the complete B5-bound payload."""
+    command = [
+        sys.executable,
+        str(Path(__file__).resolve().parents[3] / "tools" / "independent_zero_engine.py"),
+    ]
+    try:
+        process = subprocess.run(
+            command, input=json.dumps(payload), capture_output=True, text=True,
+            timeout=max(5, timeout), check=False)
+    except subprocess.TimeoutExpired:
+        return {
+            "status": "timeout", "route": "shipped_wolfram_engine",
+            "input_hash": sha(payload), "stdout": "", "stderr": "",
+            "exit_status": None,
+        }
+    except Exception as exc:
+        return {
+            "status": "process_failure", "route": "shipped_wolfram_engine",
+            "input_hash": sha(payload), "detail": type(exc).__name__,
+            "stdout": "", "stderr": "", "exit_status": None,
+        }
+    try:
+        parsed = json.loads(process.stdout)
+    except Exception:
+        return {
+            "status": "malformed_output", "route": "shipped_wolfram_engine",
+            "input_hash": sha(payload), "stdout": process.stdout,
+            "stderr": process.stderr, "exit_status": process.returncode,
+        }
+    if not isinstance(parsed, dict):
+        return {
+            "status": "malformed_output", "route": "shipped_wolfram_engine",
+            "input_hash": sha(payload), "stdout": process.stdout,
+            "stderr": process.stderr, "exit_status": process.returncode,
+        }
+    return {
+        "route": "shipped_wolfram_engine",
+        "process_stdout": process.stdout,
+        "process_stderr": process.stderr,
+        "process_exit_status": process.returncode,
+        **parsed,
+    }
+
+
+def _strict_second_zero_confirmed(second, payload):
+    """Validate the exact stored B3 schema and its raw process/JSON transport."""
+    if not isinstance(second, dict) or set(second) != _B3_EVIDENCE_FIELDS or \
+            not _PINNED_SECOND_ZERO_CONFIRMED(second, payload):
         return False
     if second.get("stdout") != "True" or second.get("exit_status") != 0 or \
             second.get("process_exit_status") != 0:
@@ -308,6 +407,31 @@ def _derivative_claim_hash(context, variable, derivative_claim):
     })
 
 
+def _child_context_binding(context, slot_index, variable, derivative_claim_hash):
+    return {
+        "schema": CHILD_CONTEXT_SCHEMA,
+        "version": "1.0",
+        "parent_claim_hash": context["parent_claim_hash"],
+        "variable_order_hash": context["variable_order_hash"],
+        "slot_index": slot_index,
+        "derivative_variable": variable,
+        "domain_hash": context["domain_hash"],
+        "assumptions_hash": context["assumptions_hash"],
+        "scope": context["scope"],
+        "scope_hash": context["scope_hash"],
+        "derivative_claim_hash": derivative_claim_hash,
+    }
+
+
+def _child_b3_payload(context, derivative_claim, context_binding):
+    payload = _core._second_engine_payload(
+        derivative_claim["lhs"], derivative_claim["rhs"], context["variables"],
+        context["scope"], context["normalized_domain"], context["assumptions"])
+    payload["b5_context_binding"] = copy.deepcopy(context_binding)
+    payload["b5_context_binding_hash"] = sha(context_binding)
+    return payload
+
+
 def _base_point_certificate(context):
     point = _base_point(context["intervals"], context["variables"])
     substitutions = {
@@ -332,12 +456,7 @@ def _base_point_certificate(context):
     return base
 
 
-def build_certificate(
-        claim,
-        timeout,
-        second_engine_runner,
-        second_engine_payload_builder,
-        second_engine_validator):
+def build_certificate(claim, timeout):
     """Build a complete B5 certificate or return None without partial promotion."""
     try:
         context = _parent_context(claim)
@@ -358,22 +477,21 @@ def build_certificate(
                 parent_graph_claim, b4_domain, context["assumptions"],
                 parent_graph).get("ok"):
             return None
-        for variable in context["variables"]:
+        for slot_index, variable in enumerate(context["variables"]):
             derivative_lhs, derivative_rhs, derivative_claim = _derivative_claim(context, variable)
-            exact_certificate = _exact_child_certificate(
-                derivative_lhs, derivative_rhs, context["variables"])
-            if exact_certificate is None:
-                return None
             derivative_hash = _derivative_claim_hash(
                 context, variable, derivative_claim)
-            payload = second_engine_payload_builder(
-                derivative_claim["lhs"], derivative_claim["rhs"], context["variables"],
-                context["scope"], context["normalized_domain"], context["assumptions"])
-            second = second_engine_runner(
-                derivative_claim["lhs"], derivative_claim["rhs"], context["variables"],
-                context["scope"], context["normalized_domain"], context["assumptions"], timeout)
-            if not _strict_second_zero_confirmed(
-                    second, payload, second_engine_validator):
+            context_binding = _child_context_binding(
+                context, slot_index, variable, derivative_hash)
+            exact_certificate = _bound_exact_child_certificate(
+                derivative_lhs, derivative_rhs, context["variables"],
+                context_binding)
+            if exact_certificate is None:
+                return None
+            payload = _child_b3_payload(
+                context, derivative_claim, context_binding)
+            second = _run_pinned_b3_payload(payload, timeout)
+            if not _strict_second_zero_confirmed(second, payload):
                 return None
             graph_claim = {
                 "lhs": derivative_claim["lhs"],
@@ -387,6 +505,7 @@ def build_certificate(
                     graph_claim, b4_domain, context["assumptions"], graph).get("ok"):
                 return None
             child = {
+                "slot_index": slot_index,
                 "variable": variable,
                 "ordered_variables": list(context["variables"]),
                 "variable_order_hash": context["variable_order_hash"],
@@ -399,6 +518,8 @@ def build_certificate(
                 "domain_hash": context["domain_hash"],
                 "derivative_claim": derivative_claim,
                 "derivative_claim_hash": derivative_hash,
+                "context_binding": copy.deepcopy(context_binding),
+                "context_binding_hash": sha(context_binding),
                 "exact_certificate": exact_certificate,
                 "exact_certificate_hash": sha(exact_certificate),
                 "second_engine": copy.deepcopy(second),
@@ -407,8 +528,10 @@ def build_certificate(
             child["child_hash"] = sha(child)
             children.append(child)
             child_graphs.append({
+                "slot_index": slot_index,
                 "variable": variable,
                 "derivative_claim_hash": derivative_hash,
+                "context_binding_hash": sha(context_binding),
                 "graph": graph,
             })
         graph_bundle = {
@@ -422,8 +545,10 @@ def build_certificate(
         }
         graph_bundle["graph_hash"] = sha(graph_bundle)
         coverage = [
-            {"variable": child["variable"],
-             "derivative_claim_hash": child["derivative_claim_hash"]}
+            {"slot_index": child["slot_index"],
+             "variable": child["variable"],
+             "derivative_claim_hash": child["derivative_claim_hash"],
+             "context_binding_hash": child["context_binding_hash"]}
             for child in children
         ]
         certificate = {
@@ -459,8 +584,10 @@ def build_certificate(
         return None
 
 
-def recheck(claim, certificate):
+def recheck(claim, certificate, timeout=None):
     """Reconstruct every B5 obligation; never trust builder status or coverage fields."""
+    if timeout is None:
+        timeout = _core.POLICY["simplify_timeout_seconds"]
     if not isinstance(certificate, dict) or set(certificate) != _CERTIFICATE_FIELDS:
         return {"ok": False, "detail": "B5 certificate schema mismatch"}
     if certificate.get("kind") != CERTIFICATE_KIND or \
@@ -504,9 +631,16 @@ def recheck(claim, certificate):
         child = children[index]
         if not isinstance(child, dict) or set(child) != _CHILD_FIELDS:
             return {"ok": False, "detail": "B5 derivative child schema mismatch"}
-        derivative_lhs, derivative_rhs, derivative_claim = _derivative_claim(context, variable)
+        try:
+            derivative_lhs, derivative_rhs, derivative_claim = _derivative_claim(
+                context, variable)
+        except (AdapterError, Exception):
+            return {"ok": False, "detail": "B5 exact finite derivative reconstruction failed"}
         derivative_hash = _derivative_claim_hash(context, variable, derivative_claim)
+        context_binding = _child_context_binding(
+            context, index, variable, derivative_hash)
         expected_bindings = {
+            "slot_index": index,
             "variable": variable,
             "ordered_variables": context["variables"],
             "variable_order_hash": context["variable_order_hash"],
@@ -519,26 +653,36 @@ def recheck(claim, certificate):
             "domain_hash": context["domain_hash"],
             "derivative_claim": derivative_claim,
             "derivative_claim_hash": derivative_hash,
+            "context_binding": context_binding,
+            "context_binding_hash": sha(context_binding),
         }
         if any(child.get(key) != value for key, value in expected_bindings.items()):
             return {"ok": False, "detail": "B5 derivative child does not match the ordered partial"}
         if child.get("exact_certificate_hash") != sha(child.get("exact_certificate")):
             return {"ok": False, "detail": "B5 exact child certificate hash mismatch"}
-        if not _recheck_exact_child(derivative_claim, child.get("exact_certificate")):
+        if not _recheck_exact_child(
+                derivative_lhs, derivative_rhs, derivative_claim,
+                child.get("exact_certificate"), context_binding):
             return {"ok": False, "detail": "B5 exact derivative child replay failed"}
-        payload = _PINNED_SECOND_ENGINE_PAYLOAD(
-            derivative_claim["lhs"], derivative_claim["rhs"], context["variables"],
-            context["scope"], context["normalized_domain"], context["assumptions"])
+        payload = _child_b3_payload(context, derivative_claim, context_binding)
         if child.get("second_engine_hash") != sha(child.get("second_engine")) or \
                 not _strict_second_zero_confirmed(child.get("second_engine"), payload):
-            return {"ok": False, "detail": "B5 pinned B3 derivative confirmation failed"}
+            return {"ok": False, "detail": "B5 stored pinned B3 audit record failed"}
+        fresh_second = _run_pinned_b3_payload(payload, timeout)
+        if not _strict_second_zero_confirmed(fresh_second, payload) or \
+                fresh_second != child.get("second_engine"):
+            return {"ok": False, "detail": "B5 fresh pinned B3 replay failed"}
         if child.get("child_hash") != _body_hash(child, "child_hash"):
             return {"ok": False, "detail": "B5 derivative child hash mismatch"}
         expected_coverage.append({
+            "slot_index": index,
             "variable": variable,
             "derivative_claim_hash": derivative_hash,
+            "context_binding_hash": sha(context_binding),
         })
-        expected_graph_bindings.append((variable, derivative_hash, derivative_claim))
+        expected_graph_bindings.append((
+            index, variable, derivative_hash, sha(context_binding),
+            derivative_claim))
     bundle = certificate.get("domain_obligation_graph")
     if not isinstance(bundle, dict) or set(bundle) != _BUNDLE_FIELDS or \
             bundle.get("schema") != GRAPH_BUNDLE_SCHEMA or bundle.get("version") != "1.0":
@@ -566,12 +710,17 @@ def recheck(claim, certificate):
         return {"ok": False, "detail": "B5 parent-source B4 graph replay failed"}
     if not isinstance(graph_entries, list) or len(graph_entries) != len(expected_graph_bindings):
         return {"ok": False, "detail": "B5 B4 child graph coverage is incomplete"}
-    for entry, (variable, derivative_hash, derivative_claim) in zip(
+    for entry, (
+            slot_index, variable, derivative_hash, context_binding_hash,
+            derivative_claim) in zip(
             graph_entries, expected_graph_bindings):
         if not isinstance(entry, dict) or set(entry) != {
-                "variable", "derivative_claim_hash", "graph"} or \
+                "slot_index", "variable", "derivative_claim_hash",
+                "context_binding_hash", "graph"} or \
+                entry.get("slot_index") != slot_index or \
                 entry.get("variable") != variable or \
-                entry.get("derivative_claim_hash") != derivative_hash:
+                entry.get("derivative_claim_hash") != derivative_hash or \
+                entry.get("context_binding_hash") != context_binding_hash:
             return {"ok": False, "detail": "B5 B4 child graph ordering or claim binding mismatch"}
         graph_claim = {
             "lhs": derivative_claim["lhs"],

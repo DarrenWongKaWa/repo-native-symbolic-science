@@ -86,6 +86,14 @@ def _reseal(certificate):
     _outer_hash(certificate)
 
 
+def _reseal_exact_envelope(envelope):
+    envelope["context_binding_hash"] = sha(envelope.get("context_binding"))
+    envelope["proof_hash"] = sha(envelope.get("proof"))
+    body = copy.deepcopy(envelope)
+    body.pop("artifact_hash", None)
+    envelope["artifact_hash"] = sha(body)
+
+
 def _assert_rejected(certificate, claim=POLYNOMIAL_CLAIM):
     assert B5.recheck(claim, certificate)["ok"] is False
 
@@ -101,7 +109,7 @@ def test_two_variable_polynomial_has_complete_exact_gradient(polynomial_certific
 
 
 def test_two_variable_transcendental_identity_uses_existing_t1_children(trig_certificate):
-    assert all(child["exact_certificate"]["kind"] == "trig_ideal_cofactor"
+    assert all(child["exact_certificate"]["proof"]["kind"] == "trig_ideal_cofactor"
                for child in trig_certificate["derivative_children"])
     assert B5.recheck(TRIG_CLAIM, trig_certificate)["ok"]
 
@@ -481,6 +489,96 @@ def test_b5_accepts_exact_rational_source_arithmetic():
     assert certificate is not None
     assert certificate["base_point_certificate"]["lhs_value"] == "1/10"
     assert B5.recheck(claim, certificate)["ok"]
+
+
+def test_b5_rechecker_rejects_fabricated_resealed_b3_transcript(
+        polynomial_certificate):
+    bad = copy.deepcopy(polynomial_certificate)
+    second = bad["derivative_children"][0]["second_engine"]
+    second["process_stderr"] = "REVIEWER_SYNTHETIC_NOT_PROCESS_OUTPUT"
+    _reseal(bad)
+    _assert_rejected(bad)
+
+
+def test_b5_rechecker_rejects_resealed_malformed_exact_child(
+        polynomial_certificate):
+    bad = copy.deepcopy(polynomial_certificate)
+    envelope = bad["derivative_children"][0]["exact_certificate"]
+    proof = envelope["proof"]
+    proof.update({
+        "artifact_hash": "FORGED_INTERNAL_HASH",
+        "total_degree": -999,
+        "symbols": ["foreign"],
+        "grid_points": -999,
+        "all_residuals_exactly_zero": False,
+        "recheck_procedure": "numerical guess",
+        "attacker_extra": "accepted",
+    })
+    _reseal_exact_envelope(envelope)
+    _reseal(bad)
+    _assert_rejected(bad)
+
+
+def test_b5_rejects_resealed_foreign_parent_child_with_identical_derivative(
+        polynomial_certificate):
+    shifted_claim = copy.deepcopy(POLYNOMIAL_CLAIM)
+    shifted_claim["lhs"] = "(x+y)**3+1"
+    shifted_claim["rhs"] = "x**3+3*x**2*y+3*x*y**2+y**3+1"
+    shifted_certificate = _build(shifted_claim)
+    assert shifted_certificate is not None
+    source = copy.deepcopy(polynomial_certificate["derivative_children"][0])
+    target = shifted_certificate["derivative_children"][0]
+    assert source["derivative_claim"] == target["derivative_claim"]
+    source["parent_claim_hash"] = target["parent_claim_hash"]
+    source["derivative_claim_hash"] = target["derivative_claim_hash"]
+    bad = copy.deepcopy(shifted_certificate)
+    bad["derivative_children"][0] = source
+    _reseal(bad)
+    assert B5.recheck(shifted_claim, bad)["ok"] is False
+
+
+def test_b5_rechecker_fails_closed_when_fresh_b3_replay_is_unavailable(
+        monkeypatch, polynomial_certificate):
+    monkeypatch.setattr(B5, "_run_pinned_b3_payload", lambda *_: {
+        "status": "process_failure",
+        "route": "shipped_wolfram_engine",
+    })
+    _assert_rejected(polynomial_certificate)
+
+
+def test_b5_rejects_extra_child_fields_and_incorrect_child_slots(
+        polynomial_certificate):
+    extra = copy.deepcopy(polynomial_certificate)
+    extra["derivative_children"][0]["attacker_extra"] = "forged"
+    _reseal(extra)
+    _assert_rejected(extra)
+
+    wrong_slot = copy.deepcopy(polynomial_certificate)
+    wrong_slot["derivative_children"][0]["slot_index"] = 1
+    _reseal(wrong_slot)
+    _assert_rejected(wrong_slot)
+
+
+def test_b5_rejects_copied_b3_evidence_from_another_claim(
+        polynomial_certificate, trig_certificate):
+    bad = copy.deepcopy(polynomial_certificate)
+    bad["derivative_children"][0]["second_engine"] = copy.deepcopy(
+        trig_certificate["derivative_children"][0]["second_engine"])
+    _reseal(bad)
+    _assert_rejected(bad)
+
+
+def test_b5_child_context_binds_slot_parent_and_b3_input(polynomial_certificate):
+    for slot_index, child in enumerate(polynomial_certificate["derivative_children"]):
+        binding = child["context_binding"]
+        assert set(binding) == B5._CONTEXT_FIELDS
+        assert binding["slot_index"] == slot_index
+        assert binding["derivative_variable"] == child["variable"]
+        assert binding["parent_claim_hash"] == polynomial_certificate["parent_claim_hash"]
+        assert child["context_binding_hash"] == sha(binding)
+        assert child["exact_certificate"]["context_binding"] == binding
+        assert child["exact_certificate"]["artifact_hash"]
+        assert child["second_engine"]["input_hash"]
 
 
 @pytest.mark.parametrize("source", [
