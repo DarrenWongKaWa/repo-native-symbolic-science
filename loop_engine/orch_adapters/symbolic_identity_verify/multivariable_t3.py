@@ -137,6 +137,16 @@ def _structurally_differentiable(expression):
     return False
 
 
+def _exact_finite_real(expression):
+    return (
+        isinstance(expression, sympy.Basic)
+        and not expression.atoms(sympy.Float)
+        and not expression.has(sympy.oo, -sympy.oo, sympy.zoo, sympy.nan)
+        and expression.is_real is True
+        and expression.is_finite is True
+    )
+
+
 def _parent_context(claim):
     required = {"lhs", "rhs", "symbols", "scope", "assumptions", "domain"}
     if not isinstance(claim, dict) or not required.issubset(claim):
@@ -154,6 +164,8 @@ def _parent_context(claim):
         raise AdapterError("B5_REAL_SCOPE_REQUIRED")
     lhs = validate_and_parse(claim["lhs"], variables, real=True)
     rhs = validate_and_parse(claim["rhs"], variables, real=True)
+    if not _exact_finite_real(lhs) or not _exact_finite_real(rhs):
+        raise AdapterError("B5_EXACT_FINITE_REAL_REQUIRED")
     if not _structurally_differentiable(lhs) or not _structurally_differentiable(rhs):
         raise AdapterError("B5_DIFFERENTIABILITY_UNSUPPORTED")
     normalized_domain, intervals = _normalize_domain(claim["domain"], variables)
@@ -274,6 +286,8 @@ def _derivative_claim(context, variable):
     symbol = symbol_by_name.get(variable, sympy.Symbol(variable, real=True))
     derivative_lhs = sympy.diff(context["lhs"], symbol)
     derivative_rhs = sympy.diff(context["rhs"], symbol)
+    if not _exact_finite_real(derivative_lhs) or not _exact_finite_real(derivative_rhs):
+        raise AdapterError("B5_EXACT_FINITE_REAL_DERIVATIVE_REQUIRED")
     return derivative_lhs, derivative_rhs, {
         "lhs": str(derivative_lhs),
         "rhs": str(derivative_rhs),
@@ -302,6 +316,9 @@ def _base_point_certificate(context):
     }
     lhs_value = context["lhs"].subs(substitutions)
     rhs_value = context["rhs"].subs(substitutions)
+    if lhs_value.free_symbols or rhs_value.free_symbols or \
+            not _exact_finite_real(lhs_value) or not _exact_finite_real(rhs_value):
+        raise AdapterError("B5_EXACT_FINITE_REAL_BASE_POINT_REQUIRED")
     if lhs_value != rhs_value:
         raise AdapterError("B5_BASE_POINT_EQUALITY_FAILED")
     base = {

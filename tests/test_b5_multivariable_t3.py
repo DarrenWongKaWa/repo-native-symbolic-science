@@ -452,6 +452,37 @@ def test_b5_rejects_floor_division_source_erased_pole():
     assert _build(claim) is None
 
 
+def test_b5_rejects_rounded_float_base_equality():
+    claim = copy.deepcopy(POLYNOMIAL_CLAIM)
+    claim["lhs"] = "x+y+(0.1+0.000000000000000001)"
+    claim["rhs"] = "x+y+0.1"
+    assert _build(claim) is None
+
+
+def test_b5_rejects_nonfinite_parent_and_base_values():
+    for lhs, rhs in [
+        ("oo+x", "oo"),
+        ("-oo+x", "-oo"),
+        ("oo-oo+x", "oo-oo"),
+        ("1/0+x", "1/0"),
+        ("I*x+y", "y"),
+    ]:
+        claim = copy.deepcopy(POLYNOMIAL_CLAIM)
+        claim["lhs"] = lhs
+        claim["rhs"] = rhs
+        assert _build(claim) is None, (lhs, rhs)
+
+
+def test_b5_accepts_exact_rational_source_arithmetic():
+    claim = copy.deepcopy(POLYNOMIAL_CLAIM)
+    claim["lhs"] = "x+y+1/10"
+    claim["rhs"] = "y+x+1/10"
+    certificate = _build(claim)
+    assert certificate is not None
+    assert certificate["base_point_certificate"]["lhs_value"] == "1/10"
+    assert B5.recheck(claim, certificate)["ok"]
+
+
 @pytest.mark.parametrize("source", [
     "x//y",
     "(x,y)",
