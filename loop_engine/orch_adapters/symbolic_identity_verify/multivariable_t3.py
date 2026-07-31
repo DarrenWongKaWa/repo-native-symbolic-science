@@ -7,10 +7,13 @@ and one independently recheckable plus B3-confirmed ZERO partial for every varia
 """
 from __future__ import annotations
 
+import ast
 import copy
 import json
 import os
 import platform
+import subprocess
+import sys
 import tempfile
 from fractions import Fraction
 from pathlib import Path
@@ -18,7 +21,7 @@ from pathlib import Path
 import sympy
 
 from loop_engine.orch_adapters._symbolic_safe_parse import (
-    FORBIDDEN, git_head, sha, syms_like, validate_and_parse,
+    FORBIDDEN, PARSE_POLICY, git_head, sha, syms_like, validate_and_parse,
 )
 from loop_engine.orch_adapters.symbolic_identity_verify import connected_subdomain as _domain
 from loop_engine.orch_adapters.symbolic_identity_verify import domain_obligations as _b4
@@ -26,8 +29,10 @@ from loop_engine.orch_adapters.symbolic_identity_verify import recheck as _reche
 
 REQUEST_SCHEMA = "viper.multivariable_t3_request.v1"
 CERTIFICATE_KIND = "multivariable_derivative_base_point_composite"
-CERTIFICATE_VERSION = "1.0"
+CERTIFICATE_VERSION = "1.1"
 GRADIENT_SCHEMA = "viper.gradient_certificate_graph.v1"
+CHILD_CONTEXT_SCHEMA = "viper.b5_child_context.v1"
+EXACT_CHILD_SCHEMA = "viper.b5_bound_exact_child.v1"
 FAILURE = {
     "request": "MULTIVARIABLE_T3_REQUEST_INVALID",
     "variables": "MULTIVARIABLE_T3_VARIABLE_MANIFEST_INVALID",
@@ -40,6 +45,27 @@ FAILURE = {
     "certificate": "MULTIVARIABLE_T3_CERTIFICATE_INVALID",
 }
 _ENTIRE_FUNCTIONS = {sympy.sin, sympy.cos, sympy.exp, sympy.sinh, sympy.cosh, sympy.tanh}
+_B5_CONSTANT_NAMES = {"pi", "E", "I", "oo", "zoo", "nan"}
+_RESERVED_DECLARED_NAMES = set(PARSE_POLICY["allowed_functions"]) | \
+    _B5_CONSTANT_NAMES | {"Integer", "Float", "Symbol"}
+_EXACT_CHILD_FIELDS = {
+    "schema", "version", "context_binding", "context_binding_hash",
+    "proof_kind", "proof", "proof_hash", "artifact_hash",
+}
+_CHILD_CONTEXT_FIELDS = {
+    "schema", "version", "parent_claim_hash", "variable_order_hash",
+    "variable_slot_index", "derivative_variable", "domain_hash",
+    "assumptions_hash", "scope", "scope_hash", "derivative_claim_hash",
+}
+_B3_EVIDENCE_FIELDS = {
+    "route", "process_stdout", "process_stderr", "process_exit_status",
+    "configuration_hash", "detail", "engine_identity", "exit_status",
+    "implementation_version", "input_hash", "parser_version",
+    "semantic_profile", "status", "stderr", "stdout", "verdict",
+}
+_B3_PROCESS_FIELDS = {
+    "route", "process_stdout", "process_stderr", "process_exit_status",
+}
 
 
 class MultivariableT3Error(ValueError):
@@ -56,6 +82,79 @@ def _artifact_hash(payload):
     body = copy.deepcopy(payload)
     body.pop("artifact_hash", None)
     return sha(body)
+
+
+def _validate_b5_source_ast(source, declared_symbols):
+    """Validate the complete source grammar before any SymPy parsing."""
+    try:
+        root = ast.parse(source, mode="eval")
+    except (SyntaxError, TypeError):
+        _fail(FAILURE["grammar"])
+    declared = set(declared_symbols)
+    functions = set(PARSE_POLICY["allowed_functions"])
+
+    def visit(node):
+        if isinstance(node, ast.Expression):
+            visit(node.body)
+            return
+        if isinstance(node, ast.Name):
+            if node.id not in declared and node.id not in _B5_CONSTANT_NAMES:
+                _fail(FAILURE["grammar"])
+            return
+        if isinstance(node, ast.Constant):
+            if isinstance(node.value, bool) or not isinstance(node.value, int):
+                _fail(FAILURE["grammar"])
+            return
+        if isinstance(node, ast.UnaryOp) and isinstance(node.op, (ast.UAdd, ast.USub)):
+            visit(node.operand)
+            return
+        if isinstance(node, ast.BinOp) and type(node.op) in {
+                ast.Add, ast.Sub, ast.Mult, ast.Div, ast.Pow, ast.BitXor}:
+            visit(node.left)
+            visit(node.right)
+            return
+        if isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and \
+                node.func.id in functions and not node.keywords:
+            for argument in node.args:
+                visit(argument)
+            return
+        _fail(FAILURE["grammar"])
+
+    visit(root)
+
+
+def _validate_and_parse_b5(source, declared_symbols, real=True):
+    """Apply the stricter B5 grammar without changing legacy B1-B4 parsing."""
+    if not isinstance(declared_symbols, list) or \
+            not all(isinstance(name, str) and name.isidentifier()
+                    for name in declared_symbols) or \
+            len(set(declared_symbols)) != len(declared_symbols) or \
+            any(name in _RESERVED_DECLARED_NAMES for name in declared_symbols):
+        _fail(FAILURE["variables"])
+    _validate_b5_source_ast(source, declared_symbols)
+    expression = validate_and_parse(source, declared_symbols, real=real)
+    declared_map = {
+        name: sympy.Symbol(name, real=True) if real else sympy.Symbol(name)
+        for name in declared_symbols
+    }
+    if not all(isinstance(symbol, sympy.Symbol) and str(symbol) == name
+               for name, symbol in declared_map.items()):
+        _fail(FAILURE["variables"])
+    if not all(isinstance(symbol, sympy.Symbol) and
+               str(symbol) in declared_map for symbol in expression.free_symbols):
+        _fail(FAILURE["grammar"])
+    return expression
+
+
+def _exact_finite_real(expression):
+    """Require exact finite real symbolic arithmetic throughout the B5 route."""
+    return (
+        isinstance(expression, sympy.Basic) and
+        not expression.atoms(sympy.Float) and
+        not expression.has(sympy.oo, -sympy.oo, sympy.zoo, sympy.nan) and
+        expression.is_real is True and
+        expression.is_finite is True
+    )
 
 
 def _exact_rational(source):
@@ -81,7 +180,7 @@ def _inside(value, interval):
 def _entire_real_expression(expr, declared):
     """Recognize only a small grammar whose real differentiability is structural."""
     if expr.is_Number:
-        return bool(expr.is_real)
+        return _exact_finite_real(expr)
     if expr.is_Symbol:
         return str(expr) in declared and expr.is_real is True
     if isinstance(expr, (sympy.Add, sympy.Mul)):
@@ -119,6 +218,133 @@ def _child_certificate(lhs, rhs, symbols):
     return None
 
 
+def _child_context_binding(
+        parent_claim_hash, variable_order_hash, variable_slot_index,
+        derivative_variable, domain_hash, assumptions, scope,
+        derivative_claim_hash):
+    return {
+        "schema": CHILD_CONTEXT_SCHEMA,
+        "version": "1.0",
+        "parent_claim_hash": parent_claim_hash,
+        "variable_order_hash": variable_order_hash,
+        "variable_slot_index": variable_slot_index,
+        "derivative_variable": derivative_variable,
+        "domain_hash": domain_hash,
+        "assumptions_hash": sha(list(assumptions)),
+        "scope": scope,
+        "scope_hash": sha(scope),
+        "derivative_claim_hash": derivative_claim_hash,
+    }
+
+
+def _bound_exact_child_certificate(proof, context_binding):
+    envelope = {
+        "schema": EXACT_CHILD_SCHEMA,
+        "version": "1.0",
+        "context_binding": copy.deepcopy(context_binding),
+        "context_binding_hash": sha(context_binding),
+        "proof_kind": proof.get("kind"),
+        "proof": copy.deepcopy(proof),
+        "proof_hash": sha(proof),
+    }
+    envelope["artifact_hash"] = _artifact_hash(envelope)
+    return envelope
+
+
+def _strict_exact_child_matches(expected, stored):
+    if not isinstance(stored, dict) or set(stored) != _EXACT_CHILD_FIELDS or \
+            stored.get("schema") != EXACT_CHILD_SCHEMA or \
+            stored.get("version") != "1.0" or \
+            stored.get("artifact_hash") != _artifact_hash(stored):
+        return False
+    context = stored.get("context_binding")
+    proof = stored.get("proof")
+    if not isinstance(context, dict) or set(context) != _CHILD_CONTEXT_FIELDS or \
+            stored.get("context_binding_hash") != sha(context) or \
+            not isinstance(proof, dict) or \
+            stored.get("proof_kind") != proof.get("kind") or \
+            stored.get("proof_hash") != sha(proof):
+        return False
+    return stored == expected
+
+
+def _child_b3_payload(child):
+    from loop_engine.orch_adapters.symbolic_identity_verify import core
+    payload = core._second_engine_payload(
+        child["lhs"], child["rhs"], child["symbols"], child["scope"],
+        child["engine_domain"], child["assumptions"])
+    payload["b5_context_binding"] = copy.deepcopy(child["child_context_binding"])
+    payload["b5_context_binding_hash"] = child["child_context_binding_hash"]
+    return payload
+
+
+def _run_pinned_b3_payload(payload, timeout):
+    """Invoke the shipped B3 executable directly, ignoring override commands."""
+    command = [
+        sys.executable,
+        str(Path(__file__).resolve().parents[3] /
+            "tools" / "independent_zero_engine.py"),
+    ]
+    try:
+        process = subprocess.run(
+            command, input=json.dumps(payload), capture_output=True, text=True,
+            timeout=max(5, timeout), check=False)
+    except subprocess.TimeoutExpired:
+        return {
+            "status": "timeout", "route": "shipped_wolfram_engine",
+            "input_hash": sha(payload), "stdout": "", "stderr": "",
+            "exit_status": None,
+        }
+    except Exception as exc:
+        return {
+            "status": "process_failure", "route": "shipped_wolfram_engine",
+            "input_hash": sha(payload), "detail": type(exc).__name__,
+            "stdout": "", "stderr": "", "exit_status": None,
+        }
+    try:
+        parsed = json.loads(process.stdout)
+    except Exception:
+        return {
+            "status": "malformed_output", "route": "shipped_wolfram_engine",
+            "input_hash": sha(payload), "stdout": process.stdout,
+            "stderr": process.stderr, "exit_status": process.returncode,
+        }
+    if not isinstance(parsed, dict):
+        return {
+            "status": "malformed_output", "route": "shipped_wolfram_engine",
+            "input_hash": sha(payload), "stdout": process.stdout,
+            "stderr": process.stderr, "exit_status": process.returncode,
+        }
+    return {
+        "route": "shipped_wolfram_engine",
+        "process_stdout": process.stdout,
+        "process_stderr": process.stderr,
+        "process_exit_status": process.returncode,
+        **parsed,
+    }
+
+
+def _strict_second_zero_confirmed(confirmation, payload):
+    """Require the exact stored B3 schema and raw process/JSON consistency."""
+    from loop_engine.orch_adapters.symbolic_identity_verify import core
+    if not isinstance(confirmation, dict) or \
+            set(confirmation) != _B3_EVIDENCE_FIELDS or \
+            not core._second_zero_confirmed(confirmation, payload) or \
+            confirmation.get("stdout") != "True" or \
+            confirmation.get("exit_status") != 0 or \
+            confirmation.get("process_exit_status") != 0:
+        return False
+    try:
+        parsed = json.loads(confirmation["process_stdout"])
+    except Exception:
+        return False
+    expected_parsed = {
+        key: value for key, value in confirmation.items()
+        if key not in _B3_PROCESS_FIELDS
+    }
+    return parsed == expected_parsed
+
+
 def _claim_binding(claim, canonical_domain, manifest):
     body = {
         "lhs": claim["lhs"],
@@ -143,14 +369,17 @@ def prepare_certificate(claim, lhs, rhs):
     relevant = manifest.get("relevant_variables")
     variable_order = manifest.get("variable_order")
     if not isinstance(symbols, list) or len(symbols) < 2 or len(set(symbols)) != len(symbols) or \
-            relevant != symbols or variable_order != symbols:
+            relevant != symbols or variable_order != symbols or \
+            any(not isinstance(variable, str) or not variable.isidentifier() or
+                variable in _RESERVED_DECLARED_NAMES for variable in symbols):
         _fail(FAILURE["variables"])
     assumptions = claim.get("assumptions")
     scope = claim.get("scope")
     if assumptions != [f"{variable} real" for variable in symbols] or \
             scope != "real_scalars":
         _fail(FAILURE["request"])
-    if not _entire_real_expression(lhs, set(symbols)) or \
+    if not _exact_finite_real(lhs) or not _exact_finite_real(rhs) or \
+            not _entire_real_expression(lhs, set(symbols)) or \
             not _entire_real_expression(rhs, set(symbols)):
         _fail(FAILURE["grammar"])
 
@@ -208,7 +437,8 @@ def prepare_certificate(claim, lhs, rhs):
         lhs_value, rhs_value = lhs.subs(substitutions), rhs.subs(substitutions)
     except Exception:
         _fail(FAILURE["base"])
-    if lhs_value != rhs_value:
+    if not _exact_finite_real(lhs_value) or not _exact_finite_real(rhs_value) or \
+            lhs_value.free_symbols or rhs_value.free_symbols or lhs_value != rhs_value:
         _fail(FAILURE["base"])
 
     try:
@@ -250,15 +480,38 @@ def prepare_certificate(claim, lhs, rhs):
             derivative_lhs, derivative_rhs = sympy.diff(lhs, symbol), sympy.diff(rhs, symbol)
         except Exception:
             _fail(FAILURE["partial"])
-        proof = _child_certificate(derivative_lhs, derivative_rhs, symbols)
-        if proof is None:
+        if not _exact_finite_real(derivative_lhs) or \
+                not _exact_finite_real(derivative_rhs):
             _fail(FAILURE["partial"])
+        derivative_claim = {
+            "lhs": str(derivative_lhs),
+            "rhs": str(derivative_rhs),
+            "symbols": list(symbols),
+            "scope": scope,
+            "assumptions": list(assumptions),
+        }
+        derivative_claim_hash = sha(derivative_claim)
+        context_binding = _child_context_binding(
+            parent_hash,
+            variable_order_manifest["variable_order_hash"],
+            index,
+            variable,
+            domain_certificate["domain_certificate_hash"],
+            assumptions,
+            scope,
+            derivative_claim_hash,
+        )
+        raw_proof = _child_certificate(derivative_lhs, derivative_rhs, symbols)
+        if raw_proof is None:
+            _fail(FAILURE["partial"])
+        proof = _bound_exact_child_certificate(raw_proof, context_binding)
         children.append({
             "order_index": index,
             "differentiation_variable": variable,
             "derivative_kind": "partial_derivative",
             "lhs": str(derivative_lhs),
             "rhs": str(derivative_rhs),
+            "derivative_claim_hash": derivative_claim_hash,
             "symbols": list(symbols),
             "scope": scope,
             "assumptions": list(assumptions),
@@ -267,6 +520,8 @@ def prepare_certificate(claim, lhs, rhs):
             "base_point_hash": base_point_certificate["base_point_hash"],
             "domain_certificate_hash": domain_certificate["domain_certificate_hash"],
             "domain_obligation_graph_hash": graph["graph_hash"],
+            "child_context_binding": context_binding,
+            "child_context_binding_hash": sha(context_binding),
             "proof_certificate": proof,
             "proof_certificate_hash": _artifact_hash(proof),
             "engine_domain": copy.deepcopy(engine_domain),
@@ -308,6 +563,8 @@ def finalize_certificate(prepared, confirmations):
         "variable_order_hash": prepared["variable_order_manifest"]["variable_order_hash"],
         "coverage_bitmap": coverage,
         "covered_variables": [child["differentiation_variable"] for child in children],
+        "ordered_context_binding_hashes": [
+            child["child_context_binding_hash"] for child in children],
     }
     coverage_manifest["coverage_hash"] = sha(coverage_manifest)
     graph = {
@@ -334,16 +591,10 @@ def finalize_certificate(prepared, confirmations):
     return certificate
 
 
-def _confirmation_ok(child, confirmation):
-    from loop_engine.orch_adapters.symbolic_identity_verify import core
-    payload = core._second_engine_payload(
-        child["lhs"], child["rhs"], child["symbols"], child["scope"],
-        child["engine_domain"], child["assumptions"])
-    return core._second_zero_confirmed(confirmation, payload)
-
-
-def recheck(claim, lhs, rhs, certificate):
+def recheck(claim, lhs, rhs, certificate, timeout=20):
     """Rebuild the complete certificate; no stored mathematical assertion is trusted."""
+    if not isinstance(certificate, dict):
+        return {"ok": False, "detail": FAILURE["certificate"]}
     try:
         prepared = prepare_certificate(claim, lhs, rhs)
     except MultivariableT3Error as exc:
@@ -354,8 +605,23 @@ def recheck(claim, lhs, rhs, certificate):
         return {"ok": False, "detail": FAILURE["certificate"]}
     confirmations = []
     for expected, stored in zip(prepared["prepared_children"], stored_children):
-        confirmation = stored.get("second_engine_confirmation") if isinstance(stored, dict) else None
-        if not _confirmation_ok(expected, confirmation):
+        required_fields = set(expected) | {"second_engine_confirmation", "child_hash"}
+        if not isinstance(stored, dict) or set(stored) != required_fields:
+            return {"ok": False, "detail": FAILURE["certificate"]}
+        stored_without_confirmation = copy.deepcopy(stored)
+        confirmation = stored_without_confirmation.pop("second_engine_confirmation")
+        stored_without_confirmation.pop("child_hash")
+        if stored_without_confirmation != expected or \
+                not _strict_exact_child_matches(
+                    expected["proof_certificate"],
+                    stored["proof_certificate"]):
+            return {"ok": False, "detail": FAILURE["certificate"]}
+        payload = _child_b3_payload(expected)
+        if not _strict_second_zero_confirmed(confirmation, payload):
+            return {"ok": False, "detail": FAILURE["confirmation"]}
+        fresh_confirmation = _run_pinned_b3_payload(payload, timeout)
+        if not _strict_second_zero_confirmed(fresh_confirmation, payload) or \
+                fresh_confirmation != confirmation:
             return {"ok": False, "detail": FAILURE["confirmation"]}
         confirmations.append(confirmation)
     try:
@@ -371,7 +637,7 @@ def recheck(claim, lhs, rhs, certificate):
     }
 
 
-def recheck_certificate(claim, certificate):
+def recheck_certificate(claim, certificate, timeout=20):
     """Standalone B5 recheck entry point used by the existing controller audit surface."""
     if not isinstance(certificate, dict) or certificate.get("kind") != CERTIFICATE_KIND:
         return {"ok": False, "detail": FAILURE["certificate"]}
@@ -379,11 +645,11 @@ def recheck_certificate(claim, certificate):
     if not isinstance(symbols, list):
         return {"ok": False, "detail": FAILURE["request"]}
     try:
-        lhs = validate_and_parse(claim["lhs"], symbols, real=True)
-        rhs = validate_and_parse(claim["rhs"], symbols, real=True)
+        lhs = _validate_and_parse_b5(claim["lhs"], symbols, real=True)
+        rhs = _validate_and_parse_b5(claim["rhs"], symbols, real=True)
     except Exception:
         return {"ok": False, "detail": FAILURE["request"]}
-    return recheck(claim, lhs, rhs, certificate)
+    return recheck(claim, lhs, rhs, certificate, timeout)
 
 
 def verify_request(request, timeout=20):
@@ -400,34 +666,29 @@ def verify_request(request, timeout=20):
     if not isinstance(symbols, list) or len(symbols) < 2 or len(symbols) > 40:
         return _blocked_result(request, FAILURE["variables"], [], 1)
     try:
-        lhs = validate_and_parse(claim["lhs"], symbols, real=True)
-        rhs = validate_and_parse(claim["rhs"], symbols, real=True)
+        lhs = _validate_and_parse_b5(claim["lhs"], symbols, real=True)
+        rhs = _validate_and_parse_b5(claim["rhs"], symbols, real=True)
         prepared = prepare_certificate(claim, lhs, rhs)
     except MultivariableT3Error as exc:
         return _blocked_result(request, exc.code, [], 1)
     except Exception:
         return _blocked_result(request, FAILURE["request"], [], 1)
 
-    from loop_engine.orch_adapters.symbolic_identity_verify import core
     confirmations = []
     for child in prepared["prepared_children"]:
-        payload = core._second_engine_payload(
-            child["lhs"], child["rhs"], child["symbols"], child["scope"],
-            child["engine_domain"], child["assumptions"])
-        second = core._second_opinion(
-            child["lhs"], child["rhs"], child["symbols"], child["scope"],
-            child["engine_domain"], child["assumptions"], timeout)
+        payload = _child_b3_payload(child)
+        second = _run_pinned_b3_payload(payload, timeout)
         confirmations.append(second)
         if second.get("verdict") == "NONZERO":
             return _blocked_result(
                 request, "MULTIVARIABLE_T3_PARTIAL_NONZERO", confirmations, 1)
-        if not core._second_zero_confirmed(second, payload):
+        if not _strict_second_zero_confirmed(second, payload):
             return _blocked_result(request, FAILURE["confirmation"], confirmations, 1)
     try:
         certificate = finalize_certificate(prepared, confirmations)
     except MultivariableT3Error as exc:
         return _blocked_result(request, exc.code, confirmations, 1)
-    replay = recheck(claim, lhs, rhs, certificate)
+    replay = recheck(claim, lhs, rhs, certificate, timeout)
     if replay.get("ok") is not True:
         return _blocked_result(request, FAILURE["certificate"], confirmations, 1)
     return _result(
