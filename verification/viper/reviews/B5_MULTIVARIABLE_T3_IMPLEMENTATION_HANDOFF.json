@@ -3,33 +3,46 @@
   "track": "B5",
   "state": "IMPLEMENTATION_READY_FOR_INDEPENDENT_REVIEW",
   "base_commit": "702b9f9ecacbcfffd5f4685dc8c6d49c7f8d2dbc",
-  "reviewed_code_end_commit": "d7130720a0d0ca21e613bd8a4674385561280163",
-  "packet_parent_commit": "d7130720a0d0ca21e613bd8a4674385561280163",
+  "reviewed_code_end_commit": "d73758f47589b000444c79e49917293c70a69a3b",
+  "packet_parent_commit": "d73758f47589b000444c79e49917293c70a69a3b",
   "packet_path": "verification/viper/reviews/B5_MULTIVARIABLE_T3_IMPLEMENTATION_HANDOFF.json",
-  "self_reference_policy": "The packet commit cannot include its own commit identifier. Independent review must bind this committed packet blob and the final candidate repository HEAD.",
+  "self_reference_policy": "The packet commit cannot include its own commit identifier or raw file hash. Independent review must bind this committed packet blob and the final candidate repository HEAD.",
   "author_self_review_only": true,
   "cumulative_commit_list": [
     "d4f89ddf2c9a45b771120363ed1832eec94c88e3",
     "55ec9a9a742e3099dda11717a7cd075eb6f24e4c",
     "dfab7dfcd22acc27d408fd1a8a8a47d7f44821bf",
-    "d7130720a0d0ca21e613bd8a4674385561280163"
+    "d7130720a0d0ca21e613bd8a4674385561280163",
+    "fb95bf570cea0599c90db2da089c31431cd2971e",
+    "9d72f7a1eaac4783ad92ebb96bf8454759f44c52",
+    "722187440692ce3a3ea503441881771e5ef7bf40",
+    "af7441a998f70c9ab18cf36cb356946bb292ec8f",
+    "05525ca28da3ffb53c8c626f7e2b79738f6cae59",
+    "d73758f47589b000444c79e49917293c70a69a3b"
   ],
   "cumulative_changed_paths": [
     "loop_engine/orch_adapters/symbolic_identity_verify/multivariable_t3.py",
     "loop_engine/orch_adapters/symbolic_identity_verify_adapter.py",
     "scripts/orch_controller.py",
-    "tests/test_b5_multivariable_t3.py"
+    "tests/test_b5_handoff_packet.py",
+    "tests/test_b5_multivariable_t3.py",
+    "verification/viper/reviews/B5_MULTIVARIABLE_T3_IMPLEMENTATION_HANDOFF.json"
   ],
   "cumulative_changed_file_hashes": {
-    "loop_engine/orch_adapters/symbolic_identity_verify/multivariable_t3.py": "e302effeb1930dad5c5ea1b26b3da65012e451e7a55c552206abcdfc33448363",
-    "loop_engine/orch_adapters/symbolic_identity_verify_adapter.py": "3f2773fd2070c841526a039cd4ed407e3055336e60ee6b05144dea811dab8e4e",
+    "loop_engine/orch_adapters/symbolic_identity_verify/multivariable_t3.py": "61426ae8d5ddedcf79f7ae3685de548c120db7c289aa6d3588e1d90907b7d368",
+    "loop_engine/orch_adapters/symbolic_identity_verify_adapter.py": "93e862bef3b48fd571904406ec7b035943cdec6086e04e68ddcd79bc28f96f40",
     "scripts/orch_controller.py": "2c4c28a58aea97f13475e56adee9307369a4dc50d4f3c4145c2fe1b27e031540",
-    "tests/test_b5_multivariable_t3.py": "4eb3f77a8090d6677f5ffb504edc6517cab338d9aeeb0e0ac76f3f901baf911d"
+    "tests/test_b5_handoff_packet.py": "53051934e0820e3cd0fdc952742c9a89147d6fb9476efcd53adb183ab79d3180",
+    "tests/test_b5_multivariable_t3.py": "eae5ea10b013ee547802d78133d46d8625e067292f683ab611037feee9151327"
   },
-  "focused_test_command": "python -m pytest -q tests/test_b5_multivariable_t3.py -p no:cacheprovider",
+  "focused_test_command": "python -m pytest -q tests/test_b5_multivariable_t3.py tests/test_b5_handoff_packet.py -p no:cacheprovider",
   "frozen_b4_test_command": "python -m pytest -q tests/test_b4_domain_obligations.py tests/test_b4_recovery_attack_matrix.py tests/test_b4_review_packet.py tests/test_b1_composite_t3_certificates.py tests/test_b2_connected_subdomains.py -p no:cacheprovider",
   "theorem_profile": "open_cartesian_gradient_base_point_v1",
-  "known_limitations": "Version 1.0 accepts at least two explicitly ordered real variables on nonempty Cartesian products of real lines and open exact-rational intervals or rays. Closed boundaries, unions, free-text domains, branch-sensitive expressions, and unsupported source-domain obligations fail closed.",
-  "self_review_resolution": "Author review defects involving source-erased parent singularities, mutable or contradictory B3 evidence, same-builder child replay, numerical promotion gating, and timeout propagation were corrected and covered by focused attacks.",
-  "governance_boundary": "No push, merge, tag movement, freeze, release, publication, or independent approval is represented by this packet."
+  "certificate_version": "1.1",
+  "known_limitations": "Version 1.1 accepts at least two explicitly ordered real variables on nonempty Cartesian products of real lines and open exact-rational intervals or rays. Closed boundaries, unions, free-text domains, branch-sensitive expressions, and unsupported source-domain obligations fail closed. Exact derivative children are proved globally rather than only relative to the domain, and independent replay requires the live pinned Wolfram route.",
+  "self_review_resolution": "Author-support review found no theorem or certificate-forgery blocker. Shared-parser compatibility was restored by scoping exact-source restrictions to B5; XOR, legacy parser/replay, JSON-only stdout, globally-real-differentiable terminology, and packet provenance received regression coverage. Stored and fresh B3 evidence, child context, ordered coverage, and B4 graph bindings remain independently reconstructed.",
+  "preexisting_remote_state": "Before this continuation changed the candidate, feat/viper-b5-multivariable-t3 tracked origin/wip/viper-b5-corrections-af744 at af7441a998f70c9ab18cf36cb356946bb292ec8f. This packet does not assert how that pre-existing remote ref was created.",
+  "continuation_push_performed": false,
+  "governance_boundary": "This is a local implementation handoff only. It does not authorize or represent a new push, merge, tag movement, freeze, release, publication, or independent approval. Remote-tracking state is external provenance and must be reported separately.",
+  "packet_canonical_sha256": "feaa485e25335033dd381e5bd7a3b417f0f9cea93a811341aa193b37333f0e8b"
 }
