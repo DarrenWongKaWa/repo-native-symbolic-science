@@ -239,10 +239,25 @@ def route_recheck_symbolic_certificate(raw: str) -> tuple[dict, int]:
     claim = payload.get("claim") or {}
     cert = payload.get("certificate") or {}
     try:
-        out = _rc.recheck(claim, cert)
+        if cert.get("kind") == "multivariable_derivative_base_point_composite":
+            from loop_engine.orch_adapters.symbolic_identity_verify import multivariable_t3 as _b5
+            out = _b5.recheck_certificate(claim, cert)
+        else:
+            out = _rc.recheck(claim, cert)
     except Exception as exc:
         return {"recheck_ok": False, "detail": f"recheck error: {exc.__class__.__name__}"}, 1
     return {"recheck_ok": out["ok"], "detail": out["detail"]}, (0 if out["ok"] else 1)
+
+
+def route_multivariable_t3_verify(raw: str) -> tuple[dict, int]:
+    """Run the additive B5 verifier without changing immutable B1-B4 modules."""
+    from loop_engine.orch_adapters.symbolic_identity_verify import multivariable_t3 as _b5
+    try:
+        payload = json.loads(raw)
+    except Exception:
+        return {"orch_error": "INVALID_JSON_REQUEST",
+                "operation": "multivariable_t3_verify"}, 1
+    return _b5.verify_request(payload)
 
 
 def build_registry(profile: str = "full") -> OrchRegistry:
@@ -294,6 +309,8 @@ def main() -> None:
                           help="Route a propose_equation_candidates request (JSON on stdin) through the registry")
     subparsers.add_parser("recheck-symbolic-certificate",
                           help="Independently re-verify a {claim, certificate} (JSON on stdin); no simplify, no registry")
+    subparsers.add_parser("multivariable-t3-verify",
+                          help="Verify an explicit full-gradient multivariable T3 request (JSON on stdin)")
 
     args = parser.parse_args()
 
@@ -356,6 +373,17 @@ def main() -> None:
 
     elif args.command == "recheck-symbolic-certificate":
         result, exit_code = route_recheck_symbolic_certificate(sys.stdin.read())
+        print(json.dumps(result))
+        sys.exit(exit_code)
+
+    elif args.command == "multivariable-t3-verify":
+        if args.profile == "proposer":
+            result, exit_code = {
+                "orch_error": "CAPABILITY_NOT_REGISTERED",
+                "operation": "multivariable_t3_verify",
+            }, 1
+        else:
+            result, exit_code = route_multivariable_t3_verify(sys.stdin.read())
         print(json.dumps(result))
         sys.exit(exit_code)
 

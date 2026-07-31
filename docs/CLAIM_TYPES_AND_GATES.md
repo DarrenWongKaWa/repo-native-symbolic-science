@@ -197,6 +197,35 @@ The following promotion paths are explicitly forbidden and will be blocked:
 
 ---
 
+## Bounded Multivariable T3 Certificates
+
+The standalone `multivariable-t3-verify` controller command supports an explicit,
+fail-closed `claim.multivariable_t3` route for scalar real identities without mutating
+the reviewed B1-B4 verifier modules. It is selected only when the request supplies all
+of:
+
+- `schema: "viper.multivariable_t3_request.v1"`
+- `relevant_variables` and `variable_order`, both exactly equal to `claim.symbols`
+- an exact rational `base_point` with keys in that same order
+- `scope: "real_scalars"` and one ordered `"<variable> real"` assumption per variable
+- an explicit, nonempty Cartesian product of exact B2 interval predicates covering every
+  variable
+
+The parent certificate is issued only when every ordered partial derivative has both an
+existing exact recheckable child certificate and a pinned independent Wolfram `ZERO`,
+the parent sides agree exactly at the in-component base point, and the B4 domain graph
+rechecks. The certificate binds the variable order, coverage bitmap, parent and child
+hashes, base point, connected component, domain certificate, assumptions, scope, and B4
+graph.
+
+Directional derivatives, partial coverage, reordered or omitted variables, free-text or
+disconnected domains, arbitrary semialgebraic reasoning, non-rational base points,
+unsupported partials, and `UNKNOWN` engine results cannot produce this certificate.
+Selecting the route is exclusive: failure never falls back to numerical evidence,
+canonical-zero evidence, a directional derivative, or the legacy univariate T3 route.
+
+---
+
 ## Summary Table
 
 | Claim | Required Evidence | Common Pitfall |
