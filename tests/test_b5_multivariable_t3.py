@@ -100,6 +100,13 @@ def _reseal_exact_envelope(envelope):
     envelope["artifact_hash"] = sha(body)
 
 
+def _rebuild_b3_process_stdout(second):
+    transport = {"route", "process_stdout", "process_stderr", "process_exit_status"}
+    second["process_stdout"] = json.dumps(
+        {key: value for key, value in second.items() if key not in transport},
+        sort_keys=True)
+
+
 def _assert_rejected(certificate, claim=POLYNOMIAL_CLAIM):
     assert B5.recheck(claim, certificate)["ok"] is False
 
@@ -573,6 +580,43 @@ def test_b5_rechecker_rejects_fabricated_resealed_b3_transcript(
     bad = copy.deepcopy(polynomial_certificate)
     second = bad["derivative_children"][0]["second_engine"]
     second["process_stderr"] = "REVIEWER_SYNTHETIC_NOT_PROCESS_OUTPUT"
+    _reseal(bad)
+    _assert_rejected(bad)
+
+
+def test_viper_wolfram_cmd_cannot_redirect_fresh_b5_recheck(
+        monkeypatch, polynomial_certificate):
+    original_runtime = copy.deepcopy(
+        polynomial_certificate["derivative_children"][0]["second_engine"]["trusted_runtime"])
+    monkeypatch.setenv("VIPER_WOLFRAM_CMD", "/not/used/by/b3")
+    result = B5.recheck(POLYNOMIAL_CLAIM, polynomial_certificate)
+    assert result["ok"] is True
+    assert polynomial_certificate["derivative_children"][0]["second_engine"]["trusted_runtime"] == \
+        original_runtime
+
+
+def test_mismatched_independently_computed_configuration_blocks_certification(
+        polynomial_certificate):
+    bad = copy.deepcopy(polynomial_certificate)
+    bad["derivative_children"][0]["second_engine"]["configuration_hash"] = "0" * 64
+    _rebuild_b3_process_stdout(bad["derivative_children"][0]["second_engine"])
+    _reseal(bad)
+    _assert_rejected(bad)
+
+
+def test_fully_rehashed_certificate_with_mismatched_runtime_binding_fails_recheck(
+        polynomial_certificate):
+    bad = copy.deepcopy(polynomial_certificate)
+    second = bad["derivative_children"][0]["second_engine"]
+    mismatched_binding = copy.deepcopy(second["trusted_runtime"])
+    mismatched_binding["provenance"]["executable_sha256"] = "0" * 64
+    mismatched_binding["provenance_hash"] = sha(mismatched_binding["provenance"])
+    second["trusted_runtime"] = mismatched_binding
+    expected = core.expected_second_engine_configuration()
+    mismatched_configuration = copy.deepcopy(expected)
+    mismatched_configuration["trusted_runtime"] = mismatched_binding
+    second["configuration_hash"] = sha(mismatched_configuration)
+    _rebuild_b3_process_stdout(second)
     _reseal(bad)
     _assert_rejected(bad)
 

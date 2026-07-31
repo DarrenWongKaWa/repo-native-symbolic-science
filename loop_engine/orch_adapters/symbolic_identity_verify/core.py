@@ -40,6 +40,12 @@ from loop_engine.orch_adapters._symbolic_safe_parse import (
 from loop_engine.orch_adapters.symbolic_identity_verify import recheck as _recheck
 from loop_engine.orch_adapters.symbolic_identity_verify import domain_guard as _domain
 from loop_engine.orch_adapters.symbolic_identity_verify import connected_subdomain as _subdomain
+from tools.wolfram_runtime import (
+    TrustedRuntimeError,
+    build_expected_configuration as _build_b3_expected_configuration,
+    expected_configuration_hash as _b3_expected_configuration_hash,
+    resolve_trusted_wolfram_runtime as _resolve_trusted_wolfram_runtime,
+)
 
 HERE = Path(__file__).resolve().parent
 ADAPTER_VERSION = "symbolic-identity-verify-1.0"
@@ -50,14 +56,20 @@ POLICY = {"max_expr_chars": PARSE_POLICY["max_expr_chars"], "max_nodes": PARSE_P
           "max_symbols": PARSE_POLICY["max_symbols"], "simplify_timeout_seconds": 20,
           "allowed_functions": PARSE_POLICY["allowed_functions"]}
 POLICY_HASH = hashlib.sha256(json.dumps(POLICY, sort_keys=True).encode()).hexdigest()
-SECOND_ENGINE_CONFIG = {
-    "engine_identity": "WOLFRAM_INDEPENDENT_ZERO",
-    "implementation_version": "1.0",
-    "parser_version": "python_ast_to_wolfram_1",
-    "semantic_profile": "real_identity_zero_v1",
-    "wolfram_command": os.environ.get("VIPER_WOLFRAM_CMD", "wolframscript"),
-}
-SECOND_ENGINE_CONFIG_HASH = sha(SECOND_ENGINE_CONFIG)
+
+
+def expected_second_engine_configuration(runtime_identity=None):
+    """Independently derive B3's configuration from source policy and trusted runtime facts."""
+    if runtime_identity is None:
+        runtime_identity = _resolve_trusted_wolfram_runtime()
+    return _build_b3_expected_configuration(runtime_identity)
+
+
+def expected_second_engine_configuration_hash(runtime_identity=None):
+    """Return the independent expected hash; never consume B3 process output."""
+    if runtime_identity is None:
+        runtime_identity = _resolve_trusted_wolfram_runtime()
+    return _b3_expected_configuration_hash(runtime_identity)
 
 
 
@@ -213,8 +225,9 @@ def _derivative_base_point_certificate(lhs, rhs, symbols, domain, timeout):
 
 # AUDIT-THE-AUDITOR #5 — a SECOND, INDEPENDENT engine.
 # Every other safeguard still runs inside sympy, so a bug shared across sympy's routines is
-# invisible to all of them. This calls a separate engine in a separate process (config-driven,
-# no hardcoded path). A rigorous NONZERO from it while we certified ZERO is a governance stop.
+# invisible to all of them. This calls the shipped B3 engine in a separate process. Its
+# Wolfram executable is resolved inside that engine from reviewed source policy only.
+# A rigorous NONZERO from it while we certified ZERO is a governance stop.
 def _second_engine_payload(lhs_s, rhs_s, symbols, scope, domain, assumptions):
     """The only material shared with the second engine: raw claim plus declared semantics."""
     return {"lhs": lhs_s, "rhs": rhs_s, "symbols": list(symbols), "scope": scope,
@@ -224,20 +237,13 @@ def _second_engine_payload(lhs_s, rhs_s, symbols, scope, domain, assumptions):
 def _second_opinion(lhs_s, rhs_s, symbols, scope, domain, assumptions, timeout):
     """Run the isolated B3 engine and retain raw process evidence for replay.
 
-    The default route is the shipped Python-AST-to-Wolfram executable.  An environment
-    command remains available only for fault injection and external engine experiments;
-    it can never earn a confirming ZERO unless it identifies itself as the pinned profile.
+    The only production route is the shipped Python-AST-to-Wolfram executable. Tests may
+    inject this lower-level function in-process; the production CLI exposes no executable
+    command override.
     """
     payload = _second_engine_payload(lhs_s, rhs_s, symbols, scope, domain, assumptions)
-    cmd = os.environ.get("VIPER_SECOND_CAS_CMD")
-    if cmd:
-        import shlex
-        command = shlex.split(cmd)
-        route = "external_override"
-    else:
-        command = [sys.executable, str(HERE.parents[2] / "tools" / "independent_zero_engine.py")]
-        route = "shipped_wolfram_engine"
-    import shlex
+    command = [sys.executable, str(HERE.parents[2] / "tools" / "independent_zero_engine.py")]
+    route = "shipped_wolfram_engine"
     try:
         p = subprocess.run(command, input=json.dumps(payload),
                            capture_output=True, text=True, timeout=max(5, timeout))
@@ -260,15 +266,27 @@ def _second_opinion(lhs_s, rhs_s, symbols, scope, domain, assumptions, timeout):
                 "detail": type(exc).__name__, "stdout": "", "stderr": "", "exit_status": None}
 
 
-def _second_zero_confirmed(second, payload):
-    """Fail closed unless the pinned independent profile fully binds this raw request."""
+def _second_zero_confirmed(second, payload, runtime_identity=None):
+    """Fail closed unless independent trusted facts bind this B3 ZERO evidence.
+
+    Neither the child record, stored transcript, certificate, nor a caller-provided
+    environment variable may define the expected configuration.
+    """
+    try:
+        if runtime_identity is None:
+            runtime_identity = _resolve_trusted_wolfram_runtime()
+        expected = expected_second_engine_configuration(runtime_identity)
+        expected_hash = expected_second_engine_configuration_hash(runtime_identity)
+    except TrustedRuntimeError:
+        return False
     return (isinstance(second, dict) and second.get("route") == "shipped_wolfram_engine" and
             second.get("status") == "complete" and second.get("verdict") == "ZERO" and
-            second.get("engine_identity") == SECOND_ENGINE_CONFIG["engine_identity"] and
-            second.get("implementation_version") == SECOND_ENGINE_CONFIG["implementation_version"] and
-            second.get("parser_version") == SECOND_ENGINE_CONFIG["parser_version"] and
-            second.get("semantic_profile") == SECOND_ENGINE_CONFIG["semantic_profile"] and
-            second.get("configuration_hash") == SECOND_ENGINE_CONFIG_HASH and
+            second.get("engine_identity") == expected["engine_identity"] and
+            second.get("implementation_version") == expected["implementation_version"] and
+            second.get("parser_version") == expected["parser_version"] and
+            second.get("semantic_profile") == expected["semantic_profile"] and
+            second.get("trusted_runtime") == expected["trusted_runtime"] and
+            second.get("configuration_hash") == expected_hash and
             second.get("input_hash") == sha(payload) and second.get("process_exit_status") == 0)
 
 

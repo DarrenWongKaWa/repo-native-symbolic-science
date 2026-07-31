@@ -23,6 +23,10 @@ from loop_engine.orch_adapters._symbolic_safe_parse import (
 from loop_engine.orch_adapters.symbolic_identity_verify import connected_subdomain as _b2
 from loop_engine.orch_adapters.symbolic_identity_verify import core as _core
 from loop_engine.orch_adapters.symbolic_identity_verify import domain_obligations as _b4
+from tools.wolfram_runtime import (
+    TrustedRuntimeError,
+    resolve_trusted_wolfram_runtime as _resolve_trusted_wolfram_runtime,
+)
 
 
 _PINNED_SECOND_ZERO_CONFIRMED = _core._second_zero_confirmed
@@ -87,7 +91,7 @@ _B3_EVIDENCE_FIELDS = {
     "route", "process_stdout", "process_stderr", "process_exit_status",
     "configuration_hash", "detail", "engine_identity", "exit_status",
     "implementation_version", "input_hash", "parser_version", "semantic_profile",
-    "status", "stderr", "stdout", "verdict",
+    "status", "stderr", "stdout", "trusted_runtime", "verdict",
 }
 
 
@@ -409,10 +413,15 @@ def _run_pinned_b3_payload(payload, timeout):
     }
 
 
-def _strict_second_zero_confirmed(second, payload):
-    """Validate the exact stored B3 schema and its raw process/JSON transport."""
+def _strict_second_zero_confirmed(second, payload, runtime_identity=None):
+    """Validate B3 transport against independently resolved trusted runtime facts."""
+    try:
+        if runtime_identity is None:
+            runtime_identity = _resolve_trusted_wolfram_runtime()
+    except TrustedRuntimeError:
+        return False
     if not isinstance(second, dict) or set(second) != _B3_EVIDENCE_FIELDS or \
-            not _PINNED_SECOND_ZERO_CONFIRMED(second, payload):
+            not _PINNED_SECOND_ZERO_CONFIRMED(second, payload, runtime_identity):
         return False
     if second.get("stdout") != "True" or second.get("exit_status") != 0 or \
             second.get("process_exit_status") != 0:
@@ -510,6 +519,9 @@ def _base_point_certificate(context):
 def build_certificate(claim, timeout):
     """Build a complete B5 certificate or return None without partial promotion."""
     try:
+        # Builder independently derives the expected B3 configuration before accepting
+        # child output.  The child cannot choose this identity or hash.
+        runtime_identity = _resolve_trusted_wolfram_runtime()
         context = _parent_context(claim)
         base = _base_point_certificate(context)
         differentiability = _differentiability_obligations(context)
@@ -542,7 +554,7 @@ def build_certificate(claim, timeout):
             payload = _child_b3_payload(
                 context, derivative_claim, context_binding)
             second = _run_pinned_b3_payload(payload, timeout)
-            if not _strict_second_zero_confirmed(second, payload):
+            if not _strict_second_zero_confirmed(second, payload, runtime_identity):
                 return None
             graph_claim = {
                 "lhs": derivative_claim["lhs"],
@@ -639,6 +651,12 @@ def recheck(claim, certificate, timeout=None):
     """Reconstruct every B5 obligation; never trust builder status or coverage fields."""
     if timeout is None:
         timeout = _core.POLICY["simplify_timeout_seconds"]
+    try:
+        # Rechecker repeats the resolver step rather than accepting certificate or
+        # transcript runtime metadata as its expected configuration.
+        runtime_identity = _resolve_trusted_wolfram_runtime()
+    except TrustedRuntimeError:
+        return {"ok": False, "detail": "B5 trusted Wolfram runtime is unavailable"}
     if not isinstance(certificate, dict) or set(certificate) != _CERTIFICATE_FIELDS:
         return {"ok": False, "detail": "B5 certificate schema mismatch"}
     if certificate.get("kind") != CERTIFICATE_KIND or \
@@ -717,10 +735,11 @@ def recheck(claim, certificate, timeout=None):
             return {"ok": False, "detail": "B5 exact derivative child replay failed"}
         payload = _child_b3_payload(context, derivative_claim, context_binding)
         if child.get("second_engine_hash") != sha(child.get("second_engine")) or \
-                not _strict_second_zero_confirmed(child.get("second_engine"), payload):
+                not _strict_second_zero_confirmed(
+                    child.get("second_engine"), payload, runtime_identity):
             return {"ok": False, "detail": "B5 stored pinned B3 audit record failed"}
         fresh_second = _run_pinned_b3_payload(payload, timeout)
-        if not _strict_second_zero_confirmed(fresh_second, payload) or \
+        if not _strict_second_zero_confirmed(fresh_second, payload, runtime_identity) or \
                 fresh_second != child.get("second_engine"):
             return {"ok": False, "detail": "B5 fresh pinned B3 replay failed"}
         if child.get("child_hash") != _body_hash(child, "child_hash"):

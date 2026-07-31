@@ -215,6 +215,20 @@ or closed-boundary domains, unsupported source syntax, and `UNKNOWN` or `NONZERO
 results cannot produce this certificate. Failure never falls back to numerical evidence
 or the legacy univariate route.
 
+### Trusted B3 Wolfram Runtime
+
+The B3 independent-zero route resolves its executable only from a
+repository-controlled absolute candidate inside the approved Wolfram application bundle.
+It canonicalizes that path, rejects a resolved path outside the approved bundle, verifies
+the supported macOS code-signing provenance, and fails closed when the runtime is absent
+or its provenance cannot be verified. The production route does not use a caller-selected
+environment command or `PATH` lookup.
+
+B3 configuration is independently derived from the engine/profile versions, resolver
+version, canonical executable path, and verified runtime provenance. A B3 child record may
+report that binding, but the B5 builder and rechecker separately derive their expected
+binding before accepting a `ZERO`; stored transcripts and certificates cannot supply it.
+
 ---
 
 ## Summary Table
