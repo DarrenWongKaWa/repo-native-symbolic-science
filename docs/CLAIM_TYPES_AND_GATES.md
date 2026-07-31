@@ -199,30 +199,21 @@ The following promotion paths are explicitly forbidden and will be blocked:
 
 ## Bounded Multivariable T3 Certificates
 
-The standalone `multivariable-t3-verify` controller command supports an explicit,
-fail-closed `claim.multivariable_t3` route for scalar real identities without mutating
-the reviewed B1-B4 verifier modules. It is selected only when the request supplies all
-of:
+The additive adapter seam supports a fail-closed
+`multivariable_gradient_base_point_composite` certificate for scalar real identities.
+It is selected only for an explicit ordered variable list, exact rational base point, real
+scope and assumptions, and a nonempty open Cartesian-product domain normalized by B2.
 
-- `schema: "viper.multivariable_t3_request.v1"`
-- `relevant_variables` and `variable_order`, both exactly equal to `claim.symbols`
-- an exact rational `base_point` with keys in that same order
-- `scope: "real_scalars"` and one ordered `"<variable> real"` assumption per variable
-- an explicit, nonempty Cartesian product of exact B2 interval predicates covering every
-  variable
+The parent is issued only when every ordered partial derivative has an independently
+recheckable exact child and a fresh pinned Wolfram `ZERO`, the exact base-point equality
+holds, and the reconstructed B4 domain-obligation graph passes. Parent, child, variable
+order, domain, assumptions, scope, base point, B3 evidence, and graph hashes are bound
+and recomputed by the rechecker.
 
-The parent certificate is issued only when every ordered partial derivative has both an
-existing exact recheckable child certificate and a pinned independent Wolfram `ZERO`,
-the parent sides agree exactly at the in-component base point, and the B4 domain graph
-rechecks. The certificate binds the variable order, coverage bitmap, parent and child
-hashes, base point, connected component, domain certificate, assumptions, scope, and B4
-graph.
-
-Directional derivatives, partial coverage, reordered or omitted variables, free-text or
-disconnected domains, arbitrary semialgebraic reasoning, non-rational base points,
-unsupported partials, and `UNKNOWN` engine results cannot produce this certificate.
-Selecting the route is exclusive: failure never falls back to numerical evidence,
-canonical-zero evidence, a directional derivative, or the legacy univariate T3 route.
+Directional or partial coverage, reordered or omitted variables, free-text, disconnected
+or closed-boundary domains, unsupported source syntax, and `UNKNOWN` or `NONZERO` engine
+results cannot produce this certificate. Failure never falls back to numerical evidence
+or the legacy univariate route.
 
 ---
 
