@@ -1,6 +1,10 @@
 """B5 bounded multivariable gradient/base-point contract and attack matrix."""
 import copy
 import json
+import os
+import subprocess
+import sys
+from pathlib import Path
 
 import pytest
 
@@ -12,6 +16,8 @@ from loop_engine.orch_adapters import symbolic_identity_verify_adapter as ADAPTE
 from scripts.orch_controller import route_recheck_symbolic_certificate
 
 
+REPO = Path(__file__).resolve().parents[1]
+CONTROLLER = REPO / "scripts" / "orch_controller.py"
 ALL_REAL = {"kind": "intersection", "terms": [
     {"kind": "real_line", "variable": "x"},
     {"kind": "real_line", "variable": "y"},
@@ -105,6 +111,10 @@ def test_two_variable_polynomial_has_complete_exact_gradient(polynomial_certific
     assert all(child["second_engine"]["verdict"] == "ZERO"
                for child in certificate["derivative_children"])
     assert certificate["coverage_complete"] is True
+    assert all(
+        item["proof_route"] ==
+        "structural_globally_real_differentiable_expression_v1"
+        for item in certificate["differentiability_obligations"])
     assert B5.recheck(POLYNOMIAL_CLAIM, certificate)["ok"]
 
 
@@ -131,6 +141,41 @@ def test_full_json_round_trip_replays(polynomial_certificate):
         "certificate": serialized,
     }))
     assert exit_code == 0 and result["recheck_ok"] is True
+
+
+def test_b5_cli_build_and_recheck_emit_one_json_object(
+        tmp_path, polynomial_certificate):
+    request = {
+        "operation": "symbolic_identity_verify",
+        "contract_version": "1.0",
+        "verification_mode": "symbolic_only",
+        "claim": POLYNOMIAL_CLAIM,
+    }
+    env = dict(os.environ)
+    env["VIPER_OUTPUT_DIR"] = str(tmp_path / "runtime")
+    env["PYTHONPATH"] = ""
+    build = subprocess.run(
+        [sys.executable, str(CONTROLLER), "symbolic-identity-verify"],
+        input=json.dumps(request), capture_output=True, text=True,
+        cwd=str(REPO), env=env, check=False)
+    build_lines = build.stdout.strip().splitlines()
+    assert build.returncode == 0 and len(build_lines) == 1
+    built = json.loads(build_lines[0])
+    assert built["symbolic_claim_verifier"]["certificate"]["kind"] == \
+        B5.CERTIFICATE_KIND
+    assert build.stderr == ""
+
+    replay = subprocess.run(
+        [sys.executable, str(CONTROLLER), "recheck-symbolic-certificate"],
+        input=json.dumps({
+            "claim": POLYNOMIAL_CLAIM,
+            "certificate": polynomial_certificate,
+        }),
+        capture_output=True, text=True, cwd=str(REPO), env=env, check=False)
+    replay_lines = replay.stdout.strip().splitlines()
+    assert replay.returncode == 0 and len(replay_lines) == 1
+    assert json.loads(replay_lines[0])["recheck_ok"] is True
+    assert replay.stderr == ""
 
 
 def test_additive_adapter_seam_uses_real_b3_route():
@@ -460,11 +505,43 @@ def test_b5_rejects_floor_division_source_erased_pole():
     assert _build(claim) is None
 
 
+def test_b5_rejects_bitxor_source_operator():
+    claim = copy.deepcopy(POLYNOMIAL_CLAIM)
+    claim["lhs"] = "x^2+y"
+    claim["rhs"] = "x**2+y"
+    assert _build(claim) is None
+
+
 def test_b5_rejects_rounded_float_base_equality():
     claim = copy.deepcopy(POLYNOMIAL_CLAIM)
     claim["lhs"] = "x+y+(0.1+0.000000000000000001)"
     claim["rhs"] = "x+y+0.1"
     assert _build(claim) is None
+
+
+def test_b5_source_hardening_preserves_pre_b5_decimal_parser():
+    lhs = validate_and_parse("x+0.5", ["x"], real=True)
+    rhs = validate_and_parse("0.5+x", ["x"], real=True)
+    assert lhs == rhs
+    assert any(atom.__class__.__name__ == "Float" for atom in lhs.atoms())
+
+    b5_claim = copy.deepcopy(POLYNOMIAL_CLAIM)
+    b5_claim["lhs"] = "x+y+0.5"
+    b5_claim["rhs"] = "y+x+0.5"
+    assert _build(b5_claim) is None
+
+
+def test_b5_source_hardening_preserves_legacy_b1_certificate_replay():
+    lhs = validate_and_parse("atan(x)", ["x"], real=True)
+    rhs = validate_and_parse("asin(x/sqrt(1+x**2))", ["x"], real=True)
+    legacy = RC.build_derivative_base_point_composite_certificate(
+        lhs, rhs, ["x"], {"kind": "real_line", "variable": "x"})
+    assert legacy is not None
+    assert RC.recheck({
+        "lhs": "atan(x)",
+        "rhs": "asin(x/sqrt(1+x**2))",
+        "symbols": ["x"],
+    }, legacy)["ok"] is True
 
 
 def test_b5_rejects_nonfinite_parent_and_base_values():

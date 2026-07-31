@@ -8,6 +8,7 @@ for every child.
 """
 from __future__ import annotations
 
+import ast
 import copy
 import json
 import subprocess
@@ -17,7 +18,8 @@ from pathlib import Path
 
 import sympy
 
-from loop_engine.orch_adapters._symbolic_safe_parse import AdapterError, sha, validate_and_parse
+from loop_engine.orch_adapters._symbolic_safe_parse import (
+    AdapterError, PARSE_POLICY, sha, validate_and_parse)
 from loop_engine.orch_adapters.symbolic_identity_verify import connected_subdomain as _b2
 from loop_engine.orch_adapters.symbolic_identity_verify import core as _core
 from loop_engine.orch_adapters.symbolic_identity_verify import domain_obligations as _b4
@@ -38,9 +40,17 @@ RECHECK_PROCEDURE = (
     "and pinned B3 ZERO, rebuild every embedded B4 graph, and recompute gradient coverage"
 )
 
-_ENTIRE_REAL_FUNCTIONS = {
+_GLOBALLY_REAL_DIFFERENTIABLE_FUNCTIONS = {
     sympy.sin, sympy.cos, sympy.exp, sympy.sinh, sympy.cosh, sympy.tanh, sympy.atan,
 }
+_B5_SOURCE_CONSTANTS = {"pi", "E", "I", "oo"}
+_B5_RESERVED_DECLARED_NAMES = (
+    set(PARSE_POLICY["allowed_functions"])
+    | _B5_SOURCE_CONSTANTS
+    | {"zoo", "nan", "Integer", "Float", "Symbol"}
+)
+_B5_BINARY_OPERATORS = (ast.Add, ast.Sub, ast.Mult, ast.Div, ast.Pow)
+_B5_UNARY_OPERATORS = (ast.UAdd, ast.USub)
 
 _CERTIFICATE_FIELDS = {
     "kind", "certificate_version", "theorem_profile", "parent_claim", "parent_claim_hash",
@@ -98,6 +108,45 @@ def _fraction_text(value):
     return str(value.numerator) if value.denominator == 1 else f"{value.numerator}/{value.denominator}"
 
 
+def _validate_b5_source_ast(source, declared_variables):
+    """Apply B5's exact-source grammar without changing the legacy shared parser."""
+    if set(declared_variables) & _B5_RESERVED_DECLARED_NAMES:
+        raise AdapterError("B5_RESERVED_DECLARED_SYMBOL")
+    try:
+        node = ast.parse(source, mode="eval").body
+    except (SyntaxError, TypeError):
+        raise AdapterError("B5_UNSUPPORTED_SOURCE_AST")
+    declared = set(declared_variables)
+    functions = set(PARSE_POLICY["allowed_functions"])
+
+    def visit(part):
+        if isinstance(part, ast.Name):
+            if part.id not in declared | functions | _B5_SOURCE_CONSTANTS:
+                raise AdapterError("B5_UNSUPPORTED_SOURCE_AST")
+            return
+        if isinstance(part, ast.Constant):
+            if not isinstance(part.value, int) or isinstance(part.value, bool):
+                raise AdapterError("B5_EXACT_SOURCE_LITERAL_REQUIRED")
+            return
+        if isinstance(part, ast.UnaryOp) and isinstance(
+                part.op, _B5_UNARY_OPERATORS):
+            visit(part.operand)
+            return
+        if isinstance(part, ast.BinOp) and isinstance(
+                part.op, _B5_BINARY_OPERATORS):
+            visit(part.left)
+            visit(part.right)
+            return
+        if isinstance(part, ast.Call) and isinstance(part.func, ast.Name) and \
+                part.func.id in functions and not part.keywords:
+            for argument in part.args:
+                visit(argument)
+            return
+        raise AdapterError("B5_UNSUPPORTED_SOURCE_AST")
+
+    visit(node)
+
+
 def _normalize_domain(domain, variables):
     if not isinstance(domain, dict):
         raise AdapterError("B5_UNSUPPORTED_DOMAIN")
@@ -152,7 +201,7 @@ def _structurally_differentiable(expression):
         exponent = expression.exp
         return bool(exponent.is_Integer and exponent >= 0 and
                     _structurally_differentiable(expression.base))
-    if expression.func in _ENTIRE_REAL_FUNCTIONS:
+    if expression.func in _GLOBALLY_REAL_DIFFERENTIABLE_FUNCTIONS:
         return all(_structurally_differentiable(arg) for arg in expression.args)
     return False
 
@@ -182,6 +231,8 @@ def _parent_context(claim):
     scope = claim["scope"]
     if scope not in {"real_scalars", "reals", "real", "R", "s"}:
         raise AdapterError("B5_REAL_SCOPE_REQUIRED")
+    _validate_b5_source_ast(claim["lhs"], variables)
+    _validate_b5_source_ast(claim["rhs"], variables)
     lhs = validate_and_parse(claim["lhs"], variables, real=True)
     rhs = validate_and_parse(claim["rhs"], variables, real=True)
     if not _exact_finite_real(lhs) or not _exact_finite_real(rhs):
@@ -238,7 +289,7 @@ def _differentiability_obligations(context):
                 "parent_claim_hash": context["parent_claim_hash"],
                 "domain_hash": context["domain_hash"],
                 "status": "PROVED",
-                "proof_route": "structural_real_entire_expression_v1",
+                "proof_route": "structural_globally_real_differentiable_expression_v1",
             }
             body["obligation_hash"] = sha(body)
             obligations.append(body)
