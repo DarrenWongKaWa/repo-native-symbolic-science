@@ -109,7 +109,7 @@ def _validate_b5_source_ast(source, declared_symbols):
             visit(node.operand)
             return
         if isinstance(node, ast.BinOp) and type(node.op) in {
-                ast.Add, ast.Sub, ast.Mult, ast.Div, ast.Pow, ast.BitXor}:
+                ast.Add, ast.Sub, ast.Mult, ast.Div, ast.Pow}:
             visit(node.left)
             visit(node.right)
             return

@@ -195,6 +195,13 @@ def test_b5_rejects_floor_division_source_erased_pole():
     ))
 
 
+def test_b5_rejects_bitxor_source_operator():
+    _assert_b5_blocked(claim(
+        lhs="x^2 + y",
+        rhs="x**2 + y",
+    ))
+
+
 def test_b5_rejects_rounded_float_base_equality():
     _assert_b5_blocked(claim(
         lhs="x+y+0.1+0.2",
