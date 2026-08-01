@@ -377,7 +377,8 @@ def _run_pinned_b3_payload(payload, timeout):
     try:
         process = subprocess.run(
             command, input=json.dumps(payload), capture_output=True, text=True,
-            timeout=max(5, timeout), check=False)
+            timeout=max(_core.TRUSTED_RUNTIME_SUBPROCESS_TIMEOUT_FLOOR, timeout),
+            check=False)
     except subprocess.TimeoutExpired:
         return {
             "status": "timeout", "route": "shipped_wolfram_engine",

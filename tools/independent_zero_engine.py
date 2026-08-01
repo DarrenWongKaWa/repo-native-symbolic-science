@@ -34,6 +34,7 @@ from tools.wolfram_runtime import (
     TrustedWolframRuntime,
     expected_configuration_hash,
     resolve_trusted_wolfram_runtime,
+    validate_trusted_wolfram_runtime_execution_binding,
 )
 
 DEFAULT_TIMEOUT_SECONDS = 12
@@ -111,12 +112,19 @@ def _response(payload, runtime_identity=None, **extra):
 
 
 def run_wolfram_code(runtime_identity, code, runner=subprocess.run):
-    """Run code with the resolver's canonical absolute executable path only."""
+    """Run code only after the final fixed-path provenance and descriptor binding guard."""
     if not isinstance(runtime_identity, TrustedWolframRuntime):
         raise TrustedRuntimeError("TRUSTED_RUNTIME_IDENTITY_INVALID")
-    return runner(
-        [runtime_identity.canonical_executable_path, "-code", code],
+    resolved = validate_trusted_wolfram_runtime_execution_binding(runtime_identity)
+    process = runner(
+        [str(resolved["canonical_candidate"]), "-local",
+         str(resolved["canonical_kernel"]), "-code", code],
         text=True, capture_output=True, timeout=DEFAULT_TIMEOUT_SECONDS, check=False)
+    # The signed bundle and fixed-path identity must also survive the launch/result
+    # interval.  A changed path can never contribute a trusted ZERO result, even if a
+    # platform-level launch race occurred after the pre-launch descriptor guard.
+    validate_trusted_wolfram_runtime_execution_binding(runtime_identity)
+    return process
 
 
 def evaluate_with_runtime(payload, runtime_identity, runner=subprocess.run):

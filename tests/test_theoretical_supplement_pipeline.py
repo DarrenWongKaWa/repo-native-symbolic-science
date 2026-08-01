@@ -112,7 +112,7 @@ def test_stale_stage_rejection_reruns_generated_output(tmp_path):
 def test_missing_derivation_graph_blocking(tmp_path):
     fixture_copy, manifest_path = _copy_fixture_manifest(tmp_path)
     (fixture_copy / "derivation_graph.json").unlink()
-    req = _request(tmp_path, source_manifest=str(manifest_path))
+    req = _request(tmp_path, source_manifest=manifest_path.name)
     proc = _run(req)
     assert proc.returncode == 1
     result = _load(tmp_path / "out" / "final_result.json")
@@ -127,7 +127,7 @@ def test_derivation_gap_blocking(tmp_path):
     manifest = _load(manifest_path)
     manifest["artifact_shas"]["derivation_graph"] = pipeline.sha256_file(fixture_copy / "derivation_graph.json")
     _write_json(manifest_path, manifest)
-    req = _request(tmp_path, source_manifest=str(manifest_path))
+    req = _request(tmp_path, source_manifest=manifest_path.name)
     proc = _run(req)
     assert proc.returncode == 1
     result = _load(tmp_path / "out" / "final_result.json")
@@ -139,7 +139,7 @@ def test_missing_interpretation_blocking(tmp_path):
     manifest["artifacts"].pop("physical_interpretation_mapping")
     manifest_path = tmp_path / "manifest.json"
     _write_json(manifest_path, manifest)
-    req = _request(tmp_path, source_manifest=str(manifest_path))
+    req = _request(tmp_path, source_manifest=manifest_path.name)
     proc = _run(req)
     assert proc.returncode == 1
     assert _load(tmp_path / "out" / "final_result.json")["verdict"] == "BLOCKED_AT_PHYSICAL_INTERPRETATION"
@@ -150,7 +150,7 @@ def test_missing_omission_ledger_blocking_when_required(tmp_path):
     manifest["artifacts"].pop("mathematical_omission_ledger")
     manifest_path = tmp_path / "manifest.json"
     _write_json(manifest_path, manifest)
-    req = _request(tmp_path, source_manifest=str(manifest_path))
+    req = _request(tmp_path, source_manifest=manifest_path.name)
     proc = _run(req)
     assert proc.returncode == 1
     assert "mathematical_omission_ledger" in _load(tmp_path / "out" / "final_result.json")["blocking_reason"]
@@ -201,7 +201,7 @@ def test_sha_mismatch_rejection(tmp_path):
     fixture_copy, manifest_path = _copy_fixture_manifest(tmp_path)
     source = fixture_copy / "source_artifacts" / "starting_expression.txt"
     source.write_text(source.read_text() + "\nchanged\n", encoding="utf-8")
-    req = _request(tmp_path, source_manifest=str(manifest_path))
+    req = _request(tmp_path, source_manifest=manifest_path.name)
     proc = _run(req)
     assert proc.returncode == 1
     assert "sha_mismatch" in _load(tmp_path / "out" / "final_result.json")["blocking_reason"]

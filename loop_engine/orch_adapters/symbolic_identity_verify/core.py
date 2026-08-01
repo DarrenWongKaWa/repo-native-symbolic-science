@@ -49,6 +49,10 @@ from tools.wolfram_runtime import (
 
 HERE = Path(__file__).resolve().parent
 ADAPTER_VERSION = "symbolic-identity-verify-1.0"
+# The child engine verifies the fixed signed app and Gatekeeper provenance before its
+# bounded Wolfram evaluation.  This is a source-policy transport allowance, not a caller
+# timeout override; the engine's own evaluation deadline remains separately bounded.
+TRUSTED_RUNTIME_SUBPROCESS_TIMEOUT_FLOOR = 90
 
 
 # repository policy (NOT caller-supplied); a caller may only strengthen, never weaken.
@@ -245,8 +249,9 @@ def _second_opinion(lhs_s, rhs_s, symbols, scope, domain, assumptions, timeout):
     command = [sys.executable, str(HERE.parents[2] / "tools" / "independent_zero_engine.py")]
     route = "shipped_wolfram_engine"
     try:
-        p = subprocess.run(command, input=json.dumps(payload),
-                           capture_output=True, text=True, timeout=max(5, timeout))
+        p = subprocess.run(
+            command, input=json.dumps(payload), capture_output=True, text=True,
+            timeout=max(TRUSTED_RUNTIME_SUBPROCESS_TIMEOUT_FLOOR, timeout))
         try:
             parsed = json.loads(p.stdout)
         except Exception:

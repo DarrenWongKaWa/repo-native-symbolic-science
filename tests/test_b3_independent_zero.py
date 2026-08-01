@@ -42,16 +42,8 @@ def _engine_payload(lhs, rhs, symbols=("x",), domain="connected: all real x"):
 
 
 def _synthetic_trusted_runtime():
-    """A lower-level test identity; production always calls the resolver itself."""
-    return WOLFRAM_RUNTIME.TrustedWolframRuntime(
-        canonical_executable_path=WOLFRAM_RUNTIME.APPROVED_RUNTIME_CANDIDATES[0],
-        approved_application_boundary=WOLFRAM_RUNTIME.APPROVED_APPLICATION_BOUNDARIES[0],
-        executable_sha256="a" * 64,
-        code_signing_identifier="wolframscript",
-        code_signing_team_identifier="D2Y8ST33G6",
-        code_signing_cdhash="b" * 40,
-        code_signing_authority="Developer ID Application: Wolfram Research, Inc (D2Y8ST33G6)",
-    )
+    """A resolved lower-level test identity; production calls the resolver itself."""
+    return WOLFRAM_RUNTIME.resolve_trusted_wolfram_runtime()
 
 
 def _confirmed_second(payload, runtime_identity):
@@ -194,8 +186,9 @@ def test_resolver_rejects_a_symlink_that_resolves_outside_the_boundary(tmp_path)
     candidate.symlink_to(outside)
     with pytest.raises(WOLFRAM_RUNTIME.TrustedRuntimeError) as error:
         WOLFRAM_RUNTIME._resolve_runtime_candidates(
-            [str(candidate)], [str(boundary)], lambda _: {})
-    assert error.value.code == "TRUSTED_RUNTIME_OUTSIDE_APPROVED_BOUNDARY"
+            [str(candidate)], [str(boundary)], lambda _: {},
+            kernel_candidates=(str(executable_dir / "WolframKernel"),))
+    assert error.value.code == "TRUSTED_RUNTIME_REDIRECTING_COMPONENT"
 
 
 def test_missing_approved_runtime_returns_unknown_and_never_zero(monkeypatch, tmp_path):
@@ -238,7 +231,7 @@ def test_trusted_absolute_path_is_passed_to_the_subprocess_and_true_is_zero():
         _engine_payload("x+x", "2*x"), runtime_identity, runner)
     assert seen["command"][0] == runtime_identity.canonical_executable_path
     assert Path(seen["command"][0]).is_absolute()
-    assert seen["command"][1] == "-code"
+    assert seen["command"][1:4] == ["-local", runtime_identity.canonical_kernel_path, "-code"]
     assert result["verdict"] == "ZERO"
 
 

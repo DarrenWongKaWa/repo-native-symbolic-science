@@ -595,6 +595,17 @@ def test_viper_wolfram_cmd_cannot_redirect_fresh_b5_recheck(
         original_runtime
 
 
+def test_path_change_after_certificate_construction_cannot_redirect_fresh_b5_recheck(
+        monkeypatch, tmp_path, polynomial_certificate):
+    original_runtime = copy.deepcopy(
+        polynomial_certificate["derivative_children"][0]["second_engine"]["trusted_runtime"])
+    monkeypatch.setenv("PATH", f"{tmp_path}{os.pathsep}{os.environ.get('PATH', '')}")
+    result = B5.recheck(POLYNOMIAL_CLAIM, polynomial_certificate)
+    assert result["ok"] is True
+    assert polynomial_certificate["derivative_children"][0]["second_engine"]["trusted_runtime"] == \
+        original_runtime
+
+
 def test_mismatched_independently_computed_configuration_blocks_certification(
         polynomial_certificate):
     bad = copy.deepcopy(polynomial_certificate)
