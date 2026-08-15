@@ -9,12 +9,11 @@ The governing rule: an UNCONDITIONAL certificate asserts equality everywhere on 
 domain. Where definedness obligations can fail, the judge must say so — never issue the
 unconditional verdict.
 """
-import json, os, shlex, shutil, subprocess, sys, tempfile
+import json, os, subprocess, sys, tempfile
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
 CTL = REPO / "scripts" / "orch_controller.py"
-STUB_NONZERO = REPO / "tests" / "fixtures" / "stub_second_cas_nonzero.py"
 
 UNCONDITIONAL = {"VERIFIED_SYMBOLIC_IDENTITY", "VERIFIED_BY_DERIVATIVE_AND_BASE_POINT"}
 
@@ -26,7 +25,6 @@ def _judge(lhs, rhs, symbols=("x",), scope="real_scalars", env_extra=None,
            "claim": {"lhs": lhs, "rhs": rhs, "symbols": list(symbols), "scope": scope,
                      "assumptions": ["real"], "domain": "connected: all real x"}}
     env = dict(os.environ); env["VIPER_OUTPUT_DIR"] = tempfile.mkdtemp(); env["PYTHONPATH"] = ""
-    env.pop("VIPER_SECOND_CAS_CMD", None)
     if env_extra:
         env.update(env_extra)
     p = subprocess.run([sys.executable, str(CTL), "symbolic-identity-verify"],
@@ -37,6 +35,18 @@ def _judge(lhs, rhs, symbols=("x",), scope="real_scalars", env_extra=None,
 
 def _cert(out):
     return (out.get("symbolic_claim_verifier") or {}).get("certificate") or {}
+
+
+def _judge_with_injected_second(monkeypatch, lhs, rhs, symbols, second):
+    """The fault seam is in-process only; production exposes no executable override."""
+    from loop_engine.orch_adapters.symbolic_identity_verify import core
+    request = {"operation": "symbolic_identity_verify", "contract_version": "1.0",
+               "verification_mode": "symbolic_only",
+               "claim": {"lhs": lhs, "rhs": rhs, "symbols": list(symbols),
+                         "scope": "real_scalars", "assumptions": ["real"],
+                         "domain": "connected: all real x"}}
+    monkeypatch.setattr(core, "_second_opinion", lambda *_: second)
+    return core.handle(request)
 
 
 # ---- A. removable singularities / division traps ---------------------------------
@@ -79,41 +89,15 @@ def test_declared_real_domain_is_used():
     assert _cert(out)["domain"]
 
 # ---- E. an independent second engine contradicting us must FAIL CLOSED ------------
-def test_second_engine_contradiction_fails_closed():
-    out, process = _judge(
-        "(x+y)**2", "x**2+2*x*y+y**2", symbols=("x", "y"),
-        env_extra={"VIPER_SECOND_CAS_CMD":
-                   f"{shlex.quote(sys.executable)} {shlex.quote(str(STUB_NONZERO))}"},
-        return_process=True,
-    )
+def test_second_engine_contradiction_fails_closed(monkeypatch):
+    out, exit_code = _judge_with_injected_second(
+        monkeypatch, "(x+y)**2", "x**2+2*x*y+y**2", ("x", "y"),
+        {"status": "complete", "verdict": "NONZERO"})
     assert out["combined_verdict"] == "DISPUTED_SECOND_ENGINE_CONFLICT"
     assert out["combined_evidence_level"] == 0
     assert out["symbolic_claim_verifier"]["certificate"] is None
     assert out["unresolved_obligations"]
-    assert process.returncode != 0
-
-
-def test_second_engine_command_with_path_spaces_fails_closed(tmp_path):
-    engine_dir = tmp_path / "second engine"
-    engine_dir.mkdir()
-    copied_stub = engine_dir / "stub second cas.py"
-    shutil.copy2(STUB_NONZERO, copied_stub)
-
-    out, process = _judge(
-        "(x+y)**2", "x**2+2*x*y+y**2", symbols=("x", "y"),
-        env_extra={"VIPER_SECOND_CAS_CMD":
-                   f"{shlex.quote(sys.executable)} {shlex.quote(str(copied_stub))}"},
-        return_process=True,
-    )
-
-    second = out["numerical_geobasis_verifier"]["second_engine"]
-    assert second["status"] == "ok"
-    assert second["engine"] == "stub"
-    assert second["verdict"] == "NONZERO"
-    assert out["combined_verdict"] == "DISPUTED_SECOND_ENGINE_CONFLICT"
-    assert out["combined_evidence_level"] == 0
-    assert out["symbolic_claim_verifier"]["certificate"] is None
-    assert process.returncode != 0
+    assert exit_code != 0
 
 def test_shipped_second_engine_is_recorded_not_silently_passed():
     out = _judge("(x+y)**2", "x**2+2*x*y+y**2", symbols=("x", "y"))

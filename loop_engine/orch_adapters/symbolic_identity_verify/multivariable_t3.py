@@ -1,514 +1,815 @@
-"""B5 bounded multivariable derivative/base-point certificates.
+"""B5 bounded multivariable gradient/base-point composite certificates.
 
-This is intentionally not a general multivariable theorem prover.  It accepts only an
-explicit ordered variable manifest, an exact rational base point, a connected Cartesian
-product of exact real intervals, an everywhere-real differentiable expression grammar,
-and one independently recheckable plus B3-confirmed ZERO partial for every variable.
+This is deliberately not a general multivariable theorem prover.  It admits only finite
+Cartesian products of open exact-rational intervals and real lines, reconstructs every
+partial derivative in an explicit variable order, and requires an existing exact child
+certificate, pinned B3 ZERO evidence, and an independently replayable B4 obligation graph
+for every child.
 """
 from __future__ import annotations
 
+import ast
 import copy
 import json
-import os
-import platform
-import tempfile
+import subprocess
+import sys
 from fractions import Fraction
 from pathlib import Path
 
 import sympy
 
 from loop_engine.orch_adapters._symbolic_safe_parse import (
-    FORBIDDEN, git_head, sha, syms_like, validate_and_parse,
-)
-from loop_engine.orch_adapters.symbolic_identity_verify import connected_subdomain as _domain
+    AdapterError, PARSE_POLICY, sha, validate_and_parse)
+from loop_engine.orch_adapters.symbolic_identity_verify import connected_subdomain as _b2
+from loop_engine.orch_adapters.symbolic_identity_verify import core as _core
 from loop_engine.orch_adapters.symbolic_identity_verify import domain_obligations as _b4
-from loop_engine.orch_adapters.symbolic_identity_verify import recheck as _recheck
+from tools.wolfram_runtime import (
+    TrustedRuntimeError,
+    resolve_trusted_wolfram_runtime as _resolve_trusted_wolfram_runtime,
+)
 
-REQUEST_SCHEMA = "viper.multivariable_t3_request.v1"
-CERTIFICATE_KIND = "multivariable_derivative_base_point_composite"
-CERTIFICATE_VERSION = "1.0"
-GRADIENT_SCHEMA = "viper.gradient_certificate_graph.v1"
-FAILURE = {
-    "request": "MULTIVARIABLE_T3_REQUEST_INVALID",
-    "variables": "MULTIVARIABLE_T3_VARIABLE_MANIFEST_INVALID",
-    "domain": "MULTIVARIABLE_T3_DOMAIN_UNSUPPORTED",
-    "base": "MULTIVARIABLE_T3_BASE_POINT_INVALID",
-    "grammar": "MULTIVARIABLE_T3_PARENT_GRAMMAR_UNSUPPORTED",
-    "partial": "MULTIVARIABLE_T3_PARTIAL_UNSUPPORTED",
-    "domain_obligation": "MULTIVARIABLE_T3_DOMAIN_OBLIGATION_UNRESOLVED",
-    "confirmation": "MULTIVARIABLE_T3_PARTIAL_UNCONFIRMED",
-    "certificate": "MULTIVARIABLE_T3_CERTIFICATE_INVALID",
+
+_PINNED_SECOND_ZERO_CONFIRMED = _core._second_zero_confirmed
+
+
+CERTIFICATE_KIND = "multivariable_gradient_base_point_composite"
+CERTIFICATE_VERSION = "1.1"
+THEOREM_PROFILE = "open_cartesian_gradient_base_point_v1"
+GRAPH_BUNDLE_SCHEMA = "viper.b5_gradient_domain_obligation_bundle.v1"
+CHILD_CONTEXT_SCHEMA = "viper.b5_child_context.v1"
+EXACT_CHILD_SCHEMA = "viper.b5_bound_exact_child.v1"
+RECHECK_PROCEDURE = (
+    "re-parse the raw parent, normalize the open Cartesian domain, reconstruct the exact "
+    "base point and every ordered partial derivative, replay every exact child certificate "
+    "and pinned B3 ZERO, rebuild every embedded B4 graph, and recompute gradient coverage"
+)
+
+_GLOBALLY_REAL_DIFFERENTIABLE_FUNCTIONS = {
+    sympy.sin, sympy.cos, sympy.exp, sympy.sinh, sympy.cosh, sympy.tanh, sympy.atan,
 }
-_ENTIRE_FUNCTIONS = {sympy.sin, sympy.cos, sympy.exp, sympy.sinh, sympy.cosh, sympy.tanh}
+_B5_SOURCE_CONSTANTS = {"pi", "E", "I", "oo"}
+_B5_RESERVED_DECLARED_NAMES = (
+    set(PARSE_POLICY["allowed_functions"])
+    | _B5_SOURCE_CONSTANTS
+    | {"zoo", "nan", "Integer", "Float", "Symbol"}
+)
+_B5_BINARY_OPERATORS = (ast.Add, ast.Sub, ast.Mult, ast.Div, ast.Pow)
+_B5_UNARY_OPERATORS = (ast.UAdd, ast.USub)
+
+_CERTIFICATE_FIELDS = {
+    "kind", "certificate_version", "theorem_profile", "parent_claim", "parent_claim_hash",
+    "ordered_variables", "variable_order_hash", "normalized_domain", "domain_hash",
+    "scope", "scope_hash", "assumptions", "assumptions_hash", "base_point_certificate",
+    "derivative_children", "differentiability_obligations", "domain_obligation_graph",
+    "domain_obligation_graph_hash", "coverage", "coverage_hash", "coverage_complete",
+    "independently_recheckable", "recheck_procedure", "artifact_hash",
+}
+_CHILD_FIELDS = {
+    "slot_index", "variable", "ordered_variables", "variable_order_hash",
+    "parent_claim_hash", "scope", "scope_hash", "assumptions", "assumptions_hash",
+    "normalized_domain", "domain_hash", "derivative_claim", "derivative_claim_hash",
+    "context_binding", "context_binding_hash", "exact_certificate",
+    "exact_certificate_hash", "second_engine", "second_engine_hash", "child_hash",
+}
+_BASE_FIELDS = {
+    "point", "lhs_value", "rhs_value", "parent_claim_hash", "domain_hash", "base_point_hash",
+}
+_BUNDLE_FIELDS = {
+    "schema", "version", "parent_claim_hash", "domain_hash", "assumptions_hash",
+    "parent_graph", "child_graphs", "graph_hash",
+}
+_CONTEXT_FIELDS = {
+    "schema", "version", "parent_claim_hash", "variable_order_hash", "slot_index",
+    "derivative_variable", "domain_hash", "assumptions_hash", "scope", "scope_hash",
+    "derivative_claim_hash",
+}
+_EXACT_CHILD_FIELDS = {
+    "schema", "version", "context_binding", "context_binding_hash", "proof_kind",
+    "proof", "proof_hash", "artifact_hash",
+}
+_B3_EVIDENCE_FIELDS = {
+    "route", "process_stdout", "process_stderr", "process_exit_status",
+    "configuration_hash", "detail", "engine_identity", "exit_status",
+    "implementation_version", "input_hash", "parser_version", "semantic_profile",
+    "status", "stderr", "stdout", "trusted_runtime", "verdict",
+}
 
 
-class MultivariableT3Error(ValueError):
-    def __init__(self, code):
-        super().__init__(code)
-        self.code = code
-
-
-def _fail(code):
-    raise MultivariableT3Error(code)
-
-
-def _artifact_hash(payload):
-    body = copy.deepcopy(payload)
+def _artifact_hash(value):
+    body = copy.deepcopy(value)
     body.pop("artifact_hash", None)
     return sha(body)
 
 
-def _exact_rational(source):
-    if not isinstance(source, str) or not source or "." in source or "e" in source.lower():
-        _fail(FAILURE["base"])
+def _body_hash(value, hash_field):
+    body = copy.deepcopy(value)
+    body.pop(hash_field, None)
+    return sha(body)
+
+
+def _fraction_text(value):
+    value = Fraction(value)
+    return str(value.numerator) if value.denominator == 1 else f"{value.numerator}/{value.denominator}"
+
+
+def _validate_b5_source_ast(source, declared_variables):
+    """Apply B5's exact-source grammar without changing the legacy shared parser."""
+    if set(declared_variables) & _B5_RESERVED_DECLARED_NAMES:
+        raise AdapterError("B5_RESERVED_DECLARED_SYMBOL")
     try:
-        value = Fraction(source)
-    except (ValueError, ZeroDivisionError):
-        _fail(FAILURE["base"])
-    return value, sympy.Rational(value.numerator, value.denominator)
+        node = ast.parse(source, mode="eval").body
+    except (SyntaxError, TypeError):
+        raise AdapterError("B5_UNSUPPORTED_SOURCE_AST")
+    declared = set(declared_variables)
+    functions = set(PARSE_POLICY["allowed_functions"])
+
+    def visit(part):
+        if isinstance(part, ast.Name):
+            if part.id not in declared | functions | _B5_SOURCE_CONSTANTS:
+                raise AdapterError("B5_UNSUPPORTED_SOURCE_AST")
+            return
+        if isinstance(part, ast.Constant):
+            if not isinstance(part.value, int) or isinstance(part.value, bool):
+                raise AdapterError("B5_EXACT_SOURCE_LITERAL_REQUIRED")
+            return
+        if isinstance(part, ast.UnaryOp) and isinstance(
+                part.op, _B5_UNARY_OPERATORS):
+            visit(part.operand)
+            return
+        if isinstance(part, ast.BinOp) and isinstance(
+                part.op, _B5_BINARY_OPERATORS):
+            visit(part.left)
+            visit(part.right)
+            return
+        if isinstance(part, ast.Call) and isinstance(part.func, ast.Name) and \
+                part.func.id in functions and not part.keywords:
+            for argument in part.args:
+                visit(argument)
+            return
+        raise AdapterError("B5_UNSUPPORTED_SOURCE_AST")
+
+    visit(node)
 
 
-def _inside(value, interval):
-    lower = None if interval["lower"] == "-inf" else Fraction(interval["lower"])
-    upper = None if interval["upper"] == "+inf" else Fraction(interval["upper"])
-    if lower is not None and (value < lower or value == lower and not interval["lower_closed"]):
-        return False
-    if upper is not None and (value > upper or value == upper and not interval["upper_closed"]):
-        return False
-    return True
+def _normalize_domain(domain, variables):
+    if not isinstance(domain, dict):
+        raise AdapterError("B5_UNSUPPORTED_DOMAIN")
+    predicate = domain.get("predicate") if domain.get("schema") == _b2.SCHEMA else domain
+    analysis = _b2.analyze_predicate(predicate, list(variables))
+    if analysis.get("status") == "EMPTY":
+        raise AdapterError("B5_EMPTY_DOMAIN")
+    if analysis.get("status") != "CONNECTED":
+        raise AdapterError("B5_UNSUPPORTED_DOMAIN")
+    intervals = analysis["intervals"]
+    for variable in variables:
+        interval = intervals[variable]
+        if interval["lower_closed"] or interval["upper_closed"]:
+            raise AdapterError("B5_CLOSED_BOUNDARY_UNSUPPORTED")
+    normalized = {
+        "schema": _b2.SCHEMA,
+        "profile": _b2.PROFILE,
+        "variables": list(variables),
+        "predicate": analysis["predicate"],
+    }
+    return normalized, intervals
 
 
-def _entire_real_expression(expr, declared):
-    """Recognize only a small grammar whose real differentiability is structural."""
-    if expr.is_Number:
-        return bool(expr.is_real)
-    if expr.is_Symbol:
-        return str(expr) in declared and expr.is_real is True
-    if isinstance(expr, (sympy.Add, sympy.Mul)):
-        return all(_entire_real_expression(arg, declared) for arg in expr.args)
-    if isinstance(expr, sympy.Pow):
-        return bool(expr.exp.is_Integer and expr.exp >= 0 and
-                    _entire_real_expression(expr.base, declared))
-    if expr.func in _ENTIRE_FUNCTIONS:
-        return len(expr.args) == 1 and _entire_real_expression(expr.args[0], declared)
+def _base_point(intervals, variables):
+    point = {}
+    for variable in variables:
+        interval = intervals[variable]
+        lower = None if interval["lower"] == "-inf" else Fraction(interval["lower"])
+        upper = None if interval["upper"] == "+inf" else Fraction(interval["upper"])
+        if lower is None and upper is None:
+            value = Fraction(0)
+        elif lower is None:
+            value = upper - 1
+        elif upper is None:
+            value = lower + 1
+        else:
+            value = (lower + upper) / 2
+        if lower is not None and not value > lower:
+            raise AdapterError("B5_BASE_POINT_OUTSIDE_DOMAIN")
+        if upper is not None and not value < upper:
+            raise AdapterError("B5_BASE_POINT_OUTSIDE_DOMAIN")
+        point[variable] = _fraction_text(value)
+    return point
+
+
+def _structurally_differentiable(expression):
+    if expression.is_Number or expression.is_Symbol:
+        return True
+    if isinstance(expression, (sympy.Add, sympy.Mul)):
+        return all(_structurally_differentiable(arg) for arg in expression.args)
+    if isinstance(expression, sympy.Pow):
+        exponent = expression.exp
+        return bool(exponent.is_Integer and exponent >= 0 and
+                    _structurally_differentiable(expression.base))
+    if expression.func in _GLOBALLY_REAL_DIFFERENTIABLE_FUNCTIONS:
+        return all(_structurally_differentiable(arg) for arg in expression.args)
     return False
 
 
-def _child_certificate(lhs, rhs, symbols):
+def _exact_finite_real(expression):
+    return (
+        isinstance(expression, sympy.Basic)
+        and not expression.atoms(sympy.Float)
+        and not expression.has(sympy.oo, -sympy.oo, sympy.zoo, sympy.nan)
+        and expression.is_real is True
+        and expression.is_finite is True
+    )
+
+
+def _parent_context(claim):
+    required = {"lhs", "rhs", "symbols", "scope", "assumptions", "domain"}
+    if not isinstance(claim, dict) or not required.issubset(claim):
+        raise AdapterError("B5_SCHEMA_VALIDATION_FAILED")
+    variables = claim["symbols"]
+    if not isinstance(variables, list) or len(variables) < 2 or len(set(variables)) != len(variables):
+        raise AdapterError("B5_ORDERED_VARIABLES_REQUIRED")
+    if not all(isinstance(variable, str) and variable for variable in variables):
+        raise AdapterError("B5_ORDERED_VARIABLES_REQUIRED")
+    assumptions = claim["assumptions"]
+    if not isinstance(assumptions, list) or not assumptions:
+        raise AdapterError("B5_ASSUMPTIONS_REQUIRED")
+    scope = claim["scope"]
+    if scope not in {"real_scalars", "reals", "real", "R", "s"}:
+        raise AdapterError("B5_REAL_SCOPE_REQUIRED")
+    _validate_b5_source_ast(claim["lhs"], variables)
+    _validate_b5_source_ast(claim["rhs"], variables)
+    lhs = validate_and_parse(claim["lhs"], variables, real=True)
+    rhs = validate_and_parse(claim["rhs"], variables, real=True)
+    if not _exact_finite_real(lhs) or not _exact_finite_real(rhs):
+        raise AdapterError("B5_EXACT_FINITE_REAL_REQUIRED")
+    if not _structurally_differentiable(lhs) or not _structurally_differentiable(rhs):
+        raise AdapterError("B5_DIFFERENTIABILITY_UNSUPPORTED")
+    normalized_domain, intervals = _normalize_domain(claim["domain"], variables)
+    parent_claim = {
+        "lhs": claim["lhs"],
+        "rhs": claim["rhs"],
+        "symbols": list(variables),
+        "scope": scope,
+        "assumptions": copy.deepcopy(assumptions),
+    }
+    variable_order_hash = sha({"ordered_variables": list(variables)})
+    domain_hash = sha(normalized_domain)
+    scope_hash = sha(scope)
+    assumptions_hash = sha(list(assumptions))
+    parent_claim_hash = sha({
+        "kind": CERTIFICATE_KIND,
+        "certificate_version": CERTIFICATE_VERSION,
+        "parent_claim": parent_claim,
+        "variable_order_hash": variable_order_hash,
+        "normalized_domain": normalized_domain,
+        "domain_hash": domain_hash,
+        "scope_hash": scope_hash,
+        "assumptions_hash": assumptions_hash,
+    })
+    return {
+        "lhs": lhs,
+        "rhs": rhs,
+        "variables": list(variables),
+        "assumptions": copy.deepcopy(assumptions),
+        "scope": scope,
+        "parent_claim": parent_claim,
+        "parent_claim_hash": parent_claim_hash,
+        "variable_order_hash": variable_order_hash,
+        "normalized_domain": normalized_domain,
+        "domain_hash": domain_hash,
+        "scope_hash": scope_hash,
+        "assumptions_hash": assumptions_hash,
+        "intervals": intervals,
+    }
+
+
+def _differentiability_obligations(context):
+    obligations = []
+    for side in ("lhs", "rhs"):
+        for variable in context["variables"]:
+            body = {
+                "side": side,
+                "variable": variable,
+                "source_expression": context["parent_claim"][side],
+                "parent_claim_hash": context["parent_claim_hash"],
+                "domain_hash": context["domain_hash"],
+                "status": "PROVED",
+                "proof_route": "structural_globally_real_differentiable_expression_v1",
+            }
+            body["obligation_hash"] = sha(body)
+            obligations.append(body)
+    return obligations
+
+
+def _exact_child_certificate(lhs, rhs, variables):
+    from loop_engine.orch_adapters.symbolic_identity_verify import recheck as _rc
+
+    claim = {"lhs": str(lhs), "rhs": str(rhs), "symbols": list(variables)}
     for builder in (
-        _recheck.build_polynomial_certificate,
-        _recheck.build_trig_cofactor_certificate,
-        _recheck.build_exp_polynomial_certificate,
-    ):
+            _rc.build_polynomial_certificate,
+            _rc.build_trig_cofactor_certificate,
+            _rc.build_exp_polynomial_certificate):
         try:
-            certificate = builder(lhs, rhs, symbols)
+            certificate = builder(lhs, rhs, variables)
         except Exception:
-            _fail(FAILURE["partial"])
-        # The existing T1 builder may return no cofactors when exact trig expansion makes
-        # the numerator structurally zero.  Bind explicit zero cofactors so its independent
-        # rechecker can still require one entry per declared Pythagorean constraint.
-        if certificate and certificate.get("kind") == "trig_ideal_cofactor" and \
+            certificate = None
+        if certificate is None:
+            continue
+        # The frozen T1 builder emits an empty cofactor list for the valid P=0 case,
+        # while its independent rechecker requires one cofactor per ideal generator.
+        # Supplying explicit zero cofactors makes that existing proof object replayable.
+        if certificate.get("kind") == "trig_ideal_cofactor" and \
                 certificate.get("numerator_polynomial") == "0" and \
-                certificate.get("cofactors") == []:
-            certificate = copy.deepcopy(certificate)
+                not certificate.get("cofactors"):
             certificate["cofactors"] = [
                 "0" for _ in certificate.get("constraint_polynomials", [])]
-        if certificate and _recheck.recheck(
-                {"lhs": str(lhs), "rhs": str(rhs), "symbols": list(symbols)}, certificate).get("ok"):
+        if _rc.recheck(claim, certificate).get("ok"):
             return certificate
     return None
 
 
-def _claim_binding(claim, canonical_domain, manifest):
-    body = {
-        "lhs": claim["lhs"],
-        "rhs": claim["rhs"],
-        "symbols": list(claim["symbols"]),
-        "scope": claim["scope"],
-        "assumptions": list(claim["assumptions"]),
-        "canonical_domain": canonical_domain,
-        "multivariable_t3": copy.deepcopy(manifest),
+def _bound_exact_child_certificate(lhs, rhs, variables, context_binding):
+    proof = _exact_child_certificate(lhs, rhs, variables)
+    if proof is None:
+        return None
+    envelope = {
+        "schema": EXACT_CHILD_SCHEMA,
+        "version": "1.0",
+        "context_binding": copy.deepcopy(context_binding),
+        "context_binding_hash": sha(context_binding),
+        "proof_kind": proof.get("kind"),
+        "proof": proof,
+        "proof_hash": sha(proof),
     }
-    return sha(body)
+    envelope["artifact_hash"] = _artifact_hash(envelope)
+    return envelope
 
 
-def prepare_certificate(claim, lhs, rhs):
-    """Build every exact local artifact except the independent B3 confirmations."""
-    manifest = claim.get("multivariable_t3")
-    required = {"schema", "relevant_variables", "variable_order", "base_point"}
-    if not isinstance(manifest, dict) or set(manifest) != required or \
-            manifest.get("schema") != REQUEST_SCHEMA:
-        _fail(FAILURE["request"])
-    symbols = claim.get("symbols")
-    relevant = manifest.get("relevant_variables")
-    variable_order = manifest.get("variable_order")
-    if not isinstance(symbols, list) or len(symbols) < 2 or len(set(symbols)) != len(symbols) or \
-            relevant != symbols or variable_order != symbols:
-        _fail(FAILURE["variables"])
-    assumptions = claim.get("assumptions")
-    scope = claim.get("scope")
-    if assumptions != [f"{variable} real" for variable in symbols] or \
-            scope != "real_scalars":
-        _fail(FAILURE["request"])
-    if not _entire_real_expression(lhs, set(symbols)) or \
-            not _entire_real_expression(rhs, set(symbols)):
-        _fail(FAILURE["grammar"])
+def _recheck_exact_child(
+        derivative_lhs, derivative_rhs, derivative_claim, certificate,
+        context_binding):
+    if not isinstance(certificate, dict) or set(certificate) != _EXACT_CHILD_FIELDS or \
+            certificate.get("schema") != EXACT_CHILD_SCHEMA or \
+            certificate.get("version") != "1.0":
+        return False
+    if certificate.get("context_binding") != context_binding or \
+            certificate.get("context_binding_hash") != sha(context_binding) or \
+            certificate.get("artifact_hash") != _artifact_hash(certificate):
+        return False
+    proof = certificate.get("proof")
+    if not isinstance(proof, dict) or certificate.get("proof_kind") != proof.get("kind") or \
+            certificate.get("proof_hash") != sha(proof):
+        return False
+    expected = _bound_exact_child_certificate(
+        derivative_lhs, derivative_rhs, derivative_claim["symbols"],
+        context_binding)
+    if expected is None or certificate != expected:
+        return False
+    from loop_engine.orch_adapters.symbolic_identity_verify import recheck as _rc
+    return bool(_rc.recheck(derivative_claim, proof).get("ok"))
 
-    raw_domain = claim.get("domain")
-    raw_terms = raw_domain.get("terms") if isinstance(raw_domain, dict) and \
-        raw_domain.get("kind") == "intersection" else None
-    explicit_domain_variables = [
-        term.get("variable") if isinstance(term, dict) and term.get("kind") != "comparison"
-        else term.get("left") if isinstance(term, dict) else None
-        for term in raw_terms or []
+
+def _run_pinned_b3_payload(payload, timeout):
+    """Run the shipped B3 executable on the complete B5-bound payload."""
+    command = [
+        sys.executable,
+        str(Path(__file__).resolve().parents[3] / "tools" / "independent_zero_engine.py"),
     ]
-    if not raw_terms or set(explicit_domain_variables) != set(symbols):
-        _fail(FAILURE["domain"])
     try:
-        domain_analysis = _domain.analyze_predicate(raw_domain, symbols)
+        process = subprocess.run(
+            command, input=json.dumps(payload), capture_output=True, text=True,
+            timeout=max(_core.TRUSTED_RUNTIME_SUBPROCESS_TIMEOUT_FLOOR, timeout),
+            check=False)
+    except subprocess.TimeoutExpired:
+        return {
+            "status": "timeout", "route": "shipped_wolfram_engine",
+            "input_hash": sha(payload), "stdout": "", "stderr": "",
+            "exit_status": None,
+        }
+    except Exception as exc:
+        return {
+            "status": "process_failure", "route": "shipped_wolfram_engine",
+            "input_hash": sha(payload), "detail": type(exc).__name__,
+            "stdout": "", "stderr": "", "exit_status": None,
+        }
+    try:
+        parsed = json.loads(process.stdout)
     except Exception:
-        _fail(FAILURE["domain"])
-    if domain_analysis.get("status") != "CONNECTED":
-        _fail(FAILURE["domain"])
-    canonical_domain = domain_analysis["predicate"]
-    intervals = domain_analysis["intervals"]
-    component = {
-        "kind": "cartesian_product_intervals",
-        "variables": list(symbols),
-        "intervals": [copy.deepcopy(intervals[v]) for v in symbols],
+        return {
+            "status": "malformed_output", "route": "shipped_wolfram_engine",
+            "input_hash": sha(payload), "stdout": process.stdout,
+            "stderr": process.stderr, "exit_status": process.returncode,
+        }
+    if not isinstance(parsed, dict):
+        return {
+            "status": "malformed_output", "route": "shipped_wolfram_engine",
+            "input_hash": sha(payload), "stdout": process.stdout,
+            "stderr": process.stderr, "exit_status": process.returncode,
+        }
+    return {
+        "route": "shipped_wolfram_engine",
+        "process_stdout": process.stdout,
+        "process_stderr": process.stderr,
+        "process_exit_status": process.returncode,
+        **parsed,
     }
-    component_hash = sha(component)
-    domain_certificate = {
-        "schema": _domain.SCHEMA,
-        "profile": _domain.PROFILE,
-        "variables": list(symbols),
-        "predicate": copy.deepcopy(canonical_domain),
-        "intervals": [copy.deepcopy(intervals[v]) for v in symbols],
-        "connected_component": component,
-        "connected_component_hash": component_hash,
-        "connected": True,
-        "nonempty": True,
-        "differentiability_profile": "entire_real_elementary_v1",
-    }
-    domain_certificate["domain_certificate_hash"] = sha(domain_certificate)
 
-    point = manifest.get("base_point")
-    if not isinstance(point, dict) or list(point) != symbols or set(point) != set(symbols):
-        _fail(FAILURE["base"])
-    exact_point, substitutions = {}, {}
-    symbol_objects = syms_like(lhs - rhs, symbols)
-    by_name = {str(symbol): symbol for symbol in symbol_objects}
-    for variable in symbols:
-        rational, sympy_value = _exact_rational(point[variable])
-        if not _inside(rational, intervals[variable]):
-            _fail(FAILURE["base"])
-        exact_point[variable] = point[variable]
-        substitutions[by_name[variable]] = sympy_value
+
+def _strict_second_zero_confirmed(second, payload, runtime_identity=None):
+    """Validate B3 transport against independently resolved trusted runtime facts."""
     try:
-        lhs_value, rhs_value = lhs.subs(substitutions), rhs.subs(substitutions)
+        if runtime_identity is None:
+            runtime_identity = _resolve_trusted_wolfram_runtime()
+    except TrustedRuntimeError:
+        return False
+    if not isinstance(second, dict) or set(second) != _B3_EVIDENCE_FIELDS or \
+            not _PINNED_SECOND_ZERO_CONFIRMED(second, payload, runtime_identity):
+        return False
+    if second.get("stdout") != "True" or second.get("exit_status") != 0 or \
+            second.get("process_exit_status") != 0:
+        return False
+    raw = second.get("process_stdout")
+    if not isinstance(raw, str):
+        return False
+    try:
+        parsed = json.loads(raw)
     except Exception:
-        _fail(FAILURE["base"])
+        return False
+    transport = {"route", "process_stdout", "process_stderr", "process_exit_status"}
+    return isinstance(parsed, dict) and parsed == {
+        key: value for key, value in second.items() if key not in transport
+    }
+
+
+def _derivative_claim(context, variable):
+    symbol_by_name = {str(symbol): symbol for symbol in
+                      (context["lhs"].free_symbols | context["rhs"].free_symbols)}
+    symbol = symbol_by_name.get(variable, sympy.Symbol(variable, real=True))
+    derivative_lhs = sympy.diff(context["lhs"], symbol)
+    derivative_rhs = sympy.diff(context["rhs"], symbol)
+    if not _exact_finite_real(derivative_lhs) or not _exact_finite_real(derivative_rhs):
+        raise AdapterError("B5_EXACT_FINITE_REAL_DERIVATIVE_REQUIRED")
+    return derivative_lhs, derivative_rhs, {
+        "lhs": str(derivative_lhs),
+        "rhs": str(derivative_rhs),
+        "symbols": list(context["variables"]),
+    }
+
+
+def _derivative_claim_hash(context, variable, derivative_claim):
+    return sha({
+        "parent_claim_hash": context["parent_claim_hash"],
+        "variable": variable,
+        "ordered_variables": context["variables"],
+        "variable_order_hash": context["variable_order_hash"],
+        "scope_hash": context["scope_hash"],
+        "assumptions_hash": context["assumptions_hash"],
+        "domain_hash": context["domain_hash"],
+        "derivative_claim": derivative_claim,
+    })
+
+
+def _child_context_binding(context, slot_index, variable, derivative_claim_hash):
+    return {
+        "schema": CHILD_CONTEXT_SCHEMA,
+        "version": "1.0",
+        "parent_claim_hash": context["parent_claim_hash"],
+        "variable_order_hash": context["variable_order_hash"],
+        "slot_index": slot_index,
+        "derivative_variable": variable,
+        "domain_hash": context["domain_hash"],
+        "assumptions_hash": context["assumptions_hash"],
+        "scope": context["scope"],
+        "scope_hash": context["scope_hash"],
+        "derivative_claim_hash": derivative_claim_hash,
+    }
+
+
+def _child_b3_payload(context, derivative_claim, context_binding):
+    payload = _core._second_engine_payload(
+        derivative_claim["lhs"], derivative_claim["rhs"], context["variables"],
+        context["scope"], context["normalized_domain"], context["assumptions"])
+    payload["b5_context_binding"] = copy.deepcopy(context_binding)
+    payload["b5_context_binding_hash"] = sha(context_binding)
+    return payload
+
+
+def _base_point_certificate(context):
+    point = _base_point(context["intervals"], context["variables"])
+    substitutions = {
+        sympy.Symbol(variable, real=True): sympy.Rational(value)
+        for variable, value in point.items()
+    }
+    lhs_value = context["lhs"].subs(substitutions)
+    rhs_value = context["rhs"].subs(substitutions)
+    if lhs_value.free_symbols or rhs_value.free_symbols or \
+            not _exact_finite_real(lhs_value) or not _exact_finite_real(rhs_value):
+        raise AdapterError("B5_EXACT_FINITE_REAL_BASE_POINT_REQUIRED")
     if lhs_value != rhs_value:
-        _fail(FAILURE["base"])
-
-    try:
-        graph = _b4.build_obligation_graph(
-            {k: copy.deepcopy(claim[k]) for k in ("lhs", "rhs", "symbols", "scope")},
-            claim["domain"], assumptions)
-        replay = _b4.recheck_obligation_graph(
-            {k: copy.deepcopy(claim[k]) for k in ("lhs", "rhs", "symbols", "scope")},
-            claim["domain"], assumptions, graph)
-    except Exception:
-        _fail(FAILURE["domain_obligation"])
-    if replay.get("ok") is not True:
-        _fail(FAILURE["domain_obligation"])
-
-    parent_hash = _claim_binding(claim, canonical_domain, manifest)
-    variable_order_manifest = {
-        "relevant_variables": list(relevant),
-        "variable_order": list(variable_order),
-    }
-    variable_order_manifest["variable_order_hash"] = sha(variable_order_manifest)
-    base_point_certificate = {
-        "point": exact_point,
+        raise AdapterError("B5_BASE_POINT_EQUALITY_FAILED")
+    base = {
+        "point": point,
         "lhs_value": str(lhs_value),
         "rhs_value": str(rhs_value),
-        "parent_claim_hash": parent_hash,
-        "connected_component_hash": component_hash,
+        "parent_claim_hash": context["parent_claim_hash"],
+        "domain_hash": context["domain_hash"],
     }
-    base_point_certificate["base_point_hash"] = sha(base_point_certificate)
-    engine_domain = {
-        "schema": _domain.SCHEMA,
-        "variables": list(symbols),
-        "predicate": copy.deepcopy(canonical_domain),
-    }
+    base["base_point_hash"] = sha(base)
+    return base
 
-    children = []
-    for index, variable in enumerate(variable_order):
-        symbol = by_name[variable]
+
+def build_certificate(claim, timeout):
+    """Build a complete B5 certificate or return None without partial promotion."""
+    try:
+        # Builder independently derives the expected B3 configuration before accepting
+        # child output.  The child cannot choose this identity or hash.
+        runtime_identity = _resolve_trusted_wolfram_runtime()
+        context = _parent_context(claim)
+        base = _base_point_certificate(context)
+        differentiability = _differentiability_obligations(context)
+        children = []
+        child_graphs = []
+        b4_domain = {"predicate": context["normalized_domain"]["predicate"]}
+        parent_graph_claim = {
+            "lhs": context["parent_claim"]["lhs"],
+            "rhs": context["parent_claim"]["rhs"],
+            "symbols": list(context["variables"]),
+            "scope": context["scope"],
+        }
+        parent_graph = _b4.build_obligation_graph(
+            parent_graph_claim, b4_domain, context["assumptions"])
+        if not _b4.recheck_obligation_graph(
+                parent_graph_claim, b4_domain, context["assumptions"],
+                parent_graph).get("ok"):
+            return None
+        for slot_index, variable in enumerate(context["variables"]):
+            derivative_lhs, derivative_rhs, derivative_claim = _derivative_claim(context, variable)
+            derivative_hash = _derivative_claim_hash(
+                context, variable, derivative_claim)
+            context_binding = _child_context_binding(
+                context, slot_index, variable, derivative_hash)
+            exact_certificate = _bound_exact_child_certificate(
+                derivative_lhs, derivative_rhs, context["variables"],
+                context_binding)
+            if exact_certificate is None:
+                return None
+            payload = _child_b3_payload(
+                context, derivative_claim, context_binding)
+            second = _run_pinned_b3_payload(payload, timeout)
+            if not _strict_second_zero_confirmed(second, payload, runtime_identity):
+                return None
+            graph_claim = {
+                "lhs": derivative_claim["lhs"],
+                "rhs": derivative_claim["rhs"],
+                "symbols": list(context["variables"]),
+                "scope": context["scope"],
+            }
+            graph = _b4.build_obligation_graph(
+                graph_claim, b4_domain, context["assumptions"])
+            if not _b4.recheck_obligation_graph(
+                    graph_claim, b4_domain, context["assumptions"], graph).get("ok"):
+                return None
+            child = {
+                "slot_index": slot_index,
+                "variable": variable,
+                "ordered_variables": list(context["variables"]),
+                "variable_order_hash": context["variable_order_hash"],
+                "parent_claim_hash": context["parent_claim_hash"],
+                "scope": context["scope"],
+                "scope_hash": context["scope_hash"],
+                "assumptions": copy.deepcopy(context["assumptions"]),
+                "assumptions_hash": context["assumptions_hash"],
+                "normalized_domain": copy.deepcopy(context["normalized_domain"]),
+                "domain_hash": context["domain_hash"],
+                "derivative_claim": derivative_claim,
+                "derivative_claim_hash": derivative_hash,
+                "context_binding": copy.deepcopy(context_binding),
+                "context_binding_hash": sha(context_binding),
+                "exact_certificate": exact_certificate,
+                "exact_certificate_hash": sha(exact_certificate),
+                "second_engine": copy.deepcopy(second),
+                "second_engine_hash": sha(second),
+            }
+            child["child_hash"] = sha(child)
+            children.append(child)
+            child_graphs.append({
+                "slot_index": slot_index,
+                "variable": variable,
+                "derivative_claim_hash": derivative_hash,
+                "context_binding_hash": sha(context_binding),
+                "graph": graph,
+            })
+        graph_bundle = {
+            "schema": GRAPH_BUNDLE_SCHEMA,
+            "version": "1.0",
+            "parent_claim_hash": context["parent_claim_hash"],
+            "domain_hash": context["domain_hash"],
+            "assumptions_hash": context["assumptions_hash"],
+            "parent_graph": parent_graph,
+            "child_graphs": child_graphs,
+        }
+        graph_bundle["graph_hash"] = sha(graph_bundle)
+        coverage = [
+            {"slot_index": child["slot_index"],
+             "variable": child["variable"],
+             "derivative_claim_hash": child["derivative_claim_hash"],
+             "context_binding_hash": child["context_binding_hash"]}
+            for child in children
+        ]
+        certificate = {
+            "kind": CERTIFICATE_KIND,
+            "certificate_version": CERTIFICATE_VERSION,
+            "theorem_profile": THEOREM_PROFILE,
+            "parent_claim": copy.deepcopy(context["parent_claim"]),
+            "parent_claim_hash": context["parent_claim_hash"],
+            "ordered_variables": list(context["variables"]),
+            "variable_order_hash": context["variable_order_hash"],
+            "normalized_domain": copy.deepcopy(context["normalized_domain"]),
+            "domain_hash": context["domain_hash"],
+            "scope": context["scope"],
+            "scope_hash": context["scope_hash"],
+            "assumptions": copy.deepcopy(context["assumptions"]),
+            "assumptions_hash": context["assumptions_hash"],
+            "base_point_certificate": base,
+            "derivative_children": children,
+            "differentiability_obligations": differentiability,
+            "domain_obligation_graph": graph_bundle,
+            "domain_obligation_graph_hash": graph_bundle["graph_hash"],
+            "coverage": coverage,
+            "coverage_hash": sha(coverage),
+            "coverage_complete": len(coverage) == len(context["variables"]),
+            "independently_recheckable": True,
+            "recheck_procedure": RECHECK_PROCEDURE,
+        }
+        certificate["artifact_hash"] = _artifact_hash(certificate)
+        if not recheck(claim, certificate).get("ok"):
+            return None
+        return certificate
+    except (AdapterError, Exception):
+        return None
+
+
+def recheck(claim, certificate, timeout=None):
+    """Reconstruct every B5 obligation; never trust builder status or coverage fields."""
+    if timeout is None:
+        timeout = _core.POLICY["simplify_timeout_seconds"]
+    try:
+        # Rechecker repeats the resolver step rather than accepting certificate or
+        # transcript runtime metadata as its expected configuration.
+        runtime_identity = _resolve_trusted_wolfram_runtime()
+    except TrustedRuntimeError:
+        return {"ok": False, "detail": "B5 trusted Wolfram runtime is unavailable"}
+    if not isinstance(certificate, dict) or set(certificate) != _CERTIFICATE_FIELDS:
+        return {"ok": False, "detail": "B5 certificate schema mismatch"}
+    if certificate.get("kind") != CERTIFICATE_KIND or \
+            certificate.get("certificate_version") != CERTIFICATE_VERSION or \
+            certificate.get("theorem_profile") != THEOREM_PROFILE:
+        return {"ok": False, "detail": "B5 certificate kind or version mismatch"}
+    if certificate.get("artifact_hash") != _artifact_hash(certificate):
+        return {"ok": False, "detail": "B5 artifact hash mismatch"}
+    try:
+        context = _parent_context(claim)
+        expected_base = _base_point_certificate(context)
+        expected_differentiability = _differentiability_obligations(context)
+    except (AdapterError, Exception) as exc:
+        return {"ok": False, "detail": f"B5 parent reconstruction failed: {getattr(exc, 'code', type(exc).__name__)}"}
+    expected_parent_fields = {
+        "parent_claim": context["parent_claim"],
+        "parent_claim_hash": context["parent_claim_hash"],
+        "ordered_variables": context["variables"],
+        "variable_order_hash": context["variable_order_hash"],
+        "normalized_domain": context["normalized_domain"],
+        "domain_hash": context["domain_hash"],
+        "scope": context["scope"],
+        "scope_hash": context["scope_hash"],
+        "assumptions": context["assumptions"],
+        "assumptions_hash": context["assumptions_hash"],
+    }
+    if any(certificate.get(key) != value for key, value in expected_parent_fields.items()):
+        return {"ok": False, "detail": "B5 parent, order, domain, scope, or assumption binding mismatch"}
+    base = certificate.get("base_point_certificate")
+    if not isinstance(base, dict) or set(base) != _BASE_FIELDS or base != expected_base:
+        return {"ok": False, "detail": "B5 base-point equality or membership mismatch"}
+    if certificate.get("differentiability_obligations") != expected_differentiability:
+        return {"ok": False, "detail": "B5 differentiability obligations are incomplete or stale"}
+    children = certificate.get("derivative_children")
+    if not isinstance(children, list) or len(children) != len(context["variables"]):
+        return {"ok": False, "detail": "B5 gradient child count is incomplete"}
+    expected_coverage = []
+    b4_domain = {"predicate": context["normalized_domain"]["predicate"]}
+    expected_graph_bindings = []
+    for index, variable in enumerate(context["variables"]):
+        child = children[index]
+        if not isinstance(child, dict) or set(child) != _CHILD_FIELDS:
+            return {"ok": False, "detail": "B5 derivative child schema mismatch"}
         try:
-            derivative_lhs, derivative_rhs = sympy.diff(lhs, symbol), sympy.diff(rhs, symbol)
-        except Exception:
-            _fail(FAILURE["partial"])
-        proof = _child_certificate(derivative_lhs, derivative_rhs, symbols)
-        if proof is None:
-            _fail(FAILURE["partial"])
-        children.append({
-            "order_index": index,
-            "differentiation_variable": variable,
-            "derivative_kind": "partial_derivative",
-            "lhs": str(derivative_lhs),
-            "rhs": str(derivative_rhs),
-            "symbols": list(symbols),
-            "scope": scope,
-            "assumptions": list(assumptions),
-            "parent_claim_hash": parent_hash,
-            "variable_order_hash": variable_order_manifest["variable_order_hash"],
-            "base_point_hash": base_point_certificate["base_point_hash"],
-            "domain_certificate_hash": domain_certificate["domain_certificate_hash"],
-            "domain_obligation_graph_hash": graph["graph_hash"],
-            "proof_certificate": proof,
-            "proof_certificate_hash": _artifact_hash(proof),
-            "engine_domain": copy.deepcopy(engine_domain),
+            derivative_lhs, derivative_rhs, derivative_claim = _derivative_claim(
+                context, variable)
+        except (AdapterError, Exception):
+            return {"ok": False, "detail": "B5 exact finite derivative reconstruction failed"}
+        derivative_hash = _derivative_claim_hash(context, variable, derivative_claim)
+        context_binding = _child_context_binding(
+            context, index, variable, derivative_hash)
+        expected_bindings = {
+            "slot_index": index,
+            "variable": variable,
+            "ordered_variables": context["variables"],
+            "variable_order_hash": context["variable_order_hash"],
+            "parent_claim_hash": context["parent_claim_hash"],
+            "scope": context["scope"],
+            "scope_hash": context["scope_hash"],
+            "assumptions": context["assumptions"],
+            "assumptions_hash": context["assumptions_hash"],
+            "normalized_domain": context["normalized_domain"],
+            "domain_hash": context["domain_hash"],
+            "derivative_claim": derivative_claim,
+            "derivative_claim_hash": derivative_hash,
+            "context_binding": context_binding,
+            "context_binding_hash": sha(context_binding),
+        }
+        if any(child.get(key) != value for key, value in expected_bindings.items()):
+            return {"ok": False, "detail": "B5 derivative child does not match the ordered partial"}
+        if child.get("exact_certificate_hash") != sha(child.get("exact_certificate")):
+            return {"ok": False, "detail": "B5 exact child certificate hash mismatch"}
+        if not _recheck_exact_child(
+                derivative_lhs, derivative_rhs, derivative_claim,
+                child.get("exact_certificate"), context_binding):
+            return {"ok": False, "detail": "B5 exact derivative child replay failed"}
+        payload = _child_b3_payload(context, derivative_claim, context_binding)
+        if child.get("second_engine_hash") != sha(child.get("second_engine")) or \
+                not _strict_second_zero_confirmed(
+                    child.get("second_engine"), payload, runtime_identity):
+            return {"ok": False, "detail": "B5 stored pinned B3 audit record failed"}
+        fresh_second = _run_pinned_b3_payload(payload, timeout)
+        if not _strict_second_zero_confirmed(fresh_second, payload, runtime_identity) or \
+                fresh_second != child.get("second_engine"):
+            return {"ok": False, "detail": "B5 fresh pinned B3 replay failed"}
+        if child.get("child_hash") != _body_hash(child, "child_hash"):
+            return {"ok": False, "detail": "B5 derivative child hash mismatch"}
+        expected_coverage.append({
+            "slot_index": index,
+            "variable": variable,
+            "derivative_claim_hash": derivative_hash,
+            "context_binding_hash": sha(context_binding),
         })
-
-    return {
-        "kind": CERTIFICATE_KIND,
-        "certificate_version": CERTIFICATE_VERSION,
-        "real_domain": True,
-        "parent_claim_hash": parent_hash,
-        "symbols": list(symbols),
-        "scope": scope,
-        "assumptions": list(assumptions),
-        "request_manifest": copy.deepcopy(manifest),
-        "variable_order_manifest": variable_order_manifest,
-        "base_point_certificate": base_point_certificate,
-        "connected_domain_certificate": domain_certificate,
-        "domain_obligation_graph": graph,
-        "domain_obligation_graph_hash": graph["graph_hash"],
-        "domain_obligation_graph_version": graph["graph_version"],
-        "prepared_children": children,
+        expected_graph_bindings.append((
+            index, variable, derivative_hash, sha(context_binding),
+            derivative_claim))
+    bundle = certificate.get("domain_obligation_graph")
+    if not isinstance(bundle, dict) or set(bundle) != _BUNDLE_FIELDS or \
+            bundle.get("schema") != GRAPH_BUNDLE_SCHEMA or bundle.get("version") != "1.0":
+        return {"ok": False, "detail": "B5 B4 graph bundle schema mismatch"}
+    if bundle.get("graph_hash") != _body_hash(bundle, "graph_hash") or \
+            certificate.get("domain_obligation_graph_hash") != bundle.get("graph_hash"):
+        return {"ok": False, "detail": "B5 B4 graph bundle hash mismatch"}
+    for key, value in (
+        ("parent_claim_hash", context["parent_claim_hash"]),
+        ("domain_hash", context["domain_hash"]),
+        ("assumptions_hash", context["assumptions_hash"]),
+    ):
+        if bundle.get(key) != value:
+            return {"ok": False, "detail": "B5 B4 graph bundle parent binding mismatch"}
+    graph_entries = bundle.get("child_graphs")
+    parent_graph_claim = {
+        "lhs": context["parent_claim"]["lhs"],
+        "rhs": context["parent_claim"]["rhs"],
+        "symbols": list(context["variables"]),
+        "scope": context["scope"],
     }
-
-
-def finalize_certificate(prepared, confirmations):
-    """Bind exactly one independently confirmed result to each ordered partial."""
-    children = prepared.get("prepared_children")
-    if not isinstance(confirmations, list) or not isinstance(children, list) or \
-            len(confirmations) != len(children):
-        _fail(FAILURE["confirmation"])
-    finalized_children = []
-    for child, confirmation in zip(children, confirmations):
-        bound = copy.deepcopy(child)
-        bound["second_engine_confirmation"] = copy.deepcopy(confirmation)
-        bound["child_hash"] = sha(bound)
-        finalized_children.append(bound)
-    coverage = [True for _ in children]
-    coverage_manifest = {
-        "variable_order_hash": prepared["variable_order_manifest"]["variable_order_hash"],
-        "coverage_bitmap": coverage,
-        "covered_variables": [child["differentiation_variable"] for child in children],
-    }
-    coverage_manifest["coverage_hash"] = sha(coverage_manifest)
-    graph = {
-        "schema": GRADIENT_SCHEMA,
-        "graph_version": "1.0",
-        "parent_claim_hash": prepared["parent_claim_hash"],
-        "variable_order_hash": prepared["variable_order_manifest"]["variable_order_hash"],
-        "coverage_hash": coverage_manifest["coverage_hash"],
-        "base_point_hash": prepared["base_point_certificate"]["base_point_hash"],
-        "domain_certificate_hash": prepared["connected_domain_certificate"]["domain_certificate_hash"],
-        "domain_obligation_graph_hash": prepared["domain_obligation_graph_hash"],
-        "ordered_child_hashes": [child["child_hash"] for child in finalized_children],
-        "children": finalized_children,
-    }
-    graph["gradient_graph_hash"] = sha(graph)
-    certificate = {k: copy.deepcopy(v) for k, v in prepared.items() if k != "prepared_children"}
-    certificate["coverage_manifest"] = coverage_manifest
-    certificate["gradient_certificate_graph"] = graph
-    certificate["independently_recheckable"] = True
-    certificate["recheck_procedure"] = (
-        "re-derive the ordered full gradient, exact base point, connected interval product, "
-        "B4 graph, each exact child proof, every pinned B3 ZERO, and all hashes")
-    certificate["artifact_hash"] = _artifact_hash(certificate)
-    return certificate
-
-
-def _confirmation_ok(child, confirmation):
-    from loop_engine.orch_adapters.symbolic_identity_verify import core
-    payload = core._second_engine_payload(
-        child["lhs"], child["rhs"], child["symbols"], child["scope"],
-        child["engine_domain"], child["assumptions"])
-    return core._second_zero_confirmed(confirmation, payload)
-
-
-def recheck(claim, lhs, rhs, certificate):
-    """Rebuild the complete certificate; no stored mathematical assertion is trusted."""
-    try:
-        prepared = prepare_certificate(claim, lhs, rhs)
-    except MultivariableT3Error as exc:
-        return {"ok": False, "detail": exc.code}
-    graph = certificate.get("gradient_certificate_graph")
-    stored_children = graph.get("children") if isinstance(graph, dict) else None
-    if not isinstance(stored_children, list) or len(stored_children) != len(prepared["prepared_children"]):
-        return {"ok": False, "detail": FAILURE["certificate"]}
-    confirmations = []
-    for expected, stored in zip(prepared["prepared_children"], stored_children):
-        confirmation = stored.get("second_engine_confirmation") if isinstance(stored, dict) else None
-        if not _confirmation_ok(expected, confirmation):
-            return {"ok": False, "detail": FAILURE["confirmation"]}
-        confirmations.append(confirmation)
-    try:
-        expected_certificate = finalize_certificate(prepared, confirmations)
-    except MultivariableT3Error as exc:
-        return {"ok": False, "detail": exc.code}
-    if certificate != expected_certificate or certificate.get("artifact_hash") != _artifact_hash(certificate):
-        return {"ok": False, "detail": FAILURE["certificate"]}
+    if not _b4.recheck_obligation_graph(
+            parent_graph_claim, b4_domain, context["assumptions"],
+            bundle.get("parent_graph")).get("ok"):
+        return {"ok": False, "detail": "B5 parent-source B4 graph replay failed"}
+    if not isinstance(graph_entries, list) or len(graph_entries) != len(expected_graph_bindings):
+        return {"ok": False, "detail": "B5 B4 child graph coverage is incomplete"}
+    for entry, (
+            slot_index, variable, derivative_hash, context_binding_hash,
+            derivative_claim) in zip(
+            graph_entries, expected_graph_bindings):
+        if not isinstance(entry, dict) or set(entry) != {
+                "slot_index", "variable", "derivative_claim_hash",
+                "context_binding_hash", "graph"} or \
+                entry.get("slot_index") != slot_index or \
+                entry.get("variable") != variable or \
+                entry.get("derivative_claim_hash") != derivative_hash or \
+                entry.get("context_binding_hash") != context_binding_hash:
+            return {"ok": False, "detail": "B5 B4 child graph ordering or claim binding mismatch"}
+        graph_claim = {
+            "lhs": derivative_claim["lhs"],
+            "rhs": derivative_claim["rhs"],
+            "symbols": list(context["variables"]),
+            "scope": context["scope"],
+        }
+        if not _b4.recheck_obligation_graph(
+                graph_claim, b4_domain, context["assumptions"], entry.get("graph")).get("ok"):
+            return {"ok": False, "detail": "B5 embedded B4 graph replay failed"}
+    if certificate.get("coverage") != expected_coverage or \
+            certificate.get("coverage_hash") != sha(expected_coverage) or \
+            certificate.get("coverage_complete") is not True:
+        return {"ok": False, "detail": "B5 full-gradient coverage does not reconstruct"}
+    if certificate.get("independently_recheckable") is not True or \
+            certificate.get("recheck_procedure") != RECHECK_PROCEDURE:
+        return {"ok": False, "detail": "B5 recheck metadata mismatch"}
     return {
         "ok": True,
-        "detail": "re-verified full ordered gradient, exact base point, connected domain, "
-                  "B4 obligations, and all B3/hash bindings",
+        "detail": "re-verified complete multivariable gradient and exact base point on an open Cartesian product",
     }
-
-
-def recheck_certificate(claim, certificate):
-    """Standalone B5 recheck entry point used by the existing controller audit surface."""
-    if not isinstance(certificate, dict) or certificate.get("kind") != CERTIFICATE_KIND:
-        return {"ok": False, "detail": FAILURE["certificate"]}
-    symbols = claim.get("symbols") if isinstance(claim, dict) else None
-    if not isinstance(symbols, list):
-        return {"ok": False, "detail": FAILURE["request"]}
-    try:
-        lhs = validate_and_parse(claim["lhs"], symbols, real=True)
-        rhs = validate_and_parse(claim["rhs"], symbols, real=True)
-    except Exception:
-        return {"ok": False, "detail": FAILURE["request"]}
-    return recheck(claim, lhs, rhs, certificate)
-
-
-def verify_request(request, timeout=20):
-    """Issue B5 evidence without altering the immutable B1-B4 verifier modules."""
-    if not isinstance(request, dict) or request.get("operation") != "multivariable_t3_verify" or \
-            request.get("contract_version") != "1.0" or \
-            request.get("verification_mode") != "symbolic_only":
-        return _blocked_result(request, FAILURE["request"], [], 1)
-    blob = json.dumps(request)
-    if any(field in blob for field in FORBIDDEN):
-        return _blocked_result(request, "BENCHMARK_METADATA_NOT_ALLOWED", [], 1)
-    claim = request.get("claim")
-    symbols = claim.get("symbols") if isinstance(claim, dict) else None
-    if not isinstance(symbols, list) or len(symbols) < 2 or len(symbols) > 40:
-        return _blocked_result(request, FAILURE["variables"], [], 1)
-    try:
-        lhs = validate_and_parse(claim["lhs"], symbols, real=True)
-        rhs = validate_and_parse(claim["rhs"], symbols, real=True)
-        prepared = prepare_certificate(claim, lhs, rhs)
-    except MultivariableT3Error as exc:
-        return _blocked_result(request, exc.code, [], 1)
-    except Exception:
-        return _blocked_result(request, FAILURE["request"], [], 1)
-
-    from loop_engine.orch_adapters.symbolic_identity_verify import core
-    confirmations = []
-    for child in prepared["prepared_children"]:
-        payload = core._second_engine_payload(
-            child["lhs"], child["rhs"], child["symbols"], child["scope"],
-            child["engine_domain"], child["assumptions"])
-        second = core._second_opinion(
-            child["lhs"], child["rhs"], child["symbols"], child["scope"],
-            child["engine_domain"], child["assumptions"], timeout)
-        confirmations.append(second)
-        if second.get("verdict") == "NONZERO":
-            return _blocked_result(
-                request, "MULTIVARIABLE_T3_PARTIAL_NONZERO", confirmations, 1)
-        if not core._second_zero_confirmed(second, payload):
-            return _blocked_result(request, FAILURE["confirmation"], confirmations, 1)
-    try:
-        certificate = finalize_certificate(prepared, confirmations)
-    except MultivariableT3Error as exc:
-        return _blocked_result(request, exc.code, confirmations, 1)
-    replay = recheck(claim, lhs, rhs, certificate)
-    if replay.get("ok") is not True:
-        return _blocked_result(request, FAILURE["certificate"], confirmations, 1)
-    return _result(
-        request,
-        {
-            "verdict": "VERIFIED_BY_MULTIVARIABLE_DERIVATIVE_AND_BASE_POINT",
-            "evidence_level": 3,
-            "certificate": certificate,
-        },
-        {
-            "verdict": "NOT_USED_FOR_PROOF",
-            "second_engine_partial_confirmations": confirmations,
-        },
-        "VERIFIED_BY_MULTIVARIABLE_DERIVATIVE_AND_BASE_POINT",
-        3,
-        "FULL_GRADIENT_AND_BASE_POINT_DECISIVE",
-        [f"valid only on the explicitly certified connected domain: "
-         f"{certificate['connected_domain_certificate']['predicate']}"],
-        0,
-    )
-
-
-def _blocked_result(request, failure_code, confirmations, exit_code):
-    return _result(
-        request,
-        {
-            "verdict": "MULTIVARIABLE_T3_BLOCKED",
-            "evidence_level": 0,
-            "certificate": None,
-            "failure_code": failure_code,
-        },
-        {
-            "verdict": "NO_EVIDENCE_UPGRADE",
-            "second_engine_partial_confirmations": confirmations,
-        },
-        "MULTIVARIABLE_T3_BLOCKED",
-        0,
-        "EXPLICIT_MULTIVARIABLE_T3_FAIL_CLOSED",
-        [failure_code],
-        exit_code,
-    )
-
-
-def _result(request, symbolic, numerical, combined, level, relation, unresolved, exit_code):
-    result = {
-        "operation": "multivariable_t3_verify",
-        "contract_version": "1.0",
-        "request_hash": sha(request),
-        "symbolic_claim_verifier": symbolic,
-        "numerical_geobasis_verifier": numerical,
-        "oracle_relation": relation,
-        "combined_verdict": combined,
-        "combined_evidence_level": level,
-        "scope": (request.get("claim") or {}).get("scope")
-        if isinstance(request, dict) else None,
-        "unresolved_obligations": unresolved,
-        "provenance": {
-            "repository_commit": git_head(Path(__file__).resolve().parents[3]),
-            "adapter_version": "multivariable-t3-verify-1.0",
-            "symbolic_verifier": "bounded full-gradient derivative/base-point certificate",
-            "numerical_verifier": None,
-            "input_contract_version": "1.0",
-            "output_contract_version": "1.0",
-            "subresult_hashes": {"symbolic": sha(symbolic)},
-            "runtime_environment": {
-                "python": platform.python_version(),
-                "sympy": sympy.__version__,
-                "platform": platform.platform(),
-            },
-            "replay_classification": "VERDICT_REPRODUCIBLE (B5 exact certificate replay)",
-        },
-    }
-    out_dir = Path(os.environ.get("VIPER_OUTPUT_DIR", tempfile.gettempdir())) / \
-        "viper_multivariable_t3_runtime"
-    out_dir.mkdir(parents=True, exist_ok=True)
-    temporary = tempfile.NamedTemporaryFile(
-        "w", delete=False, dir=str(out_dir), suffix=".tmp")
-    json.dump(result, temporary)
-    temporary.close()
-    artifact_hash = sha(Path(temporary.name).read_bytes())
-    final = out_dir / "last_result.json"
-    os.replace(temporary.name, final)
-    result["replay_artifact"] = {"path": str(final), "sha256": artifact_hash}
-    return result, exit_code

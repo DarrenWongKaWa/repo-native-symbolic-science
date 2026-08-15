@@ -10,6 +10,14 @@ from loop_engine.orch_adapters.symbolic_identity_verify import domain_obligation
 from tests.test_b2_connected_subdomains import _claim as b2_claim, _second_for
 
 
+@pytest.fixture(autouse=True)
+def _second_opinion_seam_isolation():
+    """Make accidental module-global B2 mock leakage a test failure."""
+    original = core._second_opinion
+    yield
+    assert core._second_opinion is original
+
+
 def _claim(lhs, rhs="0", symbols=None):
     return {"lhs": lhs, "rhs": rhs, "symbols": symbols or ["x"], "scope": "real_scalars"}
 
@@ -92,9 +100,9 @@ def test_atk_b4_016_to_017_unsupported_cot_is_explicit_and_cannot_be_removed():
     _assert_blocks(claim, _real_line(), deleted, B4.FAILURE["source"])
 
 
-def test_atk_b4_018_to_020_subdomain_scope_numeric_claims_and_b3_domain_binding():
+def test_atk_b4_018_to_020_subdomain_scope_numeric_claims_and_b3_domain_binding(monkeypatch):
     claim = b2_claim(); context = B2.prepare_log_product_claim(claim); second = _second_for(context, claim)
-    core._second_opinion = lambda *args: second
+    monkeypatch.setattr(core, "_second_opinion", lambda *args: second)
     result, rc = core._connected_subdomain_result({"claim": claim}, claim, 1)
     assert rc == 0 and result["combined_verdict"] == "VERIFIED_ON_EXPLICIT_SUBDOMAIN"
     cert = result["symbolic_claim_verifier"]["certificate"]
@@ -183,9 +191,9 @@ def test_b4_final_componentwise_positive_orthant_graph_and_attacks():
         with pytest.raises(Exception): B2.prepare_log_product_claim(bad)
 
 
-def test_atk_b4_028_to_030_new_b2_binds_graph_legacy_is_legacy_and_inventory_cannot_lie():
+def test_atk_b4_028_to_030_new_b2_binds_graph_legacy_is_legacy_and_inventory_cannot_lie(monkeypatch):
     claim = b2_claim(); context = B2.prepare_log_product_claim(claim); second = _second_for(context, claim)
-    core._second_opinion = lambda *args: second
+    monkeypatch.setattr(core, "_second_opinion", lambda *args: second)
     result, _ = core._connected_subdomain_result({"claim": claim}, claim, 1)
     fresh = result["symbolic_claim_verifier"]["certificate"]
     assert {"domain_obligation_graph", "domain_obligation_graph_hash", "domain_obligation_graph_version", "domain_obligation_summary"} <= set(fresh)

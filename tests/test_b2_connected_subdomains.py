@@ -30,12 +30,15 @@ def _claim(**changes):
 
 def _second_for(context, claim):
     payload = core._second_engine_payload(BODY["lhs"], BODY["rhs"], BODY["symbols"], BODY["scope"], context["subdomain"], claim["assumptions"])
+    expected = core.expected_second_engine_configuration()
     return {"route": "shipped_wolfram_engine", "status": "complete", "verdict": "ZERO",
-            "engine_identity": core.SECOND_ENGINE_CONFIG["engine_identity"],
-            "implementation_version": core.SECOND_ENGINE_CONFIG["implementation_version"],
-            "parser_version": core.SECOND_ENGINE_CONFIG["parser_version"],
-            "semantic_profile": core.SECOND_ENGINE_CONFIG["semantic_profile"],
-            "configuration_hash": core.SECOND_ENGINE_CONFIG_HASH, "input_hash": sha(payload), "process_exit_status": 0}
+            "engine_identity": expected["engine_identity"],
+            "implementation_version": expected["implementation_version"],
+            "parser_version": expected["parser_version"],
+            "semantic_profile": expected["semantic_profile"],
+            "trusted_runtime": expected["trusted_runtime"],
+            "configuration_hash": core.expected_second_engine_configuration_hash(),
+            "input_hash": sha(payload), "process_exit_status": 0}
 
 
 def _certificate():

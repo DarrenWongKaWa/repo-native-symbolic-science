@@ -13,6 +13,11 @@ def _git(*args):
     return subprocess.check_output(["git", *args], cwd=REPO, text=True).splitlines()
 
 
+def _git_blob(commit, path):
+    """Read the immutable reviewed blob, not a later additive working-tree revision."""
+    return subprocess.check_output(["git", "show", f"{commit}:{path}"], cwd=REPO)
+
+
 def test_b4_packet_covers_git_derived_parent_range_without_self_commit_recursion():
     packet = json.loads(PACKET.read_text())
     required = {"review_start_commit", "reviewed_code_end_commit", "packet_parent_commit", "packet_path",
@@ -28,6 +33,10 @@ def test_b4_packet_covers_git_derived_parent_range_without_self_commit_recursion
     assert set(packet["cumulative_changed_paths"]) == expected_paths
     assert set(packet["cumulative_changed_file_hashes"]) == expected_paths - {packet["packet_path"]}
     for rel, digest in packet["cumulative_changed_file_hashes"].items():
-        assert hashlib.sha256((REPO / rel).read_bytes()).hexdigest() == digest
+        # B4's packet freezes its reviewed parent range. Later reviewed fixes may change
+        # live production files, so the packet must continue to authenticate that exact
+        # historical tree rather than spuriously treating an additive later commit as a
+        # rewrite of the B4 evidence.
+        assert hashlib.sha256(_git_blob(packet["packet_parent_commit"], rel)).hexdigest() == digest
     body = dict(packet); actual = body.pop("packet_canonical_sha256")
     assert actual == hashlib.sha256(json.dumps(body, sort_keys=True, separators=(",", ":")).encode()).hexdigest()

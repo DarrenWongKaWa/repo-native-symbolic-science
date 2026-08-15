@@ -199,30 +199,55 @@ The following promotion paths are explicitly forbidden and will be blocked:
 
 ## Bounded Multivariable T3 Certificates
 
-The standalone `multivariable-t3-verify` controller command supports an explicit,
-fail-closed `claim.multivariable_t3` route for scalar real identities without mutating
-the reviewed B1-B4 verifier modules. It is selected only when the request supplies all
-of:
+The additive adapter seam supports a fail-closed
+`multivariable_gradient_base_point_composite` certificate for scalar real identities.
+It is selected only for an explicit ordered variable list, exact rational base point, real
+scope and assumptions, and a nonempty open Cartesian-product domain normalized by B2.
 
-- `schema: "viper.multivariable_t3_request.v1"`
-- `relevant_variables` and `variable_order`, both exactly equal to `claim.symbols`
-- an exact rational `base_point` with keys in that same order
-- `scope: "real_scalars"` and one ordered `"<variable> real"` assumption per variable
-- an explicit, nonempty Cartesian product of exact B2 interval predicates covering every
-  variable
+The parent is issued only when every ordered partial derivative has an independently
+recheckable exact child and a fresh pinned Wolfram `ZERO`, the exact base-point equality
+holds, and the reconstructed B4 domain-obligation graph passes. Parent, child, variable
+order, domain, assumptions, scope, base point, B3 evidence, and graph hashes are bound
+and recomputed by the rechecker.
 
-The parent certificate is issued only when every ordered partial derivative has both an
-existing exact recheckable child certificate and a pinned independent Wolfram `ZERO`,
-the parent sides agree exactly at the in-component base point, and the B4 domain graph
-rechecks. The certificate binds the variable order, coverage bitmap, parent and child
-hashes, base point, connected component, domain certificate, assumptions, scope, and B4
-graph.
+Directional or partial coverage, reordered or omitted variables, free-text, disconnected
+or closed-boundary domains, unsupported source syntax, and `UNKNOWN` or `NONZERO` engine
+results cannot produce this certificate. Failure never falls back to numerical evidence
+or the legacy univariate route.
 
-Directional derivatives, partial coverage, reordered or omitted variables, free-text or
-disconnected domains, arbitrary semialgebraic reasoning, non-rational base points,
-unsupported partials, and `UNKNOWN` engine results cannot produce this certificate.
-Selecting the route is exclusive: failure never falls back to numerical evidence,
-canonical-zero evidence, a directional derivative, or the legacy univariate T3 route.
+### Trusted B3 Wolfram Runtime
+
+The B3 independent-zero route resolves its executable only from the fixed,
+repository-controlled lexical paths `/Applications/Wolfram Engine.app` and
+`/Applications/Wolfram Engine.app/Contents/Resources/Wolfram Player.app/Contents/MacOS/wolframscript`.
+Its local kernel is likewise the fixed bundled
+`/Applications/Wolfram Engine.app/Contents/Resources/Wolfram Player.app/Contents/MacOS/WolframKernel`,
+passed explicitly through `wolframscript -local`; no system-default or cloud kernel is selected.
+Before it follows either path, it uses no-follow filesystem inspection on every lexical
+ancestor through the application bundle and every component through the executable and kernel,
+rejecting symlinks, unexpected object types, missing components, and redirected aliases.
+Canonicalization is an additional
+equality check only: it must equal the fixed lexical application, executable, and kernel paths and
+may not redefine the approved boundary. Component-based containment, bundle/executable
+codesign checks, Gatekeeper assessment of the fixed application bundle, and Wolfram vendor
+and team identity checks then bind the runtime. Immediately before execution, the full
+bundle/executable/kernel codesign and Gatekeeper checks are repeated; the executable and
+kernel are rehashed through a final descriptor-relative no-follow traversal and compared
+to the resolved identities. On the validated local installation, macOS rejected the
+attempted `/dev/fd` launch of this signed Mach-O bundle with `PermissionError`, so production
+invokes only the fixed lexical Wolfram executable with the fixed local kernel; that constraint
+never enables an alternate engine. The same full integrity guard is repeated before a process
+result can be accepted, so an identity change observable at either mandatory recheck fails
+closed instead of yielding a trusted `ZERO`. Because macOS disallows descriptor-based Mach-O
+execution here, this is not a claim of atomic immunity to an attacker that can swap and restore
+the fixed path entirely within the pathname-launch interval. The
+production route does not use a caller-selected environment command or `PATH` lookup.
+
+B3 configuration is independently derived from the engine/profile versions, resolver
+version, canonical executable and kernel paths, fixed-kernel hash, and verified runtime
+provenance. A B3 child record may
+report that binding, but the B5 builder and rechecker separately derive their expected
+binding before accepting a `ZERO`; stored transcripts and certificates cannot supply it.
 
 ---
 

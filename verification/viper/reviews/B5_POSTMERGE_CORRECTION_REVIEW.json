@@ -1,0 +1,42 @@
+{
+  "author_evidence_manifest_sha256": "d4c27ef59884acb3fca2888357597b43d1bfa371969c5d212b46634097d00f63",
+  "base_commit": "ff96fc71b2c60a0692ab1f1b882e08ecb5b78ce9",
+  "branch": "fix/viper-b5-postmerge-review-blockers-v2",
+  "immutable": true,
+  "independent_evidence_manifest_sha256": "bab915861cc142cd6c68042b9485c629ed36da508d89efe3135be29607f69d0a",
+  "packet_canonical_sha256": "c0b6f98ed4cf968ba3b98d059693d9ddb909762700e75dc4aa73109767e733c2",
+  "packet_parent_commit": "a6891be60b1709eda8aaf8995f63435ca194b76f",
+  "packet_path": "verification/viper/reviews/B5_POSTMERGE_CORRECTION_REVIEW.json",
+  "packet_schema": "viper.independent_review_packet.v3",
+  "review_protocol": "Read-only independent mathematical and certificate review of the exact main-based B5 post-merge correction candidate; previous B5 approvals did not apply.",
+  "reviewed_implementation_commit": "a6891be60b1709eda8aaf8995f63435ca194b76f",
+  "reviewed_paths": [
+    "docs/CLAIM_TYPES_AND_GATES.md",
+    "loop_engine/orch_adapters/symbolic_identity_verify/multivariable_t3.py",
+    "loop_engine/orch_adapters/symbolic_identity_verify_adapter.py",
+    "scripts/orch_controller.py",
+    "tests/test_b5_multivariable_t3.py",
+    "tests/test_b5_attack_matrix.py"
+  ],
+  "self_reference_policy": "The packet cannot contain the SHA of the Git commit that first materializes this exact packet without creating a recursive self-reference. The independent reviewer binds the committed packet blob and final repository HEAD in the review verdict.",
+  "source_reconciliation_reference": "042f919f1f6848f9885da4056f1e2c106bfc44e3",
+  "supersession_record": [
+    "The previous approval associated with b5f7b69a9464177ff5b36cf9ad65dcea1eb7e5d9 was superseded by a later independent rejection.",
+    "The old tag review/viper-b5-b5f7b69a remains immutable historical evidence and does not approve the corrected implementation."
+  ],
+  "track": "B5_POSTMERGE_CORRECTION",
+  "validation": {
+    "b3_gate_5": "17 passed",
+    "b5_b1_b2": "113 passed",
+    "b5_focused": "73 passed",
+    "frozen_b4": "72 passed",
+    "locks": "MATCH",
+    "release_verification": "PASS",
+    "reviewer_only_checks": "62/62 passed",
+    "root": "441 passed",
+    "runtime_isolation": "PASS",
+    "secret_scan": "CLEAN",
+    "warnings": "13 pre-existing"
+  },
+  "verdict": "B5_REVIEW_APPROVED"
+}
