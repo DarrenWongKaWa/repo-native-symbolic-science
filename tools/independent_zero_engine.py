@@ -37,7 +37,30 @@ from tools.wolfram_runtime import (
     validate_trusted_wolfram_runtime_execution_binding,
 )
 
-DEFAULT_TIMEOUT_SECONDS = 12
+# Measured runtime budget for the whole wolframscript subprocess (process spawn,
+# kernel initialization, expression parsing, FullSimplify, shutdown).
+#
+# 2025-08-15 measured distribution on the arm64 release-validation machine
+# (12 cores, 24 GB) for genuine B3 identities, 36 samples under six busy cores
+# (suite-like load ~3.4-4.6):
+#   kernel cold start only (trivial code): median ~5-6 s, max 6.5 s
+#   FullSimplify identities:               median ~5-6 s, p95 8.1-11.7 s
+# A fresh 20-run engine series (resolve + launch + evaluate) completed in
+# 15.2-23.6 s (median 17.2 s) with zero failures, and direct wolframscript
+# launches under eight busy cores stayed 4.3-6.4 s.  The previous 12 s budget
+# sat BELOW the p95 under load, so genuine computations nondeterministically
+# exceeded it; rare background I/O spikes were observed to stretch a single
+# launch past 30 s, and a full fixture build failed with a Wolfram-process
+# timeout past 60 s during a Time Machine / Spotlight disk I/O storm (measured
+# ~104 MB/s, 918 tps).  Kernel launches read hundreds of MB from disk, so an
+# I/O storm can stall them for 60-120 s.  120 s covers the measured p95
+# (11.7 s) with ~10x margin and the observed stall.  The budget stays
+# fail-closed (timeout still returns verdict UNKNOWN, never ZERO), is bounded
+# above by the engine subprocess floor in
+# loop_engine/orch_adapters/symbolic_identity_verify/core.py
+# (TRUSTED_RUNTIME_SUBPROCESS_TIMEOUT_FLOOR), and applies to expressions that
+# are already size-capped and whitelist-restricted by the parser.
+DEFAULT_TIMEOUT_SECONDS = 120
 _SYMBOL = re.compile(r"[A-Za-z_][A-Za-z0-9_]*\Z")
 _ALLOWED_FUNCTIONS = {
     "sqrt": "Sqrt", "sin": "Sin", "cos": "Cos", "tan": "Tan",

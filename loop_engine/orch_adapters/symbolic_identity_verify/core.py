@@ -52,7 +52,14 @@ ADAPTER_VERSION = "symbolic-identity-verify-1.0"
 # The child engine verifies the fixed signed app and Gatekeeper provenance before its
 # bounded Wolfram evaluation.  This is a source-policy transport allowance, not a caller
 # timeout override; the engine's own evaluation deadline remains separately bounded.
-TRUSTED_RUNTIME_SUBPROCESS_TIMEOUT_FLOOR = 90
+# 2025-08-15 measured: a fresh engine (full provenance resolution + fast binding +
+# wolframscript) completes in 15.2-23.6 s at baseline; a Time Machine / Spotlight
+# disk I/O storm (~104 MB/s) was observed to stall a kernel launch past 60 s, and a
+# full fixture build failed with a Wolfram-process timeout past 60 s during that
+# window.  480 s bounds the whole engine (resolution up to ~120 s under an I/O
+# storm + evaluation up to 120 s) with headroom, and remains fail-closed: a
+# timed-out engine returns UNKNOWN, never ZERO.
+TRUSTED_RUNTIME_SUBPROCESS_TIMEOUT_FLOOR = 480
 
 
 # repository policy (NOT caller-supplied); a caller may only strengthen, never weaken.

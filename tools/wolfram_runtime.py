@@ -13,6 +13,7 @@ import os
 from pathlib import Path
 import stat
 import subprocess
+import threading
 
 
 ENGINE_IDENTITY = "WOLFRAM_INDEPENDENT_ZERO"
@@ -130,6 +131,151 @@ class TrustedWolframRuntime:
             "kernel_sha256": self.kernel_sha256,
             "filesystem_identity": self.filesystem_identity_summary(),
         }
+
+
+# ---------------------------------------------------------------------------
+# Process-local trusted attestation reuse.
+#
+# The codesign / Gatekeeper provenance chain (7 subprocesses per resolution, and
+# again per execution binding) is expensive and is the dominant cost of every
+# symbolic request.  A single full verification per process is cached here and
+# REUSED only while every immutable identity fact still matches:
+#
+#   * fixed lexical approved paths (source policy, never caller input)
+#   * no-follow device / inode / file-type identity of every lexical component
+#   * canonical equality of the boundary, executable, and kernel
+#   * executable and kernel SHA-256 content hashes
+#   * the codesign-sealed bundle manifest (CodeResources) and Info.plist hashes
+#
+# The cache is keyed ONLY by the fixed source-policy lexical paths.  No
+# environment, request, certificate, evidence packet, CLI flag, or PATH entry
+# can select another runtime or another attestation.  Builder and rechecker
+# still independently derive their expected configuration from the same source
+# policy and the same verified identity facts.
+#
+# If any cached fact no longer matches, the cache is bypassed and the full
+# codesign + Gatekeeper chain is re-run; a mismatch raises the same
+# fail-closed TrustedRuntimeError as before.  A cached attestation is never
+# returned to a caller as a selectable handle: callers only ever receive the
+# immutable TrustedWolframRuntime record.
+# ---------------------------------------------------------------------------
+
+@dataclass(frozen=True)
+class _RuntimeAttestation:
+    """One full trusted-runtime verification, reusable only on fact match."""
+
+    runtime_identity: TrustedWolframRuntime
+    seal: dict
+
+
+_ATTESTATION_LOCK = threading.Lock()
+_ATTESTATION_CACHE = {}
+
+
+def _attestation_key():
+    """The only key a production attestation may be stored under.
+
+    Derived from every current source-policy constant set: the fixed lexical
+    paths plus the active candidate/boundary/kernel tuples.  Any policy change
+    (including a test-only monkeypatch of one constant) yields a different key,
+    so the cache can never serve an attestation for a policy it was not
+    verified under.
+    """
+    fixed = _fixed_lexical_runtime_paths()
+    return (
+        str(fixed["boundary"]), str(fixed["candidate"]), str(fixed["kernel"]),
+        tuple(str(_normalized_absolute_path(value))
+              for value in APPROVED_RUNTIME_CANDIDATES),
+        tuple(str(_normalized_absolute_path(value))
+              for value in APPROVED_APPLICATION_BOUNDARIES),
+        tuple(str(_normalized_absolute_path(value))
+              for value in APPROVED_KERNEL_CANDIDATES),
+    )
+
+
+def _bundle_seal(boundary):
+    """Hash the codesign-sealed bundle manifest and policy metadata.
+
+    CodeResources is the signature manifest: an unchanged manifest with
+    unchanged component identity and unchanged binary hashes bounds the reuse to
+    the exact signed bytes verified by the full chain.  Info.plist is the
+    bundle's policy metadata that codesign --verify --deep covers.  Both the
+    approved application bundle and the nested runtime bundle are sealed.
+    """
+    boundary_path = _normalized_absolute_path(boundary)
+    candidates = [
+        boundary_path / "Contents" / "Info.plist",
+        boundary_path / "Contents" / "_CodeSignature" / "CodeResources",
+        boundary_path / "Contents" / "Resources" / "Wolfram Player.app" / "Contents" / "Info.plist",
+        boundary_path / "Contents" / "Resources" / "Wolfram Player.app" / "Contents" /
+        "_CodeSignature" / "CodeResources",
+    ]
+    seal = {}
+    for sealed_path in candidates:
+        try:
+            seal[str(sealed_path)] = _file_sha256(sealed_path)
+        except OSError:
+            seal[str(sealed_path)] = None
+    return seal
+
+
+def _attestation_matches(attestation, resolved):
+    """True only if every immutable identity fact still matches the attestation."""
+    identity = attestation.runtime_identity
+    if not _matches_trusted_runtime_identity(resolved, identity):
+        return False
+    current_hashes = _runtime_binary_hashes(
+        resolved["canonical_candidate"], resolved["canonical_kernel"])
+    if current_hashes != {
+            "executable": identity.executable_sha256,
+            "kernel": identity.kernel_sha256}:
+        return False
+    if _bundle_seal(resolved["lexical_boundary"]) != attestation.seal:
+        return False
+    return True
+
+
+def _store_attestation(runtime_identity):
+    """Record a full verified resolution for later fact-bound reuse."""
+    if not isinstance(runtime_identity, TrustedWolframRuntime):
+        return
+    try:
+        seal = _bundle_seal(runtime_identity.approved_application_boundary)
+        key = _attestation_key()
+    except TrustedRuntimeError:
+        return
+    with _ATTESTATION_LOCK:
+        _ATTESTATION_CACHE[key] = _RuntimeAttestation(runtime_identity, seal)
+
+
+def _cached_attestation():
+    """Return the attestation for the fixed policy paths, if any."""
+    try:
+        key = _attestation_key()
+    except TrustedRuntimeError:
+        return None
+    with _ATTESTATION_LOCK:
+        return _ATTESTATION_CACHE.get(key)
+
+
+def clear_runtime_attestation_cache():
+    """Reset the process-local attestation cache (test reset; not a trust bypass).
+
+    The next resolution re-runs the full codesign + Gatekeeper chain.  This is
+    equivalent to starting a fresh process and never weakens validation.
+    """
+    with _ATTESTATION_LOCK:
+        _ATTESTATION_CACHE.clear()
+
+
+def _provenance_of(runtime_identity):
+    """Deterministic provenance facts recorded on a verified runtime identity."""
+    return {
+        "identifier": runtime_identity.code_signing_identifier,
+        "team_identifier": runtime_identity.code_signing_team_identifier,
+        "cdhash": runtime_identity.code_signing_cdhash,
+        "authority": runtime_identity.code_signing_authority,
+    }
 
 
 def _sha(value):
@@ -607,10 +753,30 @@ def _resolve_runtime_candidates(candidates, boundaries, provenance_reader=None, 
 
 
 def resolve_trusted_wolfram_runtime():
-    """Resolve the one production Wolfram runtime; no caller input is accepted."""
-    return _resolve_runtime_candidates(
+    """Resolve the one production Wolfram runtime; no caller input is accepted.
+
+    After one full codesign + Gatekeeper verification per process, later calls
+    reuse that attestation while every immutable identity fact (no-follow
+    component identity, canonical equality, binary hashes, bundle seal) still
+    matches.  Any mismatch falls through to a full re-resolution, which raises
+    the same fail-closed errors as before.
+    """
+    cached = _cached_attestation()
+    if cached is not None:
+        try:
+            fixed = _fixed_lexical_runtime_paths()
+            current = _validate_immutable_runtime_paths(
+                fixed["boundary"], fixed["candidate"], fixed["kernel"])
+            if _attestation_matches(cached, current) and \
+                    os.access(current["canonical_candidate"], os.X_OK):
+                return cached.runtime_identity
+        except TrustedRuntimeError:
+            pass
+    runtime_identity = _resolve_runtime_candidates(
         APPROVED_RUNTIME_CANDIDATES, APPROVED_APPLICATION_BOUNDARIES,
         kernel_candidates=APPROVED_KERNEL_CANDIDATES)
+    _store_attestation(runtime_identity)
+    return runtime_identity
 
 
 def validate_trusted_wolfram_runtime_identity(runtime_identity):
@@ -634,6 +800,16 @@ def validate_trusted_wolfram_runtime_identity(runtime_identity):
             "kernel": runtime_identity.kernel_sha256}:
         raise TrustedRuntimeError("TRUSTED_RUNTIME_IDENTITY_CHANGED")
 
+    # Fast path: reuse a process-local attestation while every immutable identity
+    # fact (including the codesign-sealed bundle manifest) still matches.  The
+    # incoming record's provenance is still compared against the attested
+    # provenance, so a crafted record can never be accepted on the fast path.
+    cached = _cached_attestation()
+    if cached is not None and _attestation_matches(cached, current):
+        if _matches_trusted_runtime_provenance(
+                _provenance_of(cached.runtime_identity), runtime_identity):
+            return current
+
     provenance = _codesign_provenance(
         current["lexical_boundary"], current["canonical_candidate"],
         current["canonical_kernel"])
@@ -647,6 +823,7 @@ def validate_trusted_wolfram_runtime_identity(runtime_identity):
                 after_provenance["canonical_candidate"], after_provenance["canonical_kernel"]) != \
             hashes_before_provenance:
         raise TrustedRuntimeError("TRUSTED_RUNTIME_IDENTITY_CHANGED")
+    _store_attestation(runtime_identity)
     return after_provenance
 
 
