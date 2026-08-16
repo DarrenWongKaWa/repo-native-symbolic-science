@@ -1,0 +1,19 @@
+{
+  "schema": "viper.demo.anan_d3.task.v1",
+  "demo": "literal_anan_d3_bridge",
+  "title": "Literal Anan D^(3) thermal bridge + six-orbit vvv identity",
+  "scientific_question": "Prove the longitudinal three-band identity G_vvv = -2 sum_{all distinct} Re(A^a_ab A^a_bc A^a_ca) D^(3),A_abc with the literal Anan D3 coefficient, distinguishing: thermal notation conversion, pair-generated vvv + triangle reassembly, ordered-triple identities, six-permutation identities, convention factors.",
+  "layers": [
+    {"id": "L1", "name": "thermal_dictionary", "theorems": ["ANAN_ARGUMENT_TO_GUO_ZMINUS", "ANAN_FPLUS_TO_HALF_GUO_FMINUS", "ANAN_DERIVATIVE_BRIDGE_R1", "ANAN_DERIVATIVE_BRIDGE_R2"], "type": "POINTWISE_EXACT"},
+    {"id": "L2", "name": "d3_bridge", "theorem": "LITERAL_ANAN_D3_THERMAL_BRIDGE", "type": "POINTWISE_EXACT"},
+    {"id": "L3", "name": "geometry_orbit", "theorem": "THREE_BAND_LOOP_GEOMETRY_ORBIT_INVARIANT", "type": "S3_EXACT"},
+    {"id": "L4", "name": "six_orbit", "theorem": "LITERAL_ANAN_D3_SIX_ORBIT", "type": "SIX_ORBIT_EXACT", "status": "CONTRACT_PENDING"},
+    {"id": "L5", "name": "negative_controls", "checks": ["ORDERED_TRIPLE_K_EQUALS_MINUS_D3 = FAIL_EXPECTED", "NEGATIVE_CONTROL_REAL_ENERGY_FPLUS = FAIL_AS_EXPECTED"]}
+  ],
+  "claim_boundary": {
+    "CLAIM": "Literal Anan D3 thermal notation is exactly bridged to the Guo/Supplement thermal notation, and the longitudinal all-distinct three-band vvv block agrees after complete six-orbit reassembly, with convention factor -2.",
+    "NOT_CLAIMED": ["complete Guo-Anan conductivity equivalence", "literal D2 bridge", "complete overall prefactor bridge", "generic-N proof", "post-IBP BZ equivalence", "degenerate-band extension"]
+  },
+  "parameters": {"beta": 5, "mu": 0, "Gamma": 0.08},
+  "witness": "witness/witness_parameters.json"
+}

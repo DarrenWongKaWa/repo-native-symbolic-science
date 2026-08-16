@@ -1,0 +1,11 @@
+{
+  "schema": "viper.demo.anan_d3.d3_bridge.v1",
+  "commit": "db5475fbbcca316aa7b208bb7101a52296151358",
+  "timestamp_utc": "2026-08-16T09:55:53Z",
+  "LITERAL_ANAN_D3_THERMAL_BRIDGE": "PASS_EXACT",
+  "ARROW_TYPE": "POINTWISE_EXACT",
+  "held_for": "every ordered triple (a,b,c) with pairwise distinct bands; no permutation summation",
+  "difference_after_dictionary": "0",
+  "D3_anan_literal": "8*Gamma*(eps_a - eps_b)*(-1/(eps_b - eps_c) - 1/(eps_a - eps_c))*re(fA1/(2*I*Gamma + eps_a - eps_b)) + 2*Gamma*(eps_a - eps_b)*re(fA2/(2*I*Gamma + eps_a - eps_b))",
+  "D3_reduced_guo": "-4*Gamma*(eps_a - eps_b)*(1/(eps_b - eps_c) + 1/(eps_a - eps_c))*re(fG1/(2*I*Gamma + eps_a - eps_b)) + Gamma*(eps_a - eps_b)*re(fG2/(2*I*Gamma + eps_a - eps_b))"
+}

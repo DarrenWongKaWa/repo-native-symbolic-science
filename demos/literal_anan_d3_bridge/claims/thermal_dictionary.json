@@ -1,0 +1,38 @@
+{
+  "schema": "viper.demo.anan_d3.thermal_dictionary.v1",
+  "commit": "db5475fbbcca316aa7b208bb7101a52296151358",
+  "timestamp_utc": "2026-08-16T09:55:29Z",
+  "theorems": {
+    "ANAN_ARGUMENT_TO_GUO_ZMINUS": {
+      "result": "PASS_EXACT",
+      "lhs": "(-I*beta*(I*Gamma + eps_a - mu) + pi)/(2*pi)",
+      "rhs": "(Gamma*beta - I*beta*(eps_a - mu) + pi)/(2*pi)",
+      "difference": "0"
+    },
+    "ANAN_FPLUS_TO_HALF_GUO_FMINUS": {
+      "result": "PASS_EXACT",
+      "argument_bridge_used": true,
+      "lhs": "(-2*I*psi((Gamma*beta - I*beta*(eps_a - mu) + pi)/(2*pi)) + pi)/(4*pi)",
+      "rhs": "(-2*I*psi((Gamma*beta - I*beta*(eps_a - mu) + pi)/(2*pi)) + pi)/(4*pi)",
+      "difference": "0"
+    },
+    "ANAN_DERIVATIVE_BRIDGE_R1": {
+      "result": "PASS_EXACT",
+      "statement": "f_+^{A'}(x_a) == 1/2 f_-^{G'}(eps_a)",
+      "dx_a_deps_a": "1",
+      "derived_by": "differentiate certified T2 relation; chain rule factor dx_a/deps_a = 1"
+    },
+    "ANAN_DERIVATIVE_BRIDGE_R2": {
+      "result": "PASS_EXACT",
+      "statement": "f_+^{A''}(x_a) == 1/2 f_-^{G''}(eps_a)",
+      "derived_by": "differentiate the certified r=1 bridge once more"
+    }
+  },
+  "notation_collision": {
+    "f_plusG_at_ea": "(I*psi((Gamma*beta + I*beta*(eps_a - mu) + pi)/(2*pi)) + pi/2)/pi",
+    "f_plusA_at_xa": "(-2*I*psi((-I*beta*(I*Gamma + eps_a - mu) + pi)/(2*pi)) + pi)/(4*pi)",
+    "symbolic_difference_nonzero": true,
+    "finding": "f_+^A(x_a) != f_+^G(eps_a); the bridge maps f_+^A to 1/2 f_-^G (reflected companion)"
+  },
+  "overall": "PASS_EXACT"
+}

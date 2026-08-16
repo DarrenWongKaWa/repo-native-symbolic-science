@@ -1,0 +1,33 @@
+{
+  "schema": "viper.demo.anan_d3.negative_control_pointwise.v1",
+  "commit": "db5475fbbcca316aa7b208bb7101a52296151358",
+  "timestamp_utc": "2026-08-16T09:55:36Z",
+  "ORDERED_TRIPLE_K_EQUALS_MINUS_D3": "FAIL_EXPECTED",
+  "rows": [
+    {
+      "perm": [
+        "-0.5",
+        "0.3",
+        "1.4"
+      ],
+      "K_plus_D3": "(-0.572396991853984172609446535197 - 0.824640414063334324674042699725j)"
+    },
+    {
+      "perm": [
+        "-0.5",
+        "1.4",
+        "0.3"
+      ],
+      "K_plus_D3": "(-0.9180694955311058767899708565 - 1.6258166933605054350794902789j)"
+    },
+    {
+      "perm": [
+        "0.3",
+        "-0.5",
+        "1.4"
+      ],
+      "K_plus_D3": "(0.251873357954516683895238530779 - 0.982804170824392255199770523201j)"
+    }
+  ],
+  "note": "K != -D3 pointwise (generic); identity exists only after six-orbit reassembly"
+}

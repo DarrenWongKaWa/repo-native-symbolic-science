@@ -1,0 +1,10 @@
+{
+  "schema": "viper.demo.anan_d3.negative_control_real_energy.v1",
+  "commit": "db5475fbbcca316aa7b208bb7101a52296151358",
+  "timestamp_utc": "2026-08-16T09:55:35Z",
+  "NEGATIVE_CONTROL_REAL_ENERGY_FPLUS": "FAIL_AS_EXPECTED",
+  "correct_value_sumD3": "(-0.179143322718416260357598132603 + 0.0j)",
+  "wrong_value_sumD3": "(0.168697370585162007531394709336 + 0.0j)",
+  "values_are_finite_and_different": true,
+  "note": "packet expected correct -0.1438813736614977 / wrong +0.1270106832723943 at the USER certified witness; this run uses the declared demo witness energies (-0.5, 0.3, 1.4) - digits differ, discrimination holds."
+}

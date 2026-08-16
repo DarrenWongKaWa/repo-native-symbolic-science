@@ -1,0 +1,23 @@
+{
+  "schema": "viper.demo.anan_d3.expected_certificate.v1",
+  "expected": {
+    "ANAN_ARGUMENT_TO_GUO_ZMINUS": "PASS_EXACT",
+    "ANAN_FPLUS_TO_HALF_GUO_FMINUS": "PASS_EXACT",
+    "ANAN_DERIVATIVE_BRIDGE_R1": "PASS_EXACT",
+    "ANAN_DERIVATIVE_BRIDGE_R2": "PASS_EXACT",
+    "LITERAL_ANAN_D3_THERMAL_BRIDGE": "PASS_EXACT",
+    "ARROW_TYPE": "POINTWISE_EXACT",
+    "THREE_BAND_LOOP_GEOMETRY_ORBIT_INVARIANT": "PASS_EXACT",
+    "ORDERED_TRIPLE_K_EQUALS_MINUS_D3": "FAIL_EXPECTED",
+    "NEGATIVE_CONTROL_REAL_ENERGY_FPLUS": "FAIL_AS_EXPECTED",
+    "LITERAL_ANAN_D3_SIX_ORBIT": "PASS_EXACT (packet aspiration) — actual: SIX_ORBIT_UNVERIFIED_UNDER_DECLARED_CONTRACT (open)",
+    "GUO_VVV_TO_LITERAL_ANAN_D3": "blocked by the open six-orbit gate",
+    "SCOPE": "longitudinal_all_distinct_three_band",
+    "GAMMA": "finite_positive",
+    "TRS_USED": false,
+    "IBP_USED": false,
+    "WEAK_GAMMA_USED": false
+  },
+  "actual_ref": "../proofs/out/",
+  "status": "PARTIALLY_OPEN — six-orbit gate requires contract clarification (see HUMAN_REVIEW.md item 4)"
+}
