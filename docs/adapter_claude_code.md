@@ -84,7 +84,7 @@ Do NOT treat the Task tool's text response as a valid result envelope. The subag
 
 After validating subagent output:
 
-1. Generate the output SHA manifest using: `python3 scripts/generate_sha_manifest.py --dir {{OUTPUT_DIRECTORY}}`
+1. Generate the output SHA manifest and validate that every authorized input is frozen with a SHA-256: `python3 scripts/validate_input_sha_freezing.py --state-dir {{STATE_DIR}}`
 2. Record the manifest in `{{STATE_DIR}}/sha_manifests/`
 3. Mark the task as completed in the task registry
 4. Evaluate downstream dependency gates
@@ -122,7 +122,7 @@ In Claude Code, persist controller state to disk for resumability:
 - `{{STATE_DIR}}/dependency_dag.json`
 - `{{STATE_DIR}}/event_log.jsonl`
 
-These files enable a new Claude Code session to reconstruct the full orchestration state without relying on conversation memory. Use `python3 scripts/recover_orchestration_state.py --state-dir {{STATE_DIR}}` to load.
+These files enable a new Claude Code session to reconstruct the full orchestration state without relying on conversation memory. Use `python3 scripts/validate_controller_resumability.py --state-dir {{STATE_DIR}}` to verify the on-disk state is internally consistent before resuming.
 
 ## Human Gates
 

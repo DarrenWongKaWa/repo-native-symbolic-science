@@ -1,4 +1,9 @@
-# Codex / Superpowers Rules
+# Agent Scientific Workflow Rules
+
+Model-neutral workflow and loop discipline for all agent environments.
+Model-specific files (`CODEX.md`, `CLAUDE.md`) are thin adapters that
+delegate to `REPO_POLICY.md` and to this file. Do not weaken any rule below
+in a model-specific adapter.
 
 Always use a Superpowers-style workflow for nontrivial symbolic-simplification tasks.
 
@@ -24,7 +29,7 @@ Always use a Superpowers-style workflow for nontrivial symbolic-simplification t
 - Reviewer agents audit exactness gates, stale inputs, regressions, claim boundary, and next action; they do not replace verifier scripts.
 - Routine branch review should use read-only Codex subagents: `AlgebraReviewer`, `PhysicsReviewer`, and `SoftwareReviewer`.
 - Major checkpoints, paper claims, final scientific audits, and next-branch scientific-route decisions should receive a separate web-GPT audit.
-- Do not confuse Codex app `/review` for code diffs with symbolic reviewer-agent audit.
+- Do not confuse a Codex app `/review` code-diff feature with symbolic reviewer-agent audit.
 
 ## Roles
 

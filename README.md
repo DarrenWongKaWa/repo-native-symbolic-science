@@ -18,6 +18,45 @@ This project provides a repo-native framework for auditable human-agent symbolic
 - **CAS/numerical engine**: bounded computation
 - **Independent verifier**: replay, comparison, and adjudication
 
+## Verified Architecture Flow
+
+```text
+Human scientific specification
+        ↓
+Proposer/search organ
+        ↓
+UNVERIFIED candidate
+        ↓
+typed claim + explicit domain
+        ↓
+independent verifier (whitelist judge + pinned second engine)
+        ↓
+certificate / NONZERO / UNKNOWN
+        ↓
+domain obligations (B4 graph, fail-closed)
+        ↓
+claim-chain binding (B1/B5 recheckable certificates)
+        ↓
+human-governed scientific promotion
+```
+
+## What Each Artifact Category Is
+
+This repository deliberately distinguishes six categories. A statement in one
+category must never be promoted silently to another:
+
+| Category | Meaning | Example in this repo |
+|---|---|---|
+| Framework capability | Executable, tested machinery | `symbolic_identity_verify`, ORCH controller |
+| Synthetic demonstration | Correct-shape, non-scientific workload | `fixtures/synthetic_workflow_demo.json` |
+| Scientific benchmark | Human-supplied, previously verified replay | `benchmarks/sigma_xxx_finite_gamma_replay/` |
+| Independent proof | Certificate re-derivable from frozen inputs | Viper gate bundle, B1–B5 certificates |
+| Bounded numerical evidence | Numerically supported, not symbolic proof | Gamma-scaling slopes in the sigma_xxx benchmark |
+| Historical research result | Preserved record, not a live claim | `repair_lineage/historical/` fixtures |
+
+Numerical agreement never establishes symbolic equality; verified candidates are
+never automatically promoted to canonical; every promotion is human-governed.
+
 ## Supported Backends
 
 - **SymPy**: open-source exact symbolic baseline (required)
@@ -67,6 +106,37 @@ python3 benchmarks/sigma_xxx_finite_gamma_replay/tests/validate_public_benchmark
 The scientific boundary is: DC limit first; Gamma finite and exact in the raw one-dimensional `sigma_xxx` object; then normalization, decomposition, simplification, closed-form construction, and model-specific validation. The raw object must not be described as resulting from a prior Gamma-order expansion.
 
 Secondary conversation-derived decision provenance and the benchmark-local scoped pair-sector IBP authority record are documented under `benchmarks/sigma_xxx_finite_gamma_replay/docs/`.
+
+## Certified Physics Workloads
+
+Beyond the benchmark, three research-grade physics layers are executable in this
+repository:
+
+1. **C0 certified compactification loop** — one machine-verified loop step from a
+   certified parent identity to a new certified claim through the LLM proposer and an
+   independent Python verifier. See [C0 Compactification Loop](docs/c0_minimal_compactification_loop.md).
+   ```bash
+   python3 scripts/run_c0_loop_demo.py
+   python3 -m pytest tests/test_c0_compactification_loop.py
+   ```
+
+2. **Literal Anan D^(3) bridge demo** — an end-to-end scientific stress test: notation
+   provenance, f_+ convention collision, thermal coefficient derivation, M/T/K kernels,
+   six-orbit reduction, reality, literal Anan D3 six-orbit closure, claim containment,
+   and mutation/adversarial controls.
+   ```bash
+   bash demos/literal_anan_d3_bridge/run_all.sh
+   python3 -m pytest tests/test_demo_literal_anan_d3.py
+   ```
+
+3. **Theoretical-physics stress examples** — hard identities (massive Dirac Berry
+   curvature, quantum metric, finite-Gamma resolvent structure, gauge-equivalent vector
+   potentials) exercised through the real `symbolic-identity-verify` judge with
+   adversarial wrong-physics mutations. See [Physics Stress](examples/physics_stress/README.md).
+   ```bash
+   python3 examples/physics_stress/run_all.py
+   python3 -m pytest tests/test_physics_stress.py
+   ```
 
 ## Limitations
 
@@ -147,13 +217,21 @@ scientific request
 
 ### Executable Controller Pathway
 
-Run the orchestration controller directly from the command line. Four subcommands are available:
+Run the orchestration controller directly from the command line. Ten subcommands are available, and the
+`--profile {full,judge,proposer}` registry scope switch enforces searcher/judge isolation
+(`judge` removes the proposer registration; `proposer` removes the judge).
 
 ```bash
 python3 scripts/orch_controller.py list-roles
+python3 scripts/orch_controller.py list-operations
 python3 scripts/orch_controller.py validate-task <contract_path>
 python3 scripts/orch_controller.py check-transition --from <state> --to <state>
 python3 scripts/orch_controller.py run-workflow <fixture_path>
+python3 scripts/orch_controller.py geometric-basis-verify      # JSON request on stdin
+python3 scripts/orch_controller.py symbolic-identity-verify    # JSON request on stdin
+python3 scripts/orch_controller.py propose-equation-candidates # JSON request on stdin
+python3 scripts/orch_controller.py recheck-symbolic-certificate # {claim, certificate} on stdin
+python3 scripts/orch_controller.py compactification-step       # JSON request on stdin
 ```
 
 Add `--verbose` to any command for detailed output.
@@ -161,14 +239,25 @@ Add `--verbose` to any command for detailed output.
 **Full CLI surface:**
 
 ```
-usage: orch_controller.py [-h] [--verbose]
-  {validate-task,check-transition,list-roles,run-workflow} ...
+usage: orch_controller.py [-h] [--verbose] [--profile {full,judge,proposer}]
+  {validate-task,check-transition,list-roles,list-operations,run-workflow,
+   geometric-basis-verify,symbolic-identity-verify,propose-equation-candidates,
+   recheck-symbolic-certificate,compactification-step} ...
 
 positional arguments:
   validate-task       Validate a task contract JSON file
   check-transition    Check if a state transition is valid
   list-roles          List all registered roles
+  list-operations     List registered capability/adapter operations
   run-workflow        Run a workflow fixture
+  geometric-basis-verify        Route a geometric_basis_verify request (JSON on stdin)
+  symbolic-identity-verify      Route a symbolic_identity_verify request (JSON on stdin)
+  propose-equation-candidates   Route a propose_equation_candidates request (JSON on stdin)
+  recheck-symbolic-certificate  Independently re-verify a {claim, certificate} (JSON on stdin)
+  compactification-step         Route a compactification_step request (JSON on stdin)
+
+optional arguments:
+  --profile {full,judge,proposer}   Registry scope: full (default), proposer (no judge), judge (no proposer)
 ```
 
 **Subcommand summary:**
@@ -176,16 +265,25 @@ positional arguments:
 | Command | Purpose | Exit 0 |
 |---------|---------|--------|
 | `list-roles` | List all registered roles | Always |
+| `list-operations` | List registered capability/adapter operations | Always |
 | `validate-task <path>` | Validate a task contract JSON | Contract passes |
 | `check-transition --from X --to Y` | Check state transition validity | Transition allowed |
 | `run-workflow <path>` | Run a workflow fixture | Workflow passes |
+| `geometric-basis-verify` | Adjudicate a geometric-basis claim (stdin JSON) | Claim adjudicated |
+| `symbolic-identity-verify` | Adjudicate a symbolic identity (stdin JSON) | Claim adjudicated |
+| `propose-equation-candidates` | Emit UNVERIFIED candidate equations (stdin JSON) | Proposer ran |
+| `recheck-symbolic-certificate` | Independently re-verify a stored certificate | Recheck passed |
+| `compactification-step` | Execute one certified C0 loop step (stdin JSON) | Step executed |
 
 **Minimal example using public synthetic fixtures:**
 
 ```bash
-# List registered roles (12 roles: executor, global_planner, verifier, etc.)
+# List registered roles (12 roles)
 python3 scripts/orch_controller.py list-roles
-# {"roles": ["executor", "global_planner", ...]}
+# {"roles": ["executor", "global_planner", "human_gate_materializer",
+#            "independent_verifier", "integration_executor", "integration_verifier",
+#            "lane_planner", "repair_executor", "report_generator",
+#            "report_verifier", "supplement_reviewer", "supplement_writer"]}
 
 # Run the synthetic demo workflow (3 stages: plan, execute, verify)
 python3 scripts/orch_controller.py run-workflow fixtures/synthetic_workflow_demo.json
@@ -512,30 +610,44 @@ Authority boundary: `verified_provenance_to_latex_pdf` remains the sole final Te
 
 ## Developer and Local Validation
 
-### Starting a project (minimal commands)
+### Setting up a disposable environment (contributor/CI)
 
 ```bash
-python3 -m pip install sympy numpy scipy mpmath jsonschema
+python3 -m venv /tmp/rnss-venv
+source /tmp/rnss-venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -e '.[test,extended-numerics]'
 ```
 
-### Validating the framework (contributor/CI commands)
+No global package installation is needed. Do not install or replace a
+Mathematica/Wolfram runtime globally; the B3 second engine only accepts the
+fixed, pinned `/Applications/Wolfram Engine.app` installation (see
+`docs/CLAIM_TYPES_AND_GATES.md`). When that runtime is unavailable, the
+symbolic-identity verifier degrades to `SYMBOLIC_ZERO_PENDING_SECOND_ENGINE`
+(fail-closed; a skipped Wolfram check is never reported as a PASS).
+
+### Validating the framework
 
 ```bash
-# Install test dependencies
-python3 -m pip install pytest sympy numpy scipy mpmath jsonschema
-
 # Run the full regression suite
-python3 -m pytest tests/
+python3 -m pytest -q
 
 # Run specific test files
 python3 -m pytest tests/test_orch002_synthetic_fixtures.py
 python3 -m pytest tests/test_orch004_controller_runtime.py
 python3 -m pytest tests/test_supp002r2_validator.py
 
+# Frozen release verification bundle (Gate 1-5 + full pytest + secret scan)
+python3 verification/viper/run_release_verification.py
+
 # Verify controller CLI is functional
 python3 scripts/orch_controller.py --help
 python3 scripts/orch_controller.py list-roles
+python3 scripts/orch_controller.py list-operations
 python3 scripts/orch_controller.py run-workflow fixtures/synthetic_workflow_demo.json
+
+# Engine fixtures
+python3 tests/engine_fixtures/run_fixture_suite.py
 ```
 
 Mathematica is optional and is not required for the open-source core workflow.
@@ -544,8 +656,11 @@ Mathematica is optional and is not required for the open-source core workflow.
 
 ## Verified Release Status
 
-The unified main branch reconciles the public orchestration/supplement lineage
-with the local scientific-decision-provenance and repair-lineage lineages.
+### Historical independent-review status
+
+The following block records the independent remote review of the unified main
+branch as observed at the time of that review. It is historical evidence, not a
+live guarantee; the current verification status is in the next section.
 
 ```text
 independent remote verdict:
@@ -574,6 +689,22 @@ No GitHub Release or version tag was created. Private scientific sigma research 
 Scientific canonical state is not part of this public release. Blocker 5 belongs to private
 scientific governance and was not changed.
 
+### Current maintenance verification
+
+The repository-maintenance run of 2026-08-16 re-verified the repository from a clean
+checkout. See [Maintenance Report](docs/maintenance/2026-08-16-repo-cleanup-and-validation.md)
+for the full record.
+
+```text
+root pytest:                 PLACEHOLDER_AFTER_RUN
+release verification:        PLACEHOLDER_AFTER_RUN
+sigma_xxx replay:            PLACEHOLDER_AFTER_RUN
+Anan D3 demo:                PLACEHOLDER_AFTER_RUN
+C0 tests:                    PLACEHOLDER_AFTER_RUN
+physics stress:              PASS (25/25 expectations met)
+clean-clone replay:          PLACEHOLDER_AFTER_RUN
+```
+
 ---
 
 ## Documentation
@@ -583,6 +714,9 @@ scientific governance and was not changed.
 | [Theoretical Supplement Quickstart](docs/theoretical_supplement_quickstart.md) | One-command assembly and renderer-dispatch workflow |
 | [Getting Started with an Agent](docs/GETTING_STARTED_WITH_AN_AGENT.md) | First-time user guide for agent-based interaction |
 | [Agent-First Controller Usage](docs/agent_first_controller_usage.md) | Complete executable controller guide |
+| [C0 Compactification Loop](docs/c0_minimal_compactification_loop.md) | Certified minimal compactification loop (Stage 1) |
+| [Physics Stress Examples](examples/physics_stress/README.md) | Hard theoretical-physics identities with adversarial mutations |
+| [Maintenance Report 2026-08-16](docs/maintenance/2026-08-16-repo-cleanup-and-validation.md) | Repository cleanup + scientific validation record |
 | [Skill Cookbook](docs/SKILL_COOKBOOK.md) | Reference of all public skills |
 | [End-to-End Workflow](docs/END_TO_END_WORKFLOW.md) | Synthetic walkthrough from raw input to report |
 | [Human Scientist Guide](docs/HUMAN_SCIENTIST_GUIDE.md) | Scientist responsibilities and best practices |
@@ -639,9 +773,12 @@ See [benchmarks/README.md](benchmarks/README.md) for details.
 ├── skills/                 # Symbolic, orchestration, and supplement skills
 ├── templates/              # Task and artifact templates
 ├── policies/               # Governance policies
-├── tests/                  # Public fixture suites (104 tests)
+├── tests/                  # Public fixture suites (529 tests, observed 2026-08-16 at main 52e1045)
 ├── fixtures/               # Public synthetic ORCH/SUPP fixtures
-├── examples/               # Synthetic end-to-end examples
+├── examples/               # Synthetic end-to-end examples + physics stress examples
+├── demos/                  # Literal Anan D3 bridge demo (scientific stress test)
+├── benchmarks/             # sigma_xxx finite-Gamma replay + repair-lineage benchmarks
+├── verification/           # Frozen Viper release-verification bundle (Gate 1-5)
 └── docs/                   # Architectural and workflow documentation
 ```
 

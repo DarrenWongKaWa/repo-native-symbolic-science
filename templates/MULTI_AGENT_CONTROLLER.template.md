@@ -43,7 +43,7 @@ Persist orchestration state in `{{STATE_DIR}}/orchestration_state.json`. Log eve
 
 Before any state transition, run:
 ```
-python3 scripts/validate_orchestration_state_transition.py \
+python3 scripts/validate_orch_state_transition.py \
   --from "{{PREVIOUS_STATE}}" \
   --to "{{NEXT_STATE}}" \
   --state-dir "{{STATE_DIR}}"
