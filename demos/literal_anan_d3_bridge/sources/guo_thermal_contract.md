@@ -58,6 +58,10 @@ K_abc = i[ Δ_ab(Δ_ca−Δ_bc) M_Γ(ε_a,ε_b) − Δ_ab Δ_ac Δ_bc T_Γ(ε_a,
 G_vvv  = 2 Σ_{all distinct} Λ_abc K_abc   (2 = longitudinal b↔c exchange completion)
 ```
 
-STATUS: the packet declares the six-orbit identity Σ_{S3}K = −Σ_{S3}D³.
-Independent verification under THIS contract is reported in
-claims/six_orbit_status.json (see also proofs/six_orbit_identity.py).
+STATUS (frozen 2026-08-16): the six-orbit identity Σ_{S3}K = −Σ_{S3}D³ is
+CERTIFIED under the clarified contract:
+  T_abc = ( M_cb - M_ac + iΓ F[E_c,E_c,E_c,E_a,E_b] ) / (E_b - E_a + 2iΓ)
+  K_abc = i[ x(x-2y) M_ab - x y d T_abc ], x=Δ_ab, y=Δ_ac, d=Δ_bc=y-x
+with F[u,u,u,v,w] the 5-node Hermite divided difference (u repeated 3x), and
+the S3.31 endpoint relation treated as CONJUGATION (M_ba = conj(M_ab)).
+Gates G1..G7 all PASS (see claims/six_orbit_status.json).

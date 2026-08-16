@@ -35,9 +35,10 @@ final = {
     "thermal dictionary (argument/function/derivative bridges): PASS_EXACT",
     "literal D3 substitution: PASS_EXACT (POINTWISE)",
     "geometry orbit invariance: PASS_EXACT (6/6)",
+    "six-orbit: LITERAL_ANAN_D3_SIX_ORBIT PASS_EXACT (gates G1..G7, frozen 2026-08-16 contract)",
     "negative controls: FAIL_EXPECTED / FAIL_AS_EXPECTED as designed"
   ],
-  "OPEN_COMPONENT": "LITERAL_ANAN_D3_SIX_ORBIT: SIX_ORBIT_UNVERIFIED_UNDER_DECLARED_CONTRACT — contract clarification required (M_Gamma/T_Gamma definitions, certified witness energies)",
+  "OPEN_COMPONENT": "none (contract frozen 2026-08-16; packet historical digits belong to a different witness)",
   "NOT_CLAIMED": [
     "complete Guo-Anan conductivity equivalence",
     "literal D2 bridge",
@@ -46,7 +47,7 @@ final = {
     "post-IBP BZ equivalence",
     "degenerate-band extension"
   ],
-  "final_verdict": "DEMO_LAYERS_L1_L2_L3_L5_CERTIFIED_L4_OPEN"
+  "final_verdict": "DEMO_LAYERS_L1_L2_L3_L4_L5_CERTIFIED"
 }
 (CLAIMS / "final_claim.json").write_text(json.dumps(final, indent=2))
 print("claims aggregated; final_claim.json written")

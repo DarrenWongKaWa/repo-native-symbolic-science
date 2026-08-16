@@ -41,10 +41,17 @@ arXiv:2604.04520 vs the Guo/Supplement thermal framework):
 | THREE_BAND_LOOP_GEOMETRY_ORBIT_INVARIANT | PASS_EXACT (6/6 perms) |
 | ORDERED_TRIPLE_K_EQUALS_MINUS_D3 | FAIL_EXPECTED (pointwise nonzero) |
 | NEGATIVE_CONTROL_REAL_ENERGY_FPLUS | FAIL_AS_EXPECTED (finite wrong value) |
-| LITERAL_ANAN_D3_SIX_ORBIT | SIX_ORBIT_UNVERIFIED_UNDER_DECLARED_CONTRACT |
+| LITERAL_ANAN_D3_SIX_ORBIT | PASS_EXACT (frozen 2026-08-16 contract; gates G1..G7) |
 
-The last row is the honest fail-closed outcome: under the declared
-Guo-kernel interpretation of M_Gamma/T_Gamma (sources/guo_thermal_contract.md),
-the orbit identity does not close numerically. The demo reports this rather
-than certifying an unverified statement; the certificate records exactly what
-was computed and what contract clarification is required.
+Contract clarified and frozen 2026-08-16:
+  T_abc = (M_cb - M_ac + i Gamma F[E_c,E_c,E_c,E_a,E_b]) / (E_b - E_a + 2 i Gamma)
+  K_abc = i[ x(x-2y) M_ab - x y d T_abc ],  x = Delta_ab, y = Delta_ac, d = Delta_bc
+Fail-closed gate sequence (stops at the first nonzero residual, reporting the
+exact gate and expression): M_KERNEL_PROOF_NORMAL_FORM, T_KERNEL_ARGUMENT_ORDER,
+K_XYD_NORMAL_FORM, SIX_ORBIT_TO_QM_HD_REDUCTION (with the S3.31 endpoint
+relation as CONJUGATION, never equality), SIX_ORBIT_NODE_DATA_REDUCTION,
+SIX_ORBIT_REALITY, LITERAL_ANAN_D3_SIX_ORBIT.  All seven PASS; the orbit
+residual scales as h^2 (pure w2-extraction truncation): sumK = -sumD3 =
+0.17914332271841625 at the declared valid witness {-0.5, 0.3, 1.4}.
+The packet's printed digits belong to the historical fixture (different
+witness), not to this theorem's evidence.

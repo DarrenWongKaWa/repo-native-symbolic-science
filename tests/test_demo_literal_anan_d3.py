@@ -49,8 +49,11 @@ def test_negative_controls_fail_as_expected():
     assert nc2["ORDERED_TRIPLE_K_EQUALS_MINUS_D3"] == "FAIL_EXPECTED"
 
 
-def test_six_orbit_reported_honestly():
+def test_six_orbit_all_gates_pass():
     cert = _run("proofs/six_orbit_identity.py", "six", "six_orbit_status.json")
-    assert cert["verdict"] in ("SIX_ORBIT_VERIFIED_HIGH_PRECISION",
-                               "SIX_ORBIT_UNVERIFIED_UNDER_DECLARED_CONTRACT")
-    assert cert["confluence_anchor"]["converging"] is True
+    assert cert["verdict"] == "LITERAL_ANAN_D3_SIX_ORBIT_PASS_EXACT"
+    assert cert["fail_closed_stop"] is None
+    for g, v in cert["gates"].items():
+        assert v["result"] == "PASS", (g, v["result"])
+    # S3.31 endpoint relation must be CONJUGATION (never equality)
+    assert float(cert["gates"]["G4_SIX_ORBIT_TO_QM_HD_REDUCTION"]["S3.31_conjugation_M_ba-conj(M_ab)"]) < 1e-20
