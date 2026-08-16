@@ -57,3 +57,13 @@ def test_six_orbit_all_gates_pass():
         assert v["result"] == "PASS", (g, v["result"])
     # S3.31 endpoint relation must be CONJUGATION (never equality)
     assert float(cert["gates"]["G4_SIX_ORBIT_TO_QM_HD_REDUCTION"]["S3.31_conjugation_M_ba-conj(M_ab)"]) < 1e-20
+
+def test_mutation_pass_red_flags_every_wrong_science():
+    cert = _run("negative_controls/mutation_adversarial_pass.py", "mut",
+                "mutation_adversarial_pass.json")
+    assert cert["overall"].startswith("PASS")
+    for m in cert["mutations"]:
+        assert m["gate_red"] is True, m["mutation"]
+    ids = {m["mutation"] for m in cert["mutations"]}
+    assert ids == {"M1_F_NODE_ORDER", "M2_DELTA_INDEX",
+                   "M3_CONJUGATION_EQUALITY", "M4_REAL_ENERGY_FPLUS"}

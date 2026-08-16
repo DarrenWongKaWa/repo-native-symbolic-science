@@ -55,3 +55,15 @@ residual scales as h^2 (pure w2-extraction truncation): sumK = -sumD3 =
 0.17914332271841625 at the declared valid witness {-0.5, 0.3, 1.4}.
 The packet's printed digits belong to the historical fixture (different
 witness), not to this theorem's evidence.
+
+## Mutation / adversarial pass (2026-08-16)
+
+| mutation | injected wrong science | expected red gate | caught |
+|---|---|---|---|
+| M1_F_NODE_ORDER | F[Ec,Ec,Ec,Ea,Eb] -> 3-node second divided difference | G7 six-orbit | yes (residual 0.018) |
+| M2_DELTA_INDEX | Delta_ca - Delta_bc -> Delta_ac - Delta_bc in K | G3 K xyd form | yes (residual 4.64) |
+| M3_CONJUGATION_EQUALITY | M_ba = conj(M_ab) -> M_ba = M_ab | G4 QM/HD reduction | yes (residual 2.62) |
+| M4_REAL_ENERGY_FPLUS | f_+^A(E-mu+i Gamma) -> real-energy f_+^G(E) | G7 six-orbit | yes (residual 0.35) |
+
+Principle demonstrated: correct science -> PASS; every specific wrong science
+is caught at the correct obligation (fail-closed gates, not notebook trust).

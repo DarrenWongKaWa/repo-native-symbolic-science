@@ -1,7 +1,7 @@
 {
   "schema": "viper.demo.anan_d3.d3_bridge.v1",
-  "commit": "8f3b68552a16914904d2dbebd61a3a2582212475",
-  "timestamp_utc": "2026-08-16T10:18:12Z",
+  "commit": "7233ef7a4ff330fe954cc3c3368e8c4b21804fe4",
+  "timestamp_utc": "2026-08-16T10:28:53Z",
   "LITERAL_ANAN_D3_THERMAL_BRIDGE": "PASS_EXACT",
   "ARROW_TYPE": "POINTWISE_EXACT",
   "held_for": "every ordered triple (a,b,c) with pairwise distinct bands; no permutation summation",
