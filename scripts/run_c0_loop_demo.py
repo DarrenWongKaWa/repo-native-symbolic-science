@@ -23,7 +23,7 @@ sys.path.insert(0, str(REPO))
 
 from loop_engine.orch_adapters.compactification_loop import core as C0
 
-DEFAULT_PROPOSER = "codex exec --skip-git-repo-check -"
+# F-05 fix: fail-closed — no hardcoded backend fallback.
 
 
 def main() -> int:
@@ -39,7 +39,7 @@ def main() -> int:
     out_dir = Path(args.out_dir or os.environ.get("VIPER_OUTPUT_DIR")
                    or Path(tempfile.gettempdir()) / "viper_c0_demo")
     out_dir.mkdir(parents=True, exist_ok=True)
-    proposer_cmd = args.proposer_cmd or os.environ.get("VIPER_PROPOSER_CMD")         or DEFAULT_PROPOSER
+    proposer_cmd = args.proposer_cmd or os.environ.get("VIPER_PROPOSER_CMD")
 
     print(f"[C0] seed: {args.seed}")
     seed = C0.load_seed(args.seed)

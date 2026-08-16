@@ -202,6 +202,49 @@ def test_verifier_zero_polarization_identity():
     assert rec["verdict"] == C0.VERDICT_ZERO
 
 
+def test_handle_rejects_unverified_parent_claim():
+    # F-01: a false parent (1 == 2) must never certify a child.
+    with pytest.raises(AdapterError) as exc:
+        C0.handle({
+            "operation": "compactification_step", "contract_version": "1.0",
+            "chain_id": "x", "parent_claim": {
+                "claim_id": "false-parent", "lhs": "x", "rhs": "x+1",
+                "symbols": ["x"], "scope": "declared_symbols"},
+            "candidates": [
+                {"claim_id": "child", "lhs": "x", "rhs": "x",
+                 "symbols": ["x"], "scope": "declared_symbols"},
+            ]})
+    assert exc.value.code == "PARENT_CLAIM_NOT_CERTIFIED"
+
+
+def test_verifier_never_emits_bogus_counterexample_on_true_identity():
+    # F-02: Abs(sqrt(va)) == sqrt(Abs(va)) is true; nested-radical probe values
+    # equal 0 but are not canonicalized.  Verdict must be ZERO or UNKNOWN,
+    # never NONZERO with a bogus counterexample.
+    rec = C0.python_verify({
+        "lhs": "Abs(sqrt(va))", "rhs": "sqrt(Abs(va))",
+        "symbols": [{"name": "va", "real": False}]})
+    assert rec["verdict"] in (C0.VERDICT_ZERO, C0.VERDICT_UNKNOWN)
+    assert "counterexample" not in rec
+
+
+def test_symbol_name_reserved_rejected():
+    with pytest.raises(AdapterError) as exc:
+        C0.parse_side("sin", [{"name": "sin", "real": True}])
+    assert exc.value.code == "SYMBOL_NAME_RESERVED"
+
+
+def test_run_loop_step_uniquifies_duplicate_claim_ids():
+    parent = _parent()
+    dup = {"claim_id": "same", "lhs": "(va*conjugate(vb) + vb*conjugate(va))/eps^3",
+           "rhs": "(va*conjugate(vb) + conjugate(va)*vb)/eps^3",
+           "symbols": SYMS, "scope": SCOPE}
+    step = C0.run_loop_step(parent, [dict(dup), dict(dup)], "c0-dup")
+    ids = [n["claim_id"] for n in step["nodes"]]
+    assert ids[0] != ids[1]
+    assert ids[0] == "same" or ids[1].startswith("same")
+
+
 # --------------------------------------------------------------------------- #
 # ORCH boundary (handle)
 # --------------------------------------------------------------------------- #

@@ -2,55 +2,165 @@
   "schema": "viper.c0.claim_chain.v1",
   "title": "C0 compactification claim-chain step record",
   "type": "object",
-  "required": ["operation", "contract_version", "chain_id", "parent_claim", "nodes", "summary", "provenance"],
+  "required": [
+    "operation",
+    "contract_version",
+    "chain_id",
+    "parent_claim",
+    "nodes",
+    "summary",
+    "provenance"
+  ],
   "properties": {
-    "operation": {"const": "compactification_step"},
-    "contract_version": {"const": "1.0"},
-    "chain_id": {"type": "string"},
+    "operation": {
+      "const": "compactification_step"
+    },
+    "contract_version": {
+      "const": "1.0"
+    },
+    "chain_id": {
+      "type": "string"
+    },
     "parent_claim": {
       "type": "object",
-      "required": ["claim_id", "claim_sha256"],
+      "required": [
+        "claim_id",
+        "claim_sha256"
+      ],
       "properties": {
-        "claim_id": {"type": "string"},
-        "claim_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        "claim_id": {
+          "type": "string"
+        },
+        "claim_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
       }
     },
     "nodes": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["chain_id", "position", "claim_id", "claim", "claim_sha256",
-                     "parent_claim_id", "residual", "residual_verdict", "node_status",
-                     "evidence", "node_sha256"],
+        "required": [
+          "chain_id",
+          "position",
+          "claim_id",
+          "claim",
+          "claim_sha256",
+          "parent_claim_id",
+          "residual",
+          "residual_verdict",
+          "node_status",
+          "evidence",
+          "node_sha256"
+        ],
         "properties": {
-          "chain_id": {"type": "string"},
-          "position": {"type": "integer", "minimum": 0},
-          "claim_id": {"type": "string"},
+          "chain_id": {
+            "type": "string"
+          },
+          "position": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "claim_id": {
+            "type": "string"
+          },
           "claim": {
             "type": "object",
-            "required": ["lhs", "rhs", "symbols"],
+            "required": [
+              "lhs",
+              "rhs",
+              "symbols"
+            ],
             "properties": {
-              "lhs": {"type": "string"},
-              "rhs": {"type": "string"},
-              "symbols": {"type": "array"},
-              "scope": {"type": "string"}
+              "lhs": {
+                "type": "string"
+              },
+              "rhs": {
+                "type": "string"
+              },
+              "symbols": {
+                "type": "array"
+              },
+              "scope": {
+                "type": "string"
+              }
             }
           },
-          "claim_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-          "parent_claim_id": {"type": ["string", "null"]},
-          "residual": {"type": ["object", "null"]},
-          "residual_verdict": {"enum": ["ZERO", "NONZERO", "UNKNOWN"]},
-          "node_status": {"enum": ["CERTIFIED", "DIAGNOSTIC", "UNVERIFIED"]},
-          "evidence": {"type": "object"},
-          "certificate": {"type": ["object", "null"]},
-          "node_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
-        }
+          "claim_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "parent_claim_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "residual": {
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "residual_verdict": {
+            "enum": [
+              "ZERO",
+              "NONZERO",
+              "UNKNOWN"
+            ]
+          },
+          "node_status": {
+            "enum": [
+              "CERTIFIED",
+              "DIAGNOSTIC",
+              "UNVERIFIED"
+            ]
+          },
+          "evidence": {
+            "type": "object"
+          },
+          "certificate": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "description": "required when node_status == CERTIFIED"
+          },
+          "node_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "node_status": {
+                  "const": "CERTIFIED"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "certificate"
+              ]
+            }
+          }
+        ]
       }
     },
     "summary": {
       "type": "object",
-      "required": ["candidates", "certified", "diagnostic", "unverified"]
+      "required": [
+        "candidates",
+        "certified",
+        "diagnostic",
+        "unverified"
+      ]
     },
-    "provenance": {"type": "object"}
+    "provenance": {
+      "type": "object"
+    }
   }
 }

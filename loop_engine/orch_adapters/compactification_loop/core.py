@@ -92,6 +92,9 @@ def _normalize_symbols(symbols: Any) -> list[dict]:
     names = [s["name"] for s in out]
     if not names or len(names) != len(set(names)):
         raise AdapterError("CLAIM_SYMBOLS_MALFORMED")
+    reserved = set(_safe.PARSE_POLICY["allowed_functions"]) | {"pi", "E", "I", "oo"}
+    if reserved & set(names):
+        raise AdapterError("SYMBOL_NAME_RESERVED")
     if len(names) > _safe.PARSE_POLICY["max_symbols"]:
         raise AdapterError("CLAIM_SYMBOLS_TOO_MANY")
     return out
@@ -112,6 +115,7 @@ def _symbol_locals(symbols: list[dict]) -> dict:
 
 def parse_side(expr_str: str, symbols: list[dict]) -> sympy.Expr:
     """Whitelist-parse one claim side honouring declared per-symbol assumptions."""
+    symbols = _normalize_symbols(symbols)  # reserved-name / shape checks
     if not isinstance(expr_str, str) or not expr_str.strip():
         raise AdapterError("EMPTY_EXPRESSION")
     if len(expr_str) > _safe.PARSE_POLICY["max_expr_chars"]:
@@ -227,11 +231,16 @@ def python_verify(claim: dict, max_probes: int = _MAX_PROBES) -> dict:
             value = sympy.simplify(diff.subs(point))
         except Exception:
             continue  # singular or degenerate probe: not a counterexample
-        if value in (sympy.nan, sympy.oo, -sympy.oo, sympy.zoo):
+        if value in (sympy.nan, sympy.oo, -sympy.oo, sympy.zoo,
+                     sympy.I * sympy.oo, -sympy.I * sympy.oo):
             continue
         probes.append({"point": {str(k): str(v) for k, v in point.items()},
                        "exact_value": str(value)})
-        if value != 0:
+        # F-02 fix: a probe is a counterexample ONLY when sympy can PROVE the
+        # exact value nonzero (value.equals(0) is False).  Nested-radical values
+        # that are actually 0 but not canonicalized (equals -> True or None)
+        # are skipped, never reported as counterexamples.
+        if value != 0 and value.equals(0) is False:
             counterexample = {"point": {str(k): str(v) for k, v in point.items()},
                               "exact_value": str(value)}
             break
@@ -394,7 +403,15 @@ def run_loop_step(parent_claim: dict, candidates: list[dict], chain_id: str,
     nodes = []
     summary = {"candidates": len(candidates), "certified": 0,
                "diagnostic": 0, "unverified": 0}
+    seen_ids: set = set()
     for index, candidate in enumerate(candidates):
+        # F-03 fix: chain edges must be unambiguous — unique claim_id per node.
+        base_id = candidate.get("claim_id") or f"cand:{start_position + index}"
+        if base_id in seen_ids:
+            base_id = f"{base_id}:{start_position + index}"
+        seen_ids.add(base_id)
+        candidate = dict(candidate)
+        candidate["claim_id"] = base_id
         try:
             residual = construct_residual(parent_claim, candidate)
             verdict_record = python_verify(residual)
@@ -489,6 +506,13 @@ def handle(request: dict) -> tuple[dict, int]:
     else:
         if not parent_claim.get("claim_id"):
             raise AdapterError("PARENT_CLAIM_MISSING")
+        # F-01 fix: an ORCH-supplied parent is only trustworthy if it adjudicates
+        # ZERO under the SAME verifier (or is bound to a previously certified
+        # chain node by claim hash — a later stage).  Never build residuals on an
+        # unverified parent: a false parent could certify a false child.
+        parent_verdict = python_verify(parent_claim)
+        if parent_verdict["verdict"] != VERDICT_ZERO:
+            raise AdapterError("PARENT_CLAIM_NOT_CERTIFIED")
 
     # 2. candidates: inline or via the LLM proposer organ
     candidates = request.get("candidates")
