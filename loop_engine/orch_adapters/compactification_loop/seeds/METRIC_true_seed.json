@@ -1,0 +1,25 @@
+{
+  "seed_id": "METRIC_true_seed",
+  "chain_id": "c0-metric-true",
+  "family": "METRIC_true",
+  "status": "CERTIFIED",
+  "corpus_reference": "verification/viper/corpus/expected_results/families_results.json#METRIC_true",
+  "derivation": "loop_engine/orch_adapters/geobasis_verify/families.py symbolic_gold('METRIC') per-summand identity: (v^a v^b + v^b v^a)/eps^2 == 2 Re(A^a_nm A^b_mn) with A^a_nm = v^a/(i eps), A^b_mn = conj(v^b)/(-i eps)",
+  "claim": {
+    "lhs": "(va*conjugate(vb) + vb*conjugate(va))/eps^2",
+    "rhs": "(va*conjugate(vb) + conjugate(va)*vb)/eps^2",
+    "symbols": [
+      {"name": "va", "real": false},
+      {"name": "vb", "real": false},
+      {"name": "eps", "real": true, "nonzero": true}
+    ],
+    "scope": "complex_scalars_with_real_eps"
+  },
+  "certificate": {
+    "kind": "python_exact_symbolic_seed",
+    "verifier": "python_sympy_exact_v1",
+    "verdict": "ZERO",
+    "origin": "frozen geobasis corpus symbolic gold oracle"
+  },
+  "chain_position": 0
+}

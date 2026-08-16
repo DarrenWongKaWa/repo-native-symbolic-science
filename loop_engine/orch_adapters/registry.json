@@ -74,6 +74,24 @@
         "execute_generated_code"
       ],
       "claim_authority": "proposal"
+    },
+    "compactification_step": {
+      "module_path": "loop_engine.orch_adapters.compactification_loop_adapter",
+      "class_name": "CompactificationLoopAdapter",
+      "validator_scripts": [],
+      "required_inputs": [],
+      "allowed_actions": [
+        "propose_candidates_to_chain",
+        "construct_residual",
+        "adjudicate_residual"
+      ],
+      "forbidden_actions": [
+        "promote_canonical",
+        "reinterpret_scope",
+        "self_verify",
+        "accept_proposer_self_score"
+      ],
+      "claim_authority": "verification"
     }
   },
   "adapters": {
@@ -127,6 +145,24 @@
       "forbidden_actions": [
         "promote_canonical",
         "reinterpret_scope"
+      ],
+      "claim_authority": "verification"
+    },
+    "compactification_step": {
+      "module_path": "loop_engine.orch_adapters.compactification_loop_adapter",
+      "class_name": "CompactificationLoopAdapter",
+      "validator_scripts": [],
+      "required_inputs": [],
+      "allowed_actions": [
+        "propose_candidates_to_chain",
+        "construct_residual",
+        "adjudicate_residual"
+      ],
+      "forbidden_actions": [
+        "promote_canonical",
+        "reinterpret_scope",
+        "self_verify",
+        "accept_proposer_self_score"
       ],
       "claim_authority": "verification"
     }
