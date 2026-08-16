@@ -1,7 +1,7 @@
 {
   "schema": "viper.demo.anan_d3.negative_control_real_energy.v1",
-  "commit": "f057a43e85cce1a8d661116c38b6af73fdfab377",
-  "timestamp_utc": "2026-08-16T10:46:21Z",
+  "commit": "6b062fc086a3199575b5d3c1e5fa55cbad886403",
+  "timestamp_utc": "2026-08-16T10:47:43Z",
   "NEGATIVE_CONTROL_REAL_ENERGY_FPLUS": "FAIL_AS_EXPECTED",
   "correct_value_sumD3": "(-0.179143322718416260357598132603 + 0.0j)",
   "wrong_value_sumD3": "(0.168697370585162007531394709336 + 0.0j)",

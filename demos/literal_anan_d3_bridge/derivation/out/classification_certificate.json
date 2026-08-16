@@ -1,7 +1,7 @@
 {
   "schema": "viper.demo.anan_d3.derivation.classification.v1",
-  "commit": "f057a43e85cce1a8d661116c38b6af73fdfab377",
-  "timestamp_utc": "2026-08-16T10:46:37Z",
+  "commit": "6b062fc086a3199575b5d3c1e5fa55cbad886403",
+  "timestamp_utc": "2026-08-16T10:47:59Z",
   "sectors": {
     "M_b": "sum_nm M_nm v^b_nm h^ac_mn",
     "M_c": "sum_nm M_nm v^c_nm h^ab_mn",

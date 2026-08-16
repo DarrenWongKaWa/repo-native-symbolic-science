@@ -1,7 +1,7 @@
 {
   "schema": "viper.demo.anan_d3.negative_control_pointwise.v1",
-  "commit": "f057a43e85cce1a8d661116c38b6af73fdfab377",
-  "timestamp_utc": "2026-08-16T10:46:22Z",
+  "commit": "6b062fc086a3199575b5d3c1e5fa55cbad886403",
+  "timestamp_utc": "2026-08-16T10:47:44Z",
   "ORDERED_TRIPLE_K_EQUALS_MINUS_D3": "FAIL_EXPECTED",
   "rows": [
     {
