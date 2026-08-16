@@ -26,3 +26,6 @@ reports/
 *.temp
 tests/gate4/gate4_report.json
 tests/gate4/__pycache__/
+
+# Orchestration runtime state (local, disposable)
+.loop/
