@@ -1,7 +1,7 @@
 {
   "schema": "viper.demo.anan_d3.thermal_dictionary.v1",
-  "commit": "7233ef7a4ff330fe954cc3c3368e8c4b21804fe4",
-  "timestamp_utc": "2026-08-16T10:28:52Z",
+  "commit": "f057a43e85cce1a8d661116c38b6af73fdfab377",
+  "timestamp_utc": "2026-08-16T10:46:19Z",
   "theorems": {
     "ANAN_ARGUMENT_TO_GUO_ZMINUS": {
       "result": "PASS_EXACT",

@@ -67,3 +67,25 @@ witness), not to this theorem's evidence.
 
 Principle demonstrated: correct science -> PASS; every specific wrong science
 is caught at the correct obligation (fail-closed gates, not notebook trust).
+
+## Derivation layer (2026-08-16) — from the clean scientific background
+
+Starting ONLY from the source definitions (z_+/-, f_+/-, rho_e^0, divided
+differences, rho^(1), rho^(2), [w^2], four-sector form), with NO TRS / IBP /
+weak-Gamma / two-band / three-band / supplement-compact-formula / Anan-D2D3 /
+six-orbit assumptions:
+
+| gate | statement | result |
+|---|---|---|
+| G-M1 | [w^2] rho^(1)_{nm} == M kernel | PASS (3 parameter sets) |
+| G-M2 | M explicit normal form == S03 closed form | PASS |
+| G-T3 | rho^(2) index mapping (n,l,m)=(a,c,b) is UNIQUE | PASS |
+| G-T2 | [w^2] D2(f;x,y+w,z) == f[y,y,y,x,z] (5-node Hermite dd) | PASS |
+| G-T1 | [w^2] rho^(2)_{e,nlm}(w,-w) == frozen T_abc | PASS |
+| G-C1 | four sectors == compact master form (POINTWISE_EXACT) | PASS |
+| G-S1 | carriers P/L are b<->c exchange-symmetric | PASS |
+| G-S2 | coincidence classes cover all index regimes | PASS |
+
+Derived results: M_nm = [w^2]rho^(1)_{e,nm}; T_abc = [w^2]rho^(2)_{e,a,c,b}(w,-w)
+with D^(2)_+/- inherited at (e_n, e_l + w2, e_m); compact form
+sigma_abc = (q/hbar)^3 int_BZ [ sum_nm M_nm P^{a(bc)}_nm + sum_nml T_nml L^{a(bc)}_nml ].

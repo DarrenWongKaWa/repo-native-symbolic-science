@@ -1,0 +1,38 @@
+{
+  "schema": "viper.demo.anan_d3.derivation.classification.v1",
+  "commit": "f057a43e85cce1a8d661116c38b6af73fdfab377",
+  "timestamp_utc": "2026-08-16T10:46:37Z",
+  "sectors": {
+    "M_b": "sum_nm M_nm v^b_nm h^ac_mn",
+    "M_c": "sum_nm M_nm v^c_nm h^ab_mn",
+    "T_bc": "sum_nml T_nml v^a_mn v^b_nl v^c_lm",
+    "T_cb": "sum_nml T_nml v^a_mn v^c_nl v^b_lm"
+  },
+  "coincidence_classes": {
+    "pair": [
+      "n=m (diagonal; M_nn confluent)",
+      "n!=m (off-diagonal)"
+    ],
+    "triangle": [
+      "n=m=l (all equal; T_nnn = F''''/48 confluent)",
+      "n=m!=l",
+      "n=l!=m",
+      "m=l!=n",
+      "all distinct"
+    ]
+  },
+  "common_carriers": {
+    "pair": "P^{a(bc)}_nm = v^b_nm h^ac_mn + v^c_nm h^ab_mn",
+    "loop": "L^{a(bc)}_nml = v^a_mn (v^b_nl v^c_lm + v^c_nl v^b_lm)"
+  },
+  "G-S1_CARRIER_EXCHANGE_SYMMETRY": {
+    "P": true,
+    "L": true,
+    "result": "PASS"
+  },
+  "G-S2_COINCIDENCE_COVERAGE": {
+    "result": "PASS"
+  },
+  "compact_form": "sigma_abc = (q/hbar)^3 int_BZ [ sum_nm M_nm P^{a(bc)}_nm + sum_nml T_nml L^{a(bc)}_nml ]",
+  "equality_type": "POINTWISE_EXACT (identical summands, reorganized; G-C1)"
+}

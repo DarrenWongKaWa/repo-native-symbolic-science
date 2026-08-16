@@ -12,12 +12,13 @@ DEMO = Path(__file__).resolve().parents[1] / "demos" / "literal_anan_d3_bridge"
 sys.path.insert(0, str(DEMO / "proofs"))
 
 
-def _run(script_name: str, module_name: str, output_name: str) -> dict:
+def _run(script_name: str, module_name: str, output_name: str,
+         out_dir: str = "proofs/out") -> dict:
     import importlib.util
     spec = importlib.util.spec_from_file_location(module_name, DEMO / script_name)
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
-    cert = json.loads((DEMO / "proofs" / "out" / output_name).read_text())
+    cert = json.loads((DEMO / out_dir / output_name).read_text())
     return cert
 
 
@@ -67,3 +68,20 @@ def test_mutation_pass_red_flags_every_wrong_science():
     ids = {m["mutation"] for m in cert["mutations"]}
     assert ids == {"M1_F_NODE_ORDER", "M2_DELTA_INDEX",
                    "M3_CONJUGATION_EQUALITY", "M4_REAL_ENERGY_FPLUS"}
+
+def test_derivation_layer_from_source_definitions():
+    cert = _run("derivation/derive_gates.py", "deriv", "derivation_certificate.json",
+                out_dir="derivation/out")
+    assert cert["verdict"] == "DERIVATION_GATES_ALL_PASS"
+    assert cert["fail_closed_stop"] is None
+    assert cert["forbidden_assumptions_used"]["TRS"] is False
+    assert cert["forbidden_assumptions_used"]["six_orbit"] is False
+    for g, v in cert["gates"].items():
+        assert v["result"] == "PASS", (g, v["result"])
+
+
+def test_derivation_classification():
+    cert = _run("derivation/classify_sectors.py", "clsf", "classification_certificate.json",
+                out_dir="derivation/out")
+    assert cert["G-S1_CARRIER_EXCHANGE_SYMMETRY"]["result"] == "PASS"
+    assert cert["G-S2_COINCIDENCE_COVERAGE"]["result"] == "PASS"

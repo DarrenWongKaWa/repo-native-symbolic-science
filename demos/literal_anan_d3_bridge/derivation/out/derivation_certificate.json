@@ -1,0 +1,54 @@
+{
+  "schema": "viper.demo.anan_d3.derivation.v1",
+  "commit": "f057a43e85cce1a8d661116c38b6af73fdfab377",
+  "timestamp_utc": "2026-08-16T10:46:37Z",
+  "source": "clean scientific background (2026-08-16), sections 5-10 only",
+  "forbidden_assumptions_used": {
+    "TRS": false,
+    "IBP": false,
+    "weak_gamma": false,
+    "two_band": false,
+    "three_band": false,
+    "supplement_compact_formula": false,
+    "anan_D2_D3": false,
+    "six_orbit": false
+  },
+  "gates": {
+    "G-M1_M_DERIVED_FROM_RHO1": {
+      "max_residual": "2.795033050974441507379303e-16",
+      "result": "PASS"
+    },
+    "G-M2_M_NORMAL_FORM_EXPLICIT": {
+      "max_residual": "1.603612119521505267863965e-16",
+      "result": "PASS"
+    },
+    "G-T3_MAPPING_UNIQUENESS": {
+      "unique_mapping": "acb",
+      "result": "PASS"
+    },
+    "G-T2_D2_W2_TO_DD5": {
+      "max_residual": "4.729872553954659758939461e-17",
+      "result": "PASS"
+    },
+    "G-T1_T_DERIVED_FROM_RHO2": {
+      "index_mapping": "(n,l,m) = (a,c,b)  [T_{abc} = [w^2] rho^(2)_{e,a,c,b}(w,-w)]",
+      "D2_assignment": "D^(2)_+ = D2(f_+; e_n, e_l + w2, e_m), D^(2)_- = D2(f_-; e_n, e_l + w2, e_m) (shift on l node; [w^2] insensitive to shift sign)",
+      "max_residual": "5.693303330155914259368495e-17",
+      "result": "PASS"
+    },
+    "G-C1_COMPACT_FOUR_SECTOR": {
+      "equality_type": "POINTWISE_EXACT (structural; identical summand sets)",
+      "organization": {
+        "pair_sector": "sum_nm M_nm [ v^b_nm h^ac_mn + v^c_nm h^ab_mn ]  ==  M_b + M_c",
+        "loop_sector": "sum_nml T_nml v^a_mn [ v^b_nl v^c_lm + v^c_nl v^b_lm ]  ==  T_bc + T_cb",
+        "common_weights": [
+          "M_nm = [w^2] rho^(1)_{e,nm}",
+          "T_nml = [w^2] rho^(2)_{e,nlm}"
+        ]
+      },
+      "result": "PASS"
+    }
+  },
+  "fail_closed_stop": null,
+  "verdict": "DERIVATION_GATES_ALL_PASS"
+}
