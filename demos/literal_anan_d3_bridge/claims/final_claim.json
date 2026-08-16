@@ -1,0 +1,23 @@
+{
+  "schema": "viper.demo.anan_d3.final_claim.v1",
+  "commit": "8f3b68552a16914904d2dbebd61a3a2582212475",
+  "timestamp_utc": "2026-08-16T10:18:35Z",
+  "CLAIM": "Literal Anan D3 thermal notation is exactly bridged to the Guo/Supplement thermal notation, and the longitudinal all-distinct three-band vvv block agrees after complete six-orbit reassembly, with convention factor -2.",
+  "CERTIFIED_COMPONENTS": [
+    "thermal dictionary (argument/function/derivative bridges): PASS_EXACT",
+    "literal D3 substitution: PASS_EXACT (POINTWISE)",
+    "geometry orbit invariance: PASS_EXACT (6/6)",
+    "six-orbit: LITERAL_ANAN_D3_SIX_ORBIT PASS_EXACT (gates G1..G7, frozen 2026-08-16 contract)",
+    "negative controls: FAIL_EXPECTED / FAIL_AS_EXPECTED as designed"
+  ],
+  "OPEN_COMPONENT": "none (contract frozen 2026-08-16; packet historical digits belong to a different witness)",
+  "NOT_CLAIMED": [
+    "complete Guo-Anan conductivity equivalence",
+    "literal D2 bridge",
+    "complete overall prefactor bridge",
+    "generic-N proof",
+    "post-IBP BZ equivalence",
+    "degenerate-band extension"
+  ],
+  "final_verdict": "DEMO_LAYERS_L1_L2_L3_L4_L5_CERTIFIED"
+}

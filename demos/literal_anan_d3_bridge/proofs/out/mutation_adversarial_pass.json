@@ -1,0 +1,37 @@
+{
+  "schema": "viper.demo.anan_d3.mutation_adversarial_pass.v1",
+  "commit": "6b062fc086a3199575b5d3c1e5fa55cbad886403",
+  "timestamp_utc": "2026-08-16T10:47:55Z",
+  "principle": "correct science -> PASS; specific wrong science -> caught at the correct obligation",
+  "mutations": [
+    {
+      "mutation": "M1_F_NODE_ORDER",
+      "injected": "F[Ec,Ec,Ec,Ea,Eb] -> 3-node second divided difference (historical bug)",
+      "expected_red_gate": "G7_LITERAL_ANAN_D3_SIX_ORBIT",
+      "orbit_residual": "0.01847780077192964828621172",
+      "gate_red": true
+    },
+    {
+      "mutation": "M2_DELTA_INDEX",
+      "injected": "Delta_ca - Delta_bc -> Delta_ac - Delta_bc in K",
+      "expected_red_gate": "G3_K_XYD_NORMAL_FORM",
+      "kxy_normal_form_residual": "4.635650872243768764545877",
+      "gate_red": true
+    },
+    {
+      "mutation": "M3_CONJUGATION_EQUALITY",
+      "injected": "M_ba = conj(M_ab) -> M_ba = M_ab (ordinary equality) in the orbit reduction",
+      "expected_red_gate": "G4_SIX_ORBIT_TO_QM_HD_REDUCTION",
+      "reduction_residual": "2.623403033982396369475666",
+      "gate_red": true
+    },
+    {
+      "mutation": "M4_REAL_ENERGY_FPLUS",
+      "injected": "f_+^A(E-mu+i Gamma) -> real-energy f_+^G(E) in the D3 dictionary",
+      "expected_red_gate": "G7_LITERAL_ANAN_D3_SIX_ORBIT",
+      "orbit_residual": "0.3478406933035782605",
+      "gate_red": true
+    }
+  ],
+  "overall": "PASS (every mutation red-flags at least one gate)"
+}

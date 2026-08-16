@@ -1,0 +1,53 @@
+{
+  "schema": "viper.demo.anan_d3.geometry_orbit.v1",
+  "commit": "6b062fc086a3199575b5d3c1e5fa55cbad886403",
+  "timestamp_utc": "2026-08-16T10:47:43Z",
+  "THREE_BAND_LOOP_GEOMETRY_ORBIT_INVARIANT": "PASS_EXACT",
+  "permutations_checked": [
+    "abc",
+    "acb",
+    "bac",
+    "bca",
+    "cab",
+    "cba"
+  ],
+  "hermiticity_assumption": "A_mn = conjugate(A_nm)",
+  "results": {
+    "abc": {
+      "product_equal": true,
+      "product_conjugate_equal": false,
+      "re_equal": true,
+      "reason": "identical closed product"
+    },
+    "acb": {
+      "product_equal": false,
+      "product_conjugate_equal": true,
+      "re_equal": true,
+      "reason": "orientation reversal complex-conjugates; Re removes it"
+    },
+    "bac": {
+      "product_equal": false,
+      "product_conjugate_equal": true,
+      "re_equal": true,
+      "reason": "orientation reversal complex-conjugates; Re removes it"
+    },
+    "bca": {
+      "product_equal": true,
+      "product_conjugate_equal": false,
+      "re_equal": true,
+      "reason": "identical closed product"
+    },
+    "cab": {
+      "product_equal": true,
+      "product_conjugate_equal": false,
+      "re_equal": true,
+      "reason": "identical closed product"
+    },
+    "cba": {
+      "product_equal": false,
+      "product_conjugate_equal": true,
+      "re_equal": true,
+      "reason": "orientation reversal complex-conjugates; Re removes it"
+    }
+  }
+}

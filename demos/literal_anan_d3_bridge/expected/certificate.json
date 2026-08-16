@@ -1,0 +1,23 @@
+{
+  "schema": "viper.demo.anan_d3.expected_certificate.v1",
+  "expected": {
+    "ANAN_ARGUMENT_TO_GUO_ZMINUS": "PASS_EXACT",
+    "ANAN_FPLUS_TO_HALF_GUO_FMINUS": "PASS_EXACT",
+    "ANAN_DERIVATIVE_BRIDGE_R1": "PASS_EXACT",
+    "ANAN_DERIVATIVE_BRIDGE_R2": "PASS_EXACT",
+    "LITERAL_ANAN_D3_THERMAL_BRIDGE": "PASS_EXACT",
+    "ARROW_TYPE": "POINTWISE_EXACT",
+    "THREE_BAND_LOOP_GEOMETRY_ORBIT_INVARIANT": "PASS_EXACT",
+    "ORDERED_TRIPLE_K_EQUALS_MINUS_D3": "FAIL_EXPECTED",
+    "NEGATIVE_CONTROL_REAL_ENERGY_FPLUS": "FAIL_AS_EXPECTED",
+    "LITERAL_ANAN_D3_SIX_ORBIT": "PASS_EXACT (frozen 2026-08-16 contract; gates G1..G7 all PASS)",
+    "GUO_VVV_TO_LITERAL_ANAN_D3": "blocked by claim boundary (see final_claim.json) - the vvv bridge follows from the certified six-orbit + geometry components but remains a restricted claim",
+    "SCOPE": "longitudinal_all_distinct_three_band",
+    "GAMMA": "finite_positive",
+    "TRS_USED": false,
+    "IBP_USED": false,
+    "WEAK_GAMMA_USED": false
+  },
+  "actual_ref": "../proofs/out/",
+  "status": "CLOSED under the frozen 2026-08-16 contract; witness energies {-0.5, 0.3, 1.4} declared valid (packet digits belong to the historical fixture)"
+}
