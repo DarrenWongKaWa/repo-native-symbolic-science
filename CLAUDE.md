@@ -1,7 +1,8 @@
 # CLAUDE.md — Universal Repo Rules
 
-This file holds **stable, universal** working rules for this repository.
-It is intentionally minimal: it is a contract with the executor, not a dump of current state.
+This file is a **thin adapter** to the model-neutral authority (`REPO_POLICY.md`) and
+to the scientific workflow rules (`AGENTS.md`). It is intentionally minimal: it is a
+contract with the executor, not a dump of current state.
 
 ## 1. Think before acting
 - Read the task spec end-to-end **before** writing any file.

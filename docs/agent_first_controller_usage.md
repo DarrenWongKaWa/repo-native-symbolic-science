@@ -99,15 +99,18 @@ The controller **routes** but does NOT **replace** verification. It enforces thr
 
 ### Using the controller in a real session
 
-```bash
-# 1. Synthesize a plan
-python3 scripts/init_stage.py --role planner --output plan.json
+In the shipped executable surface, plans and execution are driven through
+workflow fixtures and task contracts, not through a stage-script CLI:
 
-# 2. Validate the plan's structure
+```bash
+# 1. Validate a task contract (planner output rendered from task_templates/)
 python3 scripts/orch_controller.py validate-task plan.json
 
-# 3. If valid, freeze and dispatch
+# 2. Check a lifecycle transition is allowed
 python3 scripts/orch_controller.py check-transition --from PLAN_READY --to EXECUTION_ELIGIBLE
+
+# 3. Run a workflow fixture end to end
+python3 scripts/orch_controller.py run-workflow fixtures/synthetic_workflow_demo.json
 ```
 
 ---
@@ -400,11 +403,10 @@ human input before continuing.
 ### Materializing a human gate
 
 ```bash
-# The controller records a human gate decision
-python3 tools/sloop_handoff.py materialize-gate \
-    --gate-id "gate-001" \
-    --decision "APPROVE_WITH_CAVEAT" \
-    --rationale "Caveat is acceptable because it only affects subleading terms"
+# Validate a materialized human gate decision (gate JSON + decision directory)
+python3 scripts/validate_human_gate_materialization.py \
+    --gate-path path/to/human_gate_escalation.json \
+    --decision-dir path/to/human_decisions/
 ```
 
 ### Decision options
@@ -446,14 +448,12 @@ interrupted, you can resume from the last known state.
 ### Resuming after restart
 
 ```bash
-# 1. Check current state
-python3 tools/sloop_status.py
+# 1. Validate that the on-disk orchestration state is resumable
+python3 scripts/validate_controller_resumability.py --state-dir .loop/orch_state/
 
-# 2. List eligible next actions
-python3 scripts/decide_next_action.py
-
-# 3. Resume from the last checkpoint
-python3 scripts/open_next_stage.py
+# 2. Validate a proposed recovery transition against the on-disk state
+python3 scripts/validate_orch_state_transition.py \
+    --from FAILED --to RECEIVED --state-dir .loop/orch_state/
 ```
 
 ### State invariants preserved across restarts
@@ -604,33 +604,20 @@ python3 scripts/orch_controller.py run-workflow fixtures/synthetic_workflow_demo
 When a real (non-synthetic) adapter needs to do actual symbolic work, it creates a
 subagent handoff:
 
-```bash
-# The handoff creates an isolated context with a frozen task contract
-python3 tools/sloop_handoff.py dispatch \
-    --role executor \
-    --contract path/to/contract.json \
-    --output-dir .loop/output/exec-1/
-```
-
-The subagent handoff schema is defined in `schemas/subagent_handoff.schema.json` and
-enforces that:
+The handoff record is defined in `schemas/subagent_handoff.schema.json`, and the
+controller enforces that:
 - The subagent session is ephemeral (no state persists beyond the task)
 - The subagent cannot read files outside its authorized input scope
 - The subagent's output is validated by the controller before being promoted
 
-### Building review packets
+### Review packets
 
-After a workflow completes, you can build a structured reviewer packet for human
-or automated review:
-
-```bash
-python3 scripts/build_review_packet.py \
-    --workflow-id synthetic-demo-001 \
-    --output review_packet.json
-```
-
-This produces a packet that the `AlgebraReviewer`, `PhysicsReviewer`, and
-`SoftwareReviewer` subagents can consume without access to execution internals.
+There is no shipped CLI for building reviewer packets; review packets in this
+repository are frozen artifacts produced and re-verified by the release process
+(see `verification/viper/reviews/` and
+`verification/viper/run_release_verification.py`). The `AlgebraReviewer`,
+`PhysicsReviewer`, and `SoftwareReviewer` subagent roles consume such frozen
+packets without access to execution internals.
 
 ---
 
@@ -639,21 +626,28 @@ This produces a packet that the `AlgebraReviewer`, `PhysicsReviewer`, and
 ```
 python3 scripts/orch_controller.py --help
 
-usage: orch_controller.py [-h] [--verbose]
-  {validate-task,check-transition,list-roles,run-workflow} ...
-
-Orchestration Controller CLI
+usage: orch_controller.py [-h] [--verbose] [--profile {full,judge,proposer}]
+  {validate-task,check-transition,list-roles,list-operations,run-workflow,
+   geometric-basis-verify,symbolic-identity-verify,propose-equation-candidates,
+   recheck-symbolic-certificate,compactification-step} ...
 
 positional arguments:
-  {validate-task,check-transition,list-roles,run-workflow}
-    validate-task       Validate a task contract JSON file
-    check-transition    Check if a state transition is valid
-    list-roles          List all registered roles
-    run-workflow        Run a workflow fixture
+  validate-task       Validate a task contract JSON file
+  check-transition    Check if a state transition is valid
+  list-roles          List all registered roles
+  list-operations     List registered capability/adapter operations
+  run-workflow        Run a workflow fixture
+  geometric-basis-verify        Route a geometric_basis_verify request (JSON on stdin)
+  symbolic-identity-verify      Route a symbolic_identity_verify request (JSON on stdin)
+  propose-equation-candidates   Route a propose_equation_candidates request (JSON on stdin)
+  recheck-symbolic-certificate  Independently re-verify a {claim, certificate} (JSON on stdin)
+  compactification-step         Route a compactification_step request (JSON on stdin)
 
 optional arguments:
   -h, --help            show this help message and exit
   --verbose             Print extra info to stderr
+  --profile {full,judge,proposer}  Registry scope: full (default),
+                                   proposer (no judge), judge (no proposer)
 ```
 
 ## Reference: Key Files
@@ -670,7 +664,7 @@ optional arguments:
 | `fixtures/synthetic_workflow_demo.json` | Demo workflow fixture |
 | `schemas/subagent_task_contract.schema.json` | Task contract JSON schema |
 | `schemas/orchestration_state.schema.json` | Orchestration state JSON schema |
-| `tools/sloop_handoff.py` | Subagent handoff tool |
-| `scripts/build_review_packet.py` | Review packet builder |
-| `scripts/decide_next_action.py` | Next action decision engine |
-| `tools/sloop_status.py` | Workflow status reporter |
+| `scripts/validate_controller_resumability.py` | On-disk orchestration-state resumability validator |
+| `scripts/validate_human_gate_materialization.py` | Human-gate decision materialization validator |
+| `scripts/validate_orch_state_transition.py` | State-transition validator against on-disk state |
+| `tools/independent_zero_engine.py` | Shipped B3 second engine (pinned Wolfram runtime) |

@@ -12,7 +12,7 @@ Repo-Native Symbolic Science is organized into layered modules:
 6. **Validators** — Validator implementations including the SUPP derivation-validation plugin
 7. **Templates** — Reusable task and artifact templates
 8. **Policies** — Governance and operation policies
-9. **Tests** — Public fixture suites and synthetic test cases (104 tests)
+9. **Tests** — Public fixture suites and synthetic test cases (529 tests, observed 2026-08-16 at main 52e1045)
 
 ## Data Flow
 
@@ -59,7 +59,7 @@ The facade does not replace the internal skills. It coordinates their native art
 
 | Component | Path | Purpose |
 |-----------|------|---------|
-| CLI entry point | `scripts/orch_controller.py` | Four subcommands: validate-task, check-transition, list-roles, run-workflow |
+| CLI entry point | `scripts/orch_controller.py` | Ten subcommands (validate-task, check-transition, list-roles, list-operations, run-workflow, geometric-basis-verify, symbolic-identity-verify, propose-equation-candidates, recheck-symbolic-certificate, compactification-step) plus `--profile {full,judge,proposer}` |
 | Supplement facade CLI | `scripts/build_theoretical_supplement.py` | One-command theoretical supplement pipeline with resumable state and renderer gate |
 | Dispatcher | `loop_engine/orch_dispatcher.py` | Role routing, validation orchestration, workflow execution |
 | Registry | `loop_engine/orch_registry.py` | Role definitions, adapter mappings, claim boundaries |

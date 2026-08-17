@@ -31,9 +31,8 @@ The following repo-native files are the source of truth. Do NOT rely on conversa
 ### Step 1: Load State
 
 ```
-python3 scripts/recover_orchestration_state.py \
-  --state-dir "{{STATE_DIR}}" \
-  --orchestration-id "{{ORCHESTRATION_ID}}"
+python3 scripts/validate_controller_resumability.py \
+  --state-dir "{{STATE_DIR}}"
 ```
 
 ### Step 2: Identify Completed Tasks

@@ -1,6 +1,7 @@
 # C0 — Minimal Certified Compactification Loop (Stage 1)
 
-**Status:** active development on `work/viper-c0-minimal-compactification-loop`
+**Status:** merged to `main` via PR #8 (merge `db5475f`, 2026-08-16).
+**Development branch:** `work/viper-c0-minimal-compactification-loop`
 **Base:** `main @ bfb5bb4b817162fdf87aee7a9c41bacca3e898b1` (B5 frozen authority)
 **Calculations:** Python / SymPy only — no Wolfram in this capability.
 **Scope guard:** no repository cleanup, no candidate ranking, no e-graph, no
