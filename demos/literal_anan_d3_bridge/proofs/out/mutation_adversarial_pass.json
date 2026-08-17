@@ -1,7 +1,7 @@
 {
   "schema": "viper.demo.anan_d3.mutation_adversarial_pass.v1",
-  "commit": "6b062fc086a3199575b5d3c1e5fa55cbad886403",
-  "timestamp_utc": "2026-08-16T10:47:55Z",
+  "commit": "2728599a39db7e9887ceabbc22fc2ff861701a49",
+  "timestamp_utc": "2026-08-16T18:14:34Z",
   "principle": "correct science -> PASS; specific wrong science -> caught at the correct obligation",
   "mutations": [
     {
