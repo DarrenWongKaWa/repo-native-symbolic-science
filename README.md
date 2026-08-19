@@ -65,6 +65,10 @@ raw-text verifier rejects or structurally certifies them without loading a
 known compact answer. It claims only structural factorization—not a scientific
 simplification, finite-Gamma result, or canonical promotion.
 
+New here? Start with its [interactive workflow map](demos/raw_compaction_loop/raw_compaction.workflow.html),
+then inspect the [typed diagram source](demos/raw_compaction_loop/raw_compaction.workflow.json)
+or run the offline fixture.
+
 Run the benchmark-local public validation:
 
 ```bash
