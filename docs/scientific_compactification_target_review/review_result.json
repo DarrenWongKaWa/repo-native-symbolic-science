@@ -1,0 +1,26 @@
+{
+  "status": "APPROVED_WITH_DOCUMENTED_LIMITS",
+  "reviews": [
+    {
+      "role": "AlgebraReviewer",
+      "verdict": "APPROVE",
+      "finding": "The C0 bridge binds parent and candidate payload hashes, recomputes the exact edge residual, and rejects unrelated true identities before opening selection."
+    },
+    {
+      "role": "PhysicsReviewer",
+      "verdict": "APPROVE",
+      "finding": "Scope/carrier authority, pending raw structural status, external-attestation blocking, and human-selection boundaries are scientifically disciplined."
+    },
+    {
+      "role": "SoftwareReviewer",
+      "verdict": "APPROVE",
+      "finding": "Profile isolation, action validation, error taxonomy, C0 recheck binding, and hash-bound chain selection are covered by targeted regression tests."
+    }
+  ],
+  "known_limits": [
+    "External verifier JSON is an attestation pending a registered recheck; it is not trusted proof.",
+    "The bundled trusted recheck path currently covers C0 SymPy identity claims only.",
+    "Human decision artifacts have SHA integrity and declared role provenance, not cryptographic identity authentication."
+  ],
+  "release_scope": "Commit the architecture contracts, schemas, C0/raw migrations, target documentation/workflow maps, routing record, validation packet, and focused tests. Exclude scripts/run_c0_chain_demo.py."
+}

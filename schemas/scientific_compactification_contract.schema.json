@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ScientificCompactificationContract",
+  "description": "Human contract A_i and immutable current representation C_i for one governed compactification step.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "loop_id",
+    "scientific_contract",
+    "current_representation",
+    "verification_policy",
+    "selection_policy"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "loop_id": { "type": "string", "minLength": 1 },
+    "scientific_contract": {
+      "type": "object",
+      "required": [
+        "scope",
+        "scientific_invention_forbidden",
+        "declared_claim_scope",
+        "authorized_carrier_definitions",
+        "allowed_operations",
+        "forbidden_operations",
+        "stopping_rule"
+      ],
+      "properties": {
+        "scope": { "enum": ["STRUCTURAL_ONLY", "DECLARED_SCIENTIFIC_SCOPE"] },
+        "scientific_invention_forbidden": { "const": true },
+        "declared_claim_scope": { "type": "string", "minLength": 1 },
+        "definitions": { "type": "array", "items": { "type": "string" } },
+        "index_semantics": { "type": "array", "items": { "type": "string" } },
+        "assumptions": { "type": "array", "items": { "type": "string" } },
+        "authorized_carrier_definitions": { "type": "array", "items": { "type": "string" } },
+        "allowed_operations": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "forbidden_operations": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "preferences": { "type": "array", "items": { "type": "string" } },
+        "stopping_rule": { "type": "string", "minLength": 1 }
+      }
+    },
+    "current_representation": { "$ref": "#/$defs/representation" },
+    "verification_policy": {
+      "type": "object",
+      "required": ["independent_verifier_required", "accepted_backends"],
+      "properties": {
+        "independent_verifier_required": { "const": true },
+        "accepted_backends": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+      }
+    },
+    "selection_policy": {
+      "type": "object",
+      "required": ["human_selection_required"],
+      "properties": { "human_selection_required": { "const": true } }
+    }
+  },
+  "$defs": {
+    "representation": {
+      "type": "object",
+      "required": ["representation_id", "format", "content_sha256", "status"],
+      "properties": {
+        "representation_id": { "type": "string", "minLength": 1 },
+        "format": { "type": "string", "minLength": 1 },
+        "content_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "status": { "enum": ["CURRENT", "SELECTED", "RAW_INGESTED", "CANDIDATE"] },
+        "parent_representation_id": { "type": "string" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "format": { "const": "sympy_identity_claim" } } },
+          "then": { "required": ["verifiable_payload", "source_claim_id"] }
+        }
+      ]
+    }
+  }
+}

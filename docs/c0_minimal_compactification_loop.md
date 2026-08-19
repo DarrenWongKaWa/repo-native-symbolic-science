@@ -57,6 +57,16 @@ executable, auditable, and regression-locked.
   evidence, certificate references, SHA-256 hashes, timestamps; an independent
   process can re-verify any node from the record alone.
 
+## Target-architecture bridge
+
+C0's `ZERO` verdict certifies the identity relation, but it does **not** choose
+the next scientific representation automatically. `scripts/run_c0_loop_demo.py`
+now maps C0 nodes into the shared
+[scientific compactification target architecture](scientific_compactification_target_architecture.md):
+the frozen contract (A_i), (C_i), candidate, independent residual evidence,
+and a `HUMAN_SELECTION_REQUIRED` gate are recorded together. A human must still
+select or reject the verified candidate before it becomes (C_{i+1}).
+
 ## 2. Why this is sound
 
 For certified parent `C_i` (i.e. `lhs_i − rhs_i = 0`):

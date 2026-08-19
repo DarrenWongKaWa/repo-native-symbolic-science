@@ -25,6 +25,12 @@ import time
 
 
 HERE = Path(__file__).resolve().parent
+REPO_ROOT = HERE.parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from loop_engine.scientific_compactification import core as scientific_loop
+
 DEFAULT_RAW = HERE / "raw" / "synthetic_unknown_tensor.wl"
 SOURCE_MANIFEST = HERE / "SOURCE_MANIFEST.json"
 DEFAULT_OUTPUT = HERE / "out"
@@ -425,6 +431,86 @@ def write_json_atomic(path, data):
     temporary_path.replace(path)
 
 
+def target_architecture_state(raw_path, raw_sha256, raw_provenance, proposer_id,
+                              selected, compact_text, parent_node_sha256):
+    """Map this narrow demo into the repo-wide target architecture.
+
+    Structural replay is intentionally recorded as *pending* independent
+    verification.  The demo's own process must not turn its replay result into
+    an exact CAS residual verdict or automatically select a next C_i node.
+    """
+    contract = scientific_loop.build_contract({
+        "schema_version": "1.0",
+        "loop_id": "raw-compaction-" + raw_sha256[:16],
+        "scientific_contract": {
+            "scope": "STRUCTURAL_ONLY",
+            "scientific_invention_forbidden": True,
+            "definitions": [],
+            "index_semantics": [],
+            "assumptions": [],
+            "authorized_carrier_definitions": [
+                "RawKernel%d" % index for index, _ in enumerate(
+                    (selected or {}).get("compiled_groups", []), start=1
+                )
+            ],
+            "declared_claim_scope": "STRUCTURAL_ONLY",
+            "allowed_operations": ["finite_sum_distributivity"],
+            "forbidden_operations": [
+                "scientific_interpretation", "gamma_expansion", "limit_reordering",
+                "integration_by_parts", "tensor_symmetry_assumption", "canonical_promotion"
+            ],
+            "preferences": [],
+            "stopping_rule": "human_selection_after_independent_zero_residual",
+        },
+        "current_representation": {
+            "representation_id": "C0-raw-" + raw_sha256[:16],
+            "format": "wolfram_sum_expression",
+            "content_sha256": raw_sha256,
+            "status": "RAW_INGESTED",
+            "source_path": str(raw_path),
+            "provenance_status": raw_provenance,
+        },
+        "verification_policy": {
+            "independent_verifier_required": True,
+            "accepted_backends": ["sympy", "mathematica", "wolfram"],
+        },
+        "selection_policy": {"human_selection_required": True},
+    })
+    if selected is None:
+        return {"contract": contract, "status": "NO_PROPOSAL"}
+    candidate = scientific_loop.build_candidate(contract, {
+        "candidate_id": selected["candidate_id"],
+        "parent_representation_id": contract["current_representation"]["representation_id"],
+        "candidate_representation": {
+            "representation_id": "candidate-" + sha256_text(compact_text)[:16],
+            "format": "wolfram_compact_candidate",
+            "content_sha256": sha256_text(compact_text),
+            "status": "CANDIDATE",
+        },
+        "proposer_id": proposer_id or "unspecified-external-backend",
+        "carrier_definitions": [
+            "RawKernel%d" % index for index, _ in enumerate(selected["compiled_groups"], start=1)
+        ],
+        "identities_used": ["finite_sum_distributivity"],
+        "claimed_scope": "STRUCTURAL_ONLY",
+    })
+    pending = scientific_loop.pending_independent_verification(
+        contract, candidate,
+        "Raw-text replay is executor-local structural evidence; no independent CAS residual was supplied.",
+    )
+    gate = scientific_loop.blocked_selection_gate(contract, candidate, pending)
+    return {
+        "contract": contract,
+        "candidate": candidate,
+        "verification": pending,
+        "selection_gate": gate,
+        "chain_node": scientific_loop.build_pending_chain_node(
+            contract, candidate, pending, parent_node_sha256
+        ),
+        "status": "PENDING_INDEPENDENT_VERIFICATION",
+    }
+
+
 def run_loop(raw_path, proposer_command, output_dir, n_candidates, proposer_id=None,
              emit_external_wolfram=False):
     raw, raw_bytes, raw_sha256, raw_provenance = load_raw(raw_path)
@@ -462,12 +548,14 @@ def run_loop(raw_path, proposer_command, output_dir, n_candidates, proposer_id=N
 
     output_dir.mkdir(parents=True, exist_ok=True)
     compact_path = None
+    compact_text = None
     post_render_replay = None
     render_permitted = (
         raw_provenance == "MANIFEST_LOCKED_PUBLIC_FIXTURE" or emit_external_wolfram
     )
-    if selected is not None and render_permitted:
+    if selected is not None:
         compact_text = compact_wolfram(raw_sha256, selected["candidate_id"], selected["compiled_groups"])
+    if selected is not None and render_permitted:
         compact_path = output_dir / "compact_candidate.wl"
         compact_path.write_text(compact_text)
         post_render_replay = replay_rendered_candidate(
@@ -518,6 +606,10 @@ def run_loop(raw_path, proposer_command, output_dir, n_candidates, proposer_id=N
         "nodes": nodes,
         "generated_compact_candidate": str(compact_path) if compact_path else None,
         "post_render_structural_replay": post_render_replay,
+        "target_architecture": target_architecture_state(
+            raw_path, raw_sha256, raw_provenance, proposer_id, selected,
+            compact_text, raw_node["node_sha256"],
+        ),
         "timestamp_utc": utc_now(),
     }
     evidence["chain_sha256"] = sha256_text(json.dumps(evidence, sort_keys=True))

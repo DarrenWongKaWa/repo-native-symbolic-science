@@ -52,6 +52,16 @@ Wolfram template against the source components. This is a structural
 factorization artifact only—not an independent equality proof, a scientific
 theorem, a weak-Gamma reduction, or canonical promotion.
 
+## Target-architecture status
+
+This demo now exports the shared scientific-compaction artifacts: its frozen
+structural contract \(A_i\), current representation \(C_i\), proposal-only
+\(\tilde C_{i+1}\), pending independent-verification record, blocked human-selection
+gate, and hash-linked pending chain node. The local structural replay is useful
+evidence, but it remains `UNKNOWN` for the target architecture until an
+independent CAS verifier supplies a residual verdict. See the repository-wide
+[target architecture](../../docs/scientific_compactification_target_architecture.md).
+
 ## Run
 
 The included backend is an offline fixture, not an LLM. It deliberately emits

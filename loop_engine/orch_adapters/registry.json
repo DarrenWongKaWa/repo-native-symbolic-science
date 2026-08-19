@@ -92,6 +92,26 @@
         "accept_proposer_self_score"
       ],
       "claim_authority": "verification"
+    },
+    "scientific_compactification": {
+      "module_path": "loop_engine.orch_adapters.scientific_compactification_adapter",
+      "class_name": "ScientificCompactificationAdapter",
+      "validator_scripts": [],
+      "required_inputs": [],
+      "allowed_actions": [
+        "freeze_scientific_contract",
+        "record_candidate",
+        "record_independent_verdict",
+        "materialize_selection_gate",
+        "bridge_c0_certificate"
+      ],
+      "forbidden_actions": [
+        "execute_generated_code",
+        "self_verify",
+        "automatic_selection",
+        "promote_canonical"
+      ],
+      "claim_authority": "integration"
     }
   },
   "adapters": {
@@ -165,6 +185,26 @@
         "accept_proposer_self_score"
       ],
       "claim_authority": "verification"
+    },
+    "scientific_compactification": {
+      "module_path": "loop_engine.orch_adapters.scientific_compactification_adapter",
+      "class_name": "ScientificCompactificationAdapter",
+      "validator_scripts": [],
+      "required_inputs": [],
+      "allowed_actions": [
+        "freeze_scientific_contract",
+        "record_candidate",
+        "record_independent_verdict",
+        "materialize_selection_gate",
+        "bridge_c0_certificate"
+      ],
+      "forbidden_actions": [
+        "execute_generated_code",
+        "self_verify",
+        "automatic_selection",
+        "promote_canonical"
+      ],
+      "claim_authority": "integration"
     }
   }
 }

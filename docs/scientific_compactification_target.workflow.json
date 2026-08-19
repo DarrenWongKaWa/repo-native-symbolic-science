@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Scientific Compactification Target",
+    "output": "docs/scientific_compactification_target.workflow.html",
+    "quality_profile": "showcase",
+    "viewBox": [1280, 660]
+  },
+  "lanes": [
+    { "id": "contract", "label": "Human Scientific Contract" },
+    { "id": "discovery", "label": "Heuristic Discovery" },
+    { "id": "verification", "label": "Independent Verification" },
+    { "id": "selection", "label": "Scientific Selection" }
+  ],
+  "phases": [
+    { "id": "define", "label": "Define", "fromCol": 0, "toCol": 1 },
+    { "id": "discover", "label": "Discover", "fromCol": 2, "toCol": 3, "variant": "emphasis" },
+    { "id": "verify", "label": "Verify + select", "fromCol": 4, "toCol": 5, "variant": "security" }
+  ],
+  "mainPath": ["contract", "current", "agent", "proposal", "cas", "human"],
+  "nodes": [
+    {
+      "id": "contract",
+      "lane": "contract",
+      "col": 0,
+      "type": "external",
+      "label": "A_i",
+      "sublabel": "definitions + scope"
+    },
+    {
+      "id": "current",
+      "lane": "contract",
+      "col": 1,
+      "type": "database",
+      "label": "C_i",
+      "sublabel": "immutable + hashed"
+    },
+    {
+      "id": "agent",
+      "lane": "discovery",
+      "col": 2,
+      "type": "cloud",
+      "label": "LLM agent",
+      "sublabel": "patterns + carriers",
+      "tag": "proposal only"
+    },
+    {
+      "id": "proposal",
+      "lane": "discovery",
+      "col": 3,
+      "type": "messagebus",
+      "label": "C~_(i+1)",
+      "sublabel": "candidate + scope"
+    },
+    {
+      "id": "cas",
+      "lane": "verification",
+      "col": 4,
+      "type": "security",
+      "label": "CAS residual",
+      "sublabel": "3 verdicts"
+    },
+    {
+      "id": "human",
+      "lane": "selection",
+      "col": 5,
+      "type": "external",
+      "label": "Human gate",
+      "sublabel": "select C_(i+1) or stop"
+    }
+  ],
+  "edges": [
+    { "from": "contract", "to": "current", "label": "authorize", "role": "main", "labelDy": -22 },
+    { "from": "current", "to": "agent", "role": "main", "via": [[300, 119], [300, 243]] },
+    { "from": "agent", "to": "proposal", "role": "main" },
+    { "from": "proposal", "to": "cas", "label": "residual", "role": "main", "route": "drop", "labelDy": 50 },
+    { "from": "cas", "to": "human", "label": "ZERO", "variant": "emphasis", "role": "main" },
+    { "from": "cas", "to": "agent", "label": "NONZERO / UNKNOWN", "variant": "security", "role": "error", "fromSide": "right", "toSide": "right", "via": [[760, 367], [760, 180], [346, 180]] },
+    { "from": "human", "to": "current", "label": "select + iterate", "variant": "dashed", "role": "return", "fromSide": "right", "toSide": "right", "via": [[820, 491], [820, 80], [266, 80]] }
+  ]
+}

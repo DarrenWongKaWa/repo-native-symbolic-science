@@ -77,7 +77,7 @@
       "col": 5,
       "type": "backend",
       "label": "Candidate",
-      "sublabel": "Wolfram + evidence"
+      "sublabel": "structural; pending CAS"
     }
   ],
   "edges": [
