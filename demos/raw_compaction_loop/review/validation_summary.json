@@ -1,0 +1,32 @@
+{
+  "status": "PASS",
+  "scope": "Public synthetic raw-compaction demo; structural factorization only.",
+  "checks": [
+    {
+      "command": "python3 -m pytest -q tests/test_raw_compaction_loop_demo.py",
+      "result": "PASS",
+      "detail": "8 passed"
+    },
+    {
+      "command": "python3 demos/raw_compaction_loop/run_demo.py --proposer-cmd <offline fixture> --out-dir <temporary directory>",
+      "result": "PASS",
+      "detail": "one diagnostic proposal, one structurally certified proposal, post-render structural replay passed"
+    },
+    {
+      "command": "python3 demos/raw_compaction_loop/run_demo.py --raw <authorized local source> --emit-external-wolfram --proposer-cmd <offline fixture> --out-dir <temporary directory>",
+      "result": "PASS",
+      "detail": "external input was labelled EXTERNAL_UNPINNED; no external source bytes are committed"
+    },
+    {
+      "command": "git diff --check",
+      "result": "PASS"
+    }
+  ],
+  "not_claimed": [
+    "Wolfram/CAS semantic equality",
+    "scientific or physical simplification",
+    "blind live-LLM discovery",
+    "canonical promotion"
+  ],
+  "environment_note": "The default system Python is 3.9.6. The targeted new-demo tests pass there; no full-suite result is represented by this artifact."
+}
