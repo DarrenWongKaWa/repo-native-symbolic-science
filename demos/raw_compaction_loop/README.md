@@ -19,6 +19,15 @@ Wolfram `Sum`, indexed functions, `Piecewise`, and
 coincidence branches.  Treating the latter as a C0 identity would be a false
 claim of coverage, so this demo supplies its own constrained raw-text verifier.
 
+## Start with the workflow map
+
+Open the [interactive workflow map](raw_compaction.workflow.html) for the
+shortest route through the demo, or inspect its editable
+[Archify specification](raw_compaction.workflow.json). The map makes three
+beginner-critical facts visible: the model is outside the trust boundary,
+candidate plans are JSON data rather than code, and a rejected plan returns as
+feedback instead of becoming a result.
+
 ## Trust boundary
 
 ```text
