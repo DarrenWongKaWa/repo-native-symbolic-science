@@ -1,0 +1,26 @@
+{
+  "status": "APPROVED_WITH_SCOPE_LIMITS",
+  "reviews": [
+    {
+      "role": "AlgebraReviewer",
+      "verdict": "APPROVE",
+      "finding": "The accepted plan is an exact structural factorization: source order, literal kernels, iterator domains, common prefixes, and post-render replay are gated."
+    },
+    {
+      "role": "PhysicsReviewer",
+      "verdict": "APPROVE",
+      "finding": "The committed fixture is synthetic and redistributable; the demo makes no finite-Gamma, DC conductivity, scientific-identity, or canonical claim."
+    },
+    {
+      "role": "SoftwareReviewer",
+      "verdict": "APPROVE",
+      "finding": "The untrusted proposer is data-only, output size and candidate count are capped, IDs are safe for Wolfram comments, and the manifest/negative tests are present."
+    }
+  ],
+  "release_scope": "Stage only README.md, demos/raw_compaction_loop/, and tests/test_raw_compaction_loop_demo.py. The unrelated scripts/run_c0_chain_demo.py is excluded.",
+  "known_limits": [
+    "A real model is supplied externally through --proposer-cmd; the bundled fixture is deterministic and not an LLM.",
+    "The verifier is intentionally limited to the documented raw Sum/factor grammar.",
+    "STRUCTURAL_CERTIFIED is not an independent Wolfram/CAS equality proof."
+  ]
+}

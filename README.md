@@ -58,6 +58,13 @@ The finite-Gamma `sigma_xxx` benchmark is a `HUMAN_SPECIFIED_PREVIOUSLY_VERIFIED
 
 It does not demonstrate autonomous mathematical discovery, independent verification, a general tensorial `sigma_abc` solution, or canonical scientific promotion.
 
+The [unknown raw-compaction loop demo](demos/raw_compaction_loop/README.md)
+shows the narrower, auditable discovery pattern on a public synthetic Wolfram
+fixture: an external model proposes JSON-only grouping plans and a separate
+raw-text verifier rejects or structurally certifies them without loading a
+known compact answer. It claims only structural factorization—not a scientific
+simplification, finite-Gamma result, or canonical promotion.
+
 Run the benchmark-local public validation:
 
 ```bash

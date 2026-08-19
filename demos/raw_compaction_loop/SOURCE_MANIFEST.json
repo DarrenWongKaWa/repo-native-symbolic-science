@@ -1,0 +1,17 @@
+{
+  "raw_source": "raw/synthetic_unknown_tensor.wl",
+  "raw_sha256": "b0759fd54f7c62aae12dca15595b9f66807851235bce7d593c514bdc33c49bee",
+  "raw_bytes": 972,
+  "source_format": "Wolfram Language text",
+  "redistributability": "PUBLIC_SYNTHETIC_FIXTURE",
+  "raw_status": "RAW_INGESTED_DEMO_FIXTURE",
+  "allowed_operation": "literal shared-kernel grouping and finite-sum distributivity only",
+  "forbidden_operations": [
+    "scientific interpretation",
+    "Gamma expansion or limit manipulation",
+    "integration by parts",
+    "tensor symmetry assumptions",
+    "canonical promotion"
+  ],
+  "claim_boundary": "Synthetic structural fixture only. It carries no physical finite-Gamma or conductivity claim."
+}

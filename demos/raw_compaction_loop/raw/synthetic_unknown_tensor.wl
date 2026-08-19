@@ -1,0 +1,4 @@
+(* Public synthetic fixture for structural compactification only.
+   It contains opaque heads, explicit finite sums, and coincidence branches;
+   it does not encode a scientific conductivity formula. *)
+UnknownRawTensorABC = Sum[u1[c, n, m]*u2[a, b, m, n]*Piecewise[{{pairCoincident[n], n == m}}, pairDistinct[n, m]], {n, 1, Nb}, {m, 1, Nb}] + Sum[u1[b, n, m]*u2[a, c, m, n]*Piecewise[{{pairCoincident[n], n == m}}, pairDistinct[n, m]], {n, 1, Nb}, {m, 1, Nb}] + Sum[u1[a, m, n]*u1[b, n, ell]*u1[c, ell, m]*Piecewise[{{tripleCoincident[n], n == m && m == ell}, {tripleNM[n, ell], n == m}, {tripleNEll[n, m], n == ell}, {tripleMEll[n, m], m == ell}}, tripleDistinct[n, m, ell]], {n, 1, Nb}, {m, 1, Nb}, {ell, 1, Nb}] + Sum[u1[a, m, n]*u1[b, ell, m]*u1[c, n, ell]*Piecewise[{{tripleCoincident[n], n == m && m == ell}, {tripleNM[n, ell], n == m}, {tripleNEll[n, m], n == ell}, {tripleMEll[n, m], m == ell}}, tripleDistinct[n, m, ell]], {n, 1, Nb}, {m, 1, Nb}, {ell, 1, Nb}];
