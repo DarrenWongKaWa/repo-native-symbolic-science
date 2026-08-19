@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Unknown Raw → Compact Candidate",
+    "output": "demos/raw_compaction_loop/raw_compaction.workflow.html",
+    "quality_profile": "showcase",
+    "viewBox": [1280, 660]
+  },
+  "lanes": [
+    { "id": "input", "label": "Frozen Input" },
+    { "id": "proposer", "label": "Untrusted Proposer" },
+    { "id": "verifier", "label": "Trusted Structural Verifier" },
+    { "id": "output", "label": "Generated Candidate" }
+  ],
+  "phases": [
+    { "id": "ingest", "label": "Ingest", "fromCol": 0, "toCol": 1 },
+    { "id": "propose", "label": "Propose", "fromCol": 2, "toCol": 2, "variant": "emphasis" },
+    { "id": "gate", "label": "Verify + materialize", "fromCol": 3, "toCol": 5, "variant": "security" }
+  ],
+  "mainPath": ["raw", "manifest", "proposerCommand", "plans", "parser", "gates", "candidate"],
+  "nodes": [
+    {
+      "id": "raw",
+      "lane": "input",
+      "col": 0,
+      "type": "external",
+      "label": "Raw",
+      "sublabel": "Wolfram Sum"
+    },
+    {
+      "id": "manifest",
+      "lane": "input",
+      "col": 1,
+      "type": "database",
+      "label": "Lock",
+      "sublabel": "hash + scope"
+    },
+    {
+      "id": "proposerCommand",
+      "lane": "proposer",
+      "col": 2,
+      "type": "cloud",
+      "label": "Model",
+      "sublabel": "--proposer-cmd",
+      "tag": "untrusted"
+    },
+    {
+      "id": "plans",
+      "lane": "proposer",
+      "col": 3,
+      "type": "messagebus",
+      "label": "Plans",
+      "sublabel": "JSON only"
+    },
+    {
+      "id": "parser",
+      "lane": "verifier",
+      "col": 3,
+      "type": "backend",
+      "label": "Parse",
+      "sublabel": "Sum factors",
+      "width": 60
+    },
+    {
+      "id": "gates",
+      "lane": "verifier",
+      "col": 5,
+      "type": "security",
+      "label": "Gates",
+      "sublabel": "literal checks",
+      "width": 60
+    },
+    {
+      "id": "candidate",
+      "lane": "output",
+      "col": 5,
+      "type": "backend",
+      "label": "Candidate",
+      "sublabel": "structural; pending CAS"
+    }
+  ],
+  "edges": [
+    { "from": "raw", "to": "manifest", "label": "hash", "role": "main", "labelDy": -24 },
+    { "from": "manifest", "to": "proposerCommand", "role": "main", "via": [[300, 119], [300, 243]] },
+    { "from": "proposerCommand", "to": "plans", "role": "main" },
+    { "from": "plans", "to": "parser", "role": "main" },
+    { "from": "parser", "to": "gates", "role": "main", "route": "straight" },
+    { "from": "gates", "to": "candidate", "label": "pass", "variant": "emphasis", "role": "main" },
+    { "from": "gates", "to": "proposerCommand", "label": "reject → feedback", "variant": "security", "role": "error", "fromSide": "right", "toSide": "right", "via": [[692, 367], [692, 180], [346, 180]] }
+  ]
+}

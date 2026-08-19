@@ -19,6 +19,15 @@ Wolfram `Sum`, indexed functions, `Piecewise`, and
 coincidence branches.  Treating the latter as a C0 identity would be a false
 claim of coverage, so this demo supplies its own constrained raw-text verifier.
 
+## Start with the workflow map
+
+Open the [interactive workflow map](raw_compaction.workflow.html) for the
+shortest route through the demo, or inspect its editable
+[Archify specification](raw_compaction.workflow.json). The map makes three
+beginner-critical facts visible: the model is outside the trust boundary,
+candidate plans are JSON data rather than code, and a rejected plan returns as
+feedback instead of becoming a result.
+
 ## Trust boundary
 
 ```text
@@ -42,6 +51,16 @@ prefix factor is byte-identical in both terms. It also replays the emitted
 Wolfram template against the source components. This is a structural
 factorization artifact only—not an independent equality proof, a scientific
 theorem, a weak-Gamma reduction, or canonical promotion.
+
+## Target-architecture status
+
+This demo now exports the shared scientific-compaction artifacts: its frozen
+structural contract \(A_i\), current representation \(C_i\), proposal-only
+\(\tilde C_{i+1}\), pending independent-verification record, blocked human-selection
+gate, and hash-linked pending chain node. The local structural replay is useful
+evidence, but it remains `UNKNOWN` for the target architecture until an
+independent CAS verifier supplies a residual verdict. See the repository-wide
+[target architecture](../../docs/scientific_compactification_target_architecture.md).
 
 ## Run
 

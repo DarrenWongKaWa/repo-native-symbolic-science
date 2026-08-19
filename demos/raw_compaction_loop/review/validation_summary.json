@@ -20,6 +20,16 @@
     {
       "command": "git diff --check",
       "result": "PASS"
+    },
+    {
+      "command": "Archify validate workflow raw_compaction.workflow.json --quality showcase --json",
+      "result": "PASS",
+      "detail": "9 of 9 artifact checks passed; 0 composition errors and 0 warnings"
+    },
+    {
+      "command": "Archify visual-check raw_compaction.workflow.html --json",
+      "result": "PASS",
+      "detail": "No overflow at 1440x900, 1600x1000, 1920x1080, or 2048x1320; the automated visualReview field remains pending by Archify design"
     }
   ],
   "not_claimed": [

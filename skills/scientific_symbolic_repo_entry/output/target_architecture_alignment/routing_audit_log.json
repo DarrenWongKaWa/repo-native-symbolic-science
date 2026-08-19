@@ -1,0 +1,19 @@
+[
+  {
+    "timestamp_utc": "2026-08-19T06:24:16Z",
+    "routing_decision": {
+      "request_id": "a144506155d58b9f3f88e47a724c6bb1a2b4cd5ebf480d2a2b47051deb9cef37",
+      "request_text": "modify the whole repo as this target architecture",
+      "task_class": "integration",
+      "sub_class": "integration.open_branch",
+      "confidence": 0.94,
+      "ambiguous_flags": [
+        "whole repo"
+      ],
+      "missing_information": [],
+      "routing_target": "multi_agent_scientific_workflow_orchestration",
+      "routing_rationale": "The user supplied a target architecture and authorized repository-wide implementation. The work is an additive integration migration: introduce governed contract, proposal, independent-verification, human-selection, and chain seams while preserving existing validated paths. The attached Draw.io file is architecture evidence only and is not copied into the repository."
+    },
+    "sha256": "726ce8a077bf50f6150758c7040b4d039c1b32c94a12f4dd8ccd6a11cdb6c94f"
+  }
+]

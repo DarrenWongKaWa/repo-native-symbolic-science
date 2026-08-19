@@ -141,6 +141,23 @@ def _register_synthetic_adapters(registry: OrchRegistry) -> None:
         "claim_authority": "verification",
     })
 
+    # Target architecture: carries the human contract A_i, immutable C_i,
+    # proposal-only C~_(i+1), independent verifier verdict, human selection
+    # gate, and proof-carrying chain node.  It is orchestrator-only; neither
+    # proposer nor judge profiles can create or select a representation.
+    registry.register_adapter("scientific_compactification", {
+        "module_path": "loop_engine.orch_adapters.scientific_compactification_adapter",
+        "class_name": "ScientificCompactificationAdapter",
+        "validator_scripts": [],
+        "required_inputs": [],
+        "allowed_actions": ["freeze_scientific_contract", "record_candidate",
+                            "record_independent_verdict", "materialize_selection_gate",
+                            "bridge_c0_certificate"],
+        "forbidden_actions": ["execute_generated_code", "self_verify",
+                              "automatic_selection", "promote_canonical"],
+        "claim_authority": "integration",
+    })
+
 
 def route_geometric_basis_verify(registry: OrchRegistry, raw: str) -> tuple[dict, int]:
     """Pure routing seam: raw JSON request -> (response payload, exit code).
@@ -263,6 +280,27 @@ def route_compactification_step(registry: OrchRegistry, raw: str) -> tuple[dict,
     return result, exit_code
 
 
+def route_scientific_compactification(registry: OrchRegistry, raw: str) -> tuple[dict, int]:
+    """Route target-architecture contract operations through the ORCH boundary."""
+    try:
+        req = json.loads(raw)
+    except Exception as exc:
+        return {"orch_error": "INVALID_JSON_REQUEST", "detail": str(exc)[:120]}, 1
+    op = req.get("operation")
+    if registry.get_adapter(op) is None:
+        return {"orch_error": "CAPABILITY_NOT_REGISTERED", "operation": op}, 1
+    try:
+        adapter = registry.load_adapter_instance(op)
+    except Exception as exc:
+        return {"orch_error": "ADAPTER_LOAD_FAILED", "operation": op, "detail": str(exc)[:160]}, 1
+    try:
+        result, exit_code = adapter.run(req)
+    except Exception as exc:
+        return {"orch_error": getattr(exc, "code", None) or exc.__class__.__name__,
+                "operation": op}, 1
+    return result, exit_code
+
+
 def route_recheck_symbolic_certificate(raw: str) -> tuple[dict, int]:
     """Independently re-verify a {claim, certificate} WITHOUT the judge or simplify.
 
@@ -303,7 +341,7 @@ def build_registry(profile: str = "full") -> OrchRegistry:
             if cap in (_JUDGE_CAPABILITIES | _PROPOSER_CAPABILITIES) and cap not in allow:
                 del registry._adapters[cap]
             # C0's step composes proposer + residual adjudication: orchestrator-only.
-            if cap == "compactification_step" and profile != "full":
+            if cap in {"compactification_step", "scientific_compactification"} and profile != "full":
                 del registry._adapters[cap]
     return registry
 
@@ -340,6 +378,8 @@ def main() -> None:
                           help="Independently re-verify a {claim, certificate} (JSON on stdin); no simplify, no registry")
     subparsers.add_parser("compactification-step",
                           help="Route a compactification_step request (JSON on stdin) through the registry")
+    subparsers.add_parser("scientific-compactification",
+                          help="Route a scientific_compactification request (JSON on stdin) through the registry")
 
     args = parser.parse_args()
 
@@ -407,6 +447,11 @@ def main() -> None:
 
     elif args.command == "compactification-step":
         result, exit_code = route_compactification_step(registry, sys.stdin.read())
+        print(json.dumps(result))
+        sys.exit(exit_code)
+
+    elif args.command == "scientific-compactification":
+        result, exit_code = route_scientific_compactification(registry, sys.stdin.read())
         print(json.dumps(result))
         sys.exit(exit_code)
 

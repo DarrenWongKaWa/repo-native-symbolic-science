@@ -42,6 +42,10 @@ def test_mock_loop_rejects_bad_plan_then_certifies_raw_compaction(tmp_path):
     assert evidence["nodes"][1]["verdict"]["verdict"] == "COMMON_PREFIX_LITERAL_MISMATCH"
     assert evidence["raw"]["provenance_status"] == "MANIFEST_LOCKED_PUBLIC_FIXTURE"
     assert all(evidence["post_render_structural_replay"].values())
+    architecture = evidence["target_architecture"]
+    assert architecture["status"] == "PENDING_INDEPENDENT_VERIFICATION"
+    assert architecture["verification"]["independent"] is False
+    assert architecture["selection_gate"]["status"] == "BLOCKED_INDEPENDENT_VERIFICATION"
     assert (output / "compact_candidate.wl").is_file()
     compact = (output / "compact_candidate.wl").read_text()
     assert "RawKernel1[n_, m_]" in compact

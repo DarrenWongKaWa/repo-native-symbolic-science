@@ -1,0 +1,42 @@
+{
+  "status": "PASS",
+  "scope": "Target scientific compactification architecture, C0 bridge, and structural raw-demo migration.",
+  "checks": [
+    {
+      "command": "python3 -m pytest -q tests/test_scientific_compactification_architecture.py tests/test_raw_compaction_loop_demo.py",
+      "result": "PASS",
+      "detail": "20 passed"
+    },
+    {
+      "command": "PYTHONPATH=<isolated jsonschema path> python3 -m pytest -q tests/test_c0_compactification_loop.py::test_proposer_route_with_canned_backend tests/test_c0_compactification_loop.py::test_profile_scoping",
+      "result": "PASS",
+      "detail": "2 passed"
+    },
+    {
+      "command": "C0 demo with a configured data-only proposer fixture",
+      "result": "PASS",
+      "detail": "Fresh C0 recheck bound the frozen parent and residual edge; resulting ZERO opened HUMAN_SELECTION_REQUIRED, not automatic selection."
+    },
+    {
+      "command": "Raw compaction demo with offline fixture",
+      "result": "PASS",
+      "detail": "Structural replay produced PROPOSAL_ONLY plus PENDING_INDEPENDENT_VERIFICATION and a blocked human-selection gate."
+    },
+    {
+      "command": "Archify validate/deliver/visual-check for both workflow maps",
+      "result": "PASS",
+      "detail": "Each map passed 9 showcase checks and desktop containment at 1440x900, 1600x1000, 1920x1080, and 2048x1320."
+    },
+    {
+      "command": "git diff --check",
+      "result": "PASS"
+    }
+  ],
+  "not_claimed": [
+    "A generic external CAS JSON response is independently verified",
+    "Structural raw replay proves a scientific identity",
+    "Human decision-role attestation provides cryptographic identity authentication",
+    "Any candidate is canonical or automatically selected"
+  ],
+  "environment_note": "The default system Python is 3.9.6. The focused target tests pass there; C0 tests requiring jsonschema were run with the isolated dependency path."
+}

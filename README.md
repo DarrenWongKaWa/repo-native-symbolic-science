@@ -40,6 +40,28 @@ claim-chain binding (B1/B5 recheckable certificates)
 human-governed scientific promotion
 ```
 
+## Scientific Compactification Target
+
+The repository-wide compactification architecture is now explicit:
+
+```text
+human contract A_i + immutable C_i
+  -> untrusted compact proposal C~_(i+1)
+  -> independent residual verdict {ZERO, NONZERO, UNKNOWN}
+  -> human compactness-and-meaning selection
+  -> selected C_(i+1) or a preserved diagnostic / blocked node
+```
+
+The shared [target architecture](docs/scientific_compactification_target_architecture.md)
+defines contract, candidate, verification, human-selection, and hash-linked
+chain artifacts. The `scientific_compactification` ORCH operation unifies the
+C0 exact-identity path and the raw-Wolfram path without upgrading either one
+beyond its actual verifier evidence.
+
+Open the [interactive target workflow](docs/scientific_compactification_target.workflow.html)
+for the complete contract → proposal → independent residual → human
+selection loop.
+
 ## What Each Artifact Category Is
 
 This repository deliberately distinguishes six categories. A statement in one
@@ -103,6 +125,15 @@ fixture: an external model proposes JSON-only grouping plans and a separate
 raw-text verifier rejects or structurally certifies them without loading a
 known compact answer. It claims only structural factorization—not a scientific
 simplification, finite-Gamma result, or canonical promotion.
+
+New here? Start with its [interactive workflow map](demos/raw_compaction_loop/raw_compaction.workflow.html),
+then inspect the [typed diagram source](demos/raw_compaction_loop/raw_compaction.workflow.json)
+or run the offline fixture.
+
+Its structural replay now produces a proposal pending an independent CAS
+residual verdict; it cannot select a next representation by itself. The C0
+exact residual loop is bridged to the same target architecture and likewise
+requires a human selection decision after `ZERO`.
 
 Run the benchmark-local public validation:
 
@@ -224,7 +255,7 @@ scientific request
 
 ### Executable Controller Pathway
 
-Run the orchestration controller directly from the command line. Ten subcommands are available, and the
+Run the orchestration controller directly from the command line. Eleven subcommands are available, and the
 `--profile {full,judge,proposer}` registry scope switch enforces searcher/judge isolation
 (`judge` removes the proposer registration; `proposer` removes the judge).
 
@@ -239,6 +270,7 @@ python3 scripts/orch_controller.py symbolic-identity-verify    # JSON request on
 python3 scripts/orch_controller.py propose-equation-candidates # JSON request on stdin
 python3 scripts/orch_controller.py recheck-symbolic-certificate # {claim, certificate} on stdin
 python3 scripts/orch_controller.py compactification-step       # JSON request on stdin
+python3 scripts/orch_controller.py scientific-compactification # JSON request on stdin; full profile only
 ```
 
 Add `--verbose` to any command for detailed output.
@@ -249,7 +281,7 @@ Add `--verbose` to any command for detailed output.
 usage: orch_controller.py [-h] [--verbose] [--profile {full,judge,proposer}]
   {validate-task,check-transition,list-roles,list-operations,run-workflow,
    geometric-basis-verify,symbolic-identity-verify,propose-equation-candidates,
-   recheck-symbolic-certificate,compactification-step} ...
+   recheck-symbolic-certificate,compactification-step,scientific-compactification} ...
 
 positional arguments:
   validate-task       Validate a task contract JSON file
@@ -262,6 +294,7 @@ positional arguments:
   propose-equation-candidates   Route a propose_equation_candidates request (JSON on stdin)
   recheck-symbolic-certificate  Independently re-verify a {claim, certificate} (JSON on stdin)
   compactification-step         Route a compactification_step request (JSON on stdin)
+  scientific-compactification  Route a scientific_compactification request (JSON on stdin)
 
 optional arguments:
   --profile {full,judge,proposer}   Registry scope: full (default), proposer (no judge), judge (no proposer)
@@ -281,6 +314,7 @@ optional arguments:
 | `propose-equation-candidates` | Emit UNVERIFIED candidate equations (stdin JSON) | Proposer ran |
 | `recheck-symbolic-certificate` | Independently re-verify a stored certificate | Recheck passed |
 | `compactification-step` | Execute one certified C0 loop step (stdin JSON) | Step executed |
+| `scientific-compactification` | Freeze a target contract, record attestations, bridge C0 rechecks, or materialize human selection | Requested governed action completed |
 
 **Minimal example using public synthetic fixtures:**
 

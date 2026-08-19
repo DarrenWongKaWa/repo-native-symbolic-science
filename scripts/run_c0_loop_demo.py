@@ -22,6 +22,7 @@ REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO))
 
 from loop_engine.orch_adapters.compactification_loop import core as C0
+from loop_engine.scientific_compactification import core as ScientificLoop
 
 # F-05 fix: fail-closed — no hardcoded backend fallback.
 
@@ -105,6 +106,49 @@ def main() -> int:
         "repository_commit": C0._safe.git_head(REPO),
         "calculations": "python_sympy_exact (no Wolfram)",
         "timestamp_utc": C0._now_iso(),
+    }
+    target_contract = ScientificLoop.build_contract({
+        "schema_version": "1.0",
+        "loop_id": "c0-target-" + args.seed,
+        "scientific_contract": {
+            "scope": "DECLARED_SCIENTIFIC_SCOPE",
+            "scientific_invention_forbidden": True,
+            "definitions": ["C0 claim symbols are declared in the frozen seed."],
+            "index_semantics": [],
+            "assumptions": ["The seed's declared symbol assumptions define the C0 scope."],
+            "authorized_carrier_definitions": [],
+            "declared_claim_scope": seed["claim"].get("scope", "declared_scope"),
+            "allowed_operations": ["algebraic_identity_claim"],
+            "forbidden_operations": ["integration_by_parts", "canonical_promotion"],
+            "preferences": [],
+            "stopping_rule": "human_selection_after_independent_zero_residual",
+        },
+        "current_representation": {
+            "representation_id": "C0-" + args.seed,
+            "format": "sympy_identity_claim",
+            "content_sha256": ScientificLoop.canonical_sha(seed["claim"]),
+            "status": "CURRENT",
+            "verifiable_payload": seed["claim"],
+            "source_claim_id": seed["seed_id"],
+        },
+        "verification_policy": {
+            "independent_verifier_required": True,
+            "accepted_backends": ["sympy"],
+        },
+        "selection_policy": {"human_selection_required": True},
+    })
+    target_nodes = []
+    for node in step["nodes"]:
+        target_nodes.append(ScientificLoop.bridge_c0_node(
+            target_contract, node, "c0-external-proposer"
+        ))
+    evidence["target_architecture"] = {
+        "contract": target_contract,
+        "nodes": target_nodes,
+        "selection_note": (
+            "A ZERO residual makes a C0 candidate eligible for human selection; "
+            "this demo never selects or promotes it automatically."
+        ),
     }
     ev_path = out_dir / "c0_demo_evidence.json"
     tmp = out_dir / "c0_demo_evidence.json.tmp"

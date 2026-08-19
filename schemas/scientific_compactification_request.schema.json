@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ScientificCompactificationRequest",
+  "description": "ORCH request for the target compactification architecture. Candidate and selection operations remain data-only.",
+  "type": "object",
+  "required": ["operation", "contract_version", "action", "contract"],
+  "properties": {
+    "operation": { "const": "scientific_compactification" },
+    "contract_version": { "const": "1.0" },
+    "action": { "enum": ["bootstrap", "adjudicate", "select", "bridge_c0"] },
+    "contract": { "$ref": "scientific_compactification_contract.schema.json" },
+    "candidate": { "type": "object" },
+    "verification": { "type": "object" },
+    "selection": { "type": "object" },
+    "c0_node": { "type": "object" },
+    "proposer_id": { "type": "string" }
+  },
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": { "properties": { "action": { "const": "adjudicate" } } },
+      "then": { "required": ["candidate", "verification"] }
+    },
+    {
+      "if": { "properties": { "action": { "const": "select" } } },
+      "then": { "required": ["candidate", "verification", "selection"] }
+    },
+    {
+      "if": { "properties": { "action": { "const": "bridge_c0" } } },
+      "then": { "required": ["c0_node", "proposer_id"] }
+    }
+  ]
+}

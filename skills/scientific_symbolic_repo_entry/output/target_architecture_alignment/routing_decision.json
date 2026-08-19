@@ -1,0 +1,13 @@
+{
+  "request_id": "a144506155d58b9f3f88e47a724c6bb1a2b4cd5ebf480d2a2b47051deb9cef37",
+  "request_text": "modify the whole repo as this target architecture",
+  "task_class": "integration",
+  "sub_class": "integration.open_branch",
+  "confidence": 0.94,
+  "ambiguous_flags": [
+    "whole repo"
+  ],
+  "missing_information": [],
+  "routing_target": "multi_agent_scientific_workflow_orchestration",
+  "routing_rationale": "The user supplied a target architecture and authorized repository-wide implementation. The work is an additive integration migration: introduce governed contract, proposal, independent-verification, human-selection, and chain seams while preserving existing validated paths. The attached Draw.io file is architecture evidence only and is not copied into the repository."
+}

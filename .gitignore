@@ -29,3 +29,4 @@ tests/gate4/__pycache__/
 
 # Orchestration runtime state (local, disposable)
 .loop/
+docs/*.visual-check.*

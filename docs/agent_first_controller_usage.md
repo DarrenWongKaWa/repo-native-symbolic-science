@@ -629,7 +629,7 @@ python3 scripts/orch_controller.py --help
 usage: orch_controller.py [-h] [--verbose] [--profile {full,judge,proposer}]
   {validate-task,check-transition,list-roles,list-operations,run-workflow,
    geometric-basis-verify,symbolic-identity-verify,propose-equation-candidates,
-   recheck-symbolic-certificate,compactification-step} ...
+   recheck-symbolic-certificate,compactification-step,scientific-compactification} ...
 
 positional arguments:
   validate-task       Validate a task contract JSON file
@@ -642,6 +642,7 @@ positional arguments:
   propose-equation-candidates   Route a propose_equation_candidates request (JSON on stdin)
   recheck-symbolic-certificate  Independently re-verify a {claim, certificate} (JSON on stdin)
   compactification-step         Route a compactification_step request (JSON on stdin)
+  scientific-compactification  Route a scientific_compactification request (JSON on stdin)
 
 optional arguments:
   -h, --help            show this help message and exit
